@@ -15,15 +15,25 @@ const loginUserFromDB = async (payload: IAuth) => {
 
     const user = await User.findOne({ email: payload.email }).session(session);
     if (!user) {
-      throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found!');
+      throw new AppError(StatusCodes.NOT_FOUND, 'You are not registered!');
+    }
+
+    if (!user.isVerified) {
+      throw new AppError(
+        StatusCodes.FORBIDDEN,
+        'You are not verified! Please verify your email address. Check your inbox.',
+      );
     }
 
     if (!user.isActive) {
-      throw new AppError(StatusCodes.FORBIDDEN, 'This user is not active!');
+      throw new AppError(StatusCodes.FORBIDDEN, 'Your account is not active');
     }
 
     if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
-      throw new AppError(StatusCodes.FORBIDDEN, 'Password does not match');
+      throw new AppError(
+        StatusCodes.FORBIDDEN,
+        'Wrong password please try again',
+      );
     }
 
     const jwtPayload: IJwtPayload = {
@@ -72,11 +82,11 @@ const registerUserFromDB = async (userData: IUser) => {
       session,
     );
     if (isUserExist) {
-      throw new Error('User already exists');
+      throw new Error('You are already registered');
     }
 
     if (isUserExist) {
-      throw new AppError(StatusCodes.BAD_REQUEST, 'User already exists');
+      throw new AppError(StatusCodes.BAD_REQUEST, 'You are already registered');
     }
 
     const user = new User(userData);

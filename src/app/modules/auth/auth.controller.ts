@@ -2,26 +2,22 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthService } from './auth.service';
-import config from '../../config';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
-  console.log('register result', result);
+//   console.log('register result', result);
 
-  // const { accessToken, refreshToken } = result;
+   let otptoken;
 
-  //   res.cookie('refreshToken', refreshToken, {
-  //     secure: config.NODE_ENV === 'production',
-  //     httpOnly: true,
-  //     sameSite: 'none',
-  //     maxAge: 1000 * 60 * 60 * 24 * 365,
-  //   });
+    if (!result?.data?.isVerified) {
+        otptoken = await otpServices.resendOtp(result?.email);
+    }
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'You are registered successfully!',
-    data: null,
+    data: result,
   });
 });
 
@@ -30,12 +26,6 @@ const loginUser = catchAsync(async (req, res) => {
   const { refreshToken, accessToken } = result;
 //   console.log('loginUser', result);
 
-  res.cookie('refreshToken', refreshToken, {
-    secure: config.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 * 365,
-  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { Role } from './auth.interface';
 
+export const verificationSchema = z.object({
+  otp: z.union([z.string(), z.number()]).default('0'),
+  expiresAt: z.coerce.date(),
+  status: z.boolean().default(false),
+});
+
 const userValidationSchema = z.object({
   body: z.object({
     first_name: z
@@ -18,6 +24,7 @@ const userValidationSchema = z.object({
     isVerified: z.boolean().optional(),
     contact_number: z.number().optional(),
     isActive: z.boolean().optional(),
+    verification: verificationSchema,
   }),
 });
 
