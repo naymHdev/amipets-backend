@@ -25,7 +25,7 @@ export interface IUser {
   isActive?: boolean;
   isDeleted?: boolean;
   isVerified?: boolean;
-  verification: {
+  verification?: {
     otp: string | number;
     expiresAt: Date;
     status: boolean;

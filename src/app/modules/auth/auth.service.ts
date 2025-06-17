@@ -18,7 +18,7 @@ const loginUserFromDB = async (payload: IAuth) => {
       throw new AppError(StatusCodes.NOT_FOUND, 'You are not registered!');
     }
 
-    if (!user.isVerified) {
+    if (!user.verification?.status) {
       throw new AppError(
         StatusCodes.FORBIDDEN,
         'You are not verified! Please verify your email address. Check your inbox.',

@@ -10,8 +10,9 @@ import path from 'path';
 import fs from 'fs';
 
 const verifyOtp = async (token: string, otp: string | number) => {
+  // console.log('token', token);
   if (!token) {
-    throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
+    throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
   }
   let decode;
 
@@ -20,7 +21,7 @@ const verifyOtp = async (token: string, otp: string | number) => {
       token,
       config.jwt_access_secret as Secret,
     ) as JwtPayload;
-  } catch (err) {
+  } catch (err: any) {
     throw new AppError(
       StatusCodes.FORBIDDEN,
       'Session has expired. Please try to submit OTP within 3 minute',
@@ -30,6 +31,8 @@ const verifyOtp = async (token: string, otp: string | number) => {
   const user = await User.findById(decode?.userId).select(
     'verification status ',
   );
+
+  console.log("user otp", user);
 
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'User not found');
@@ -88,6 +91,8 @@ const resendOtp = async (email: string) => {
   }
 
   const otp = generateOtp();
+  // console.log('new otp', otp);
+
   const expiresAt = moment().add(3, 'minute');
 
   const updateOtp = await User.findByIdAndUpdate(

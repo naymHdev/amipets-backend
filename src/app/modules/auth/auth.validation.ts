@@ -24,7 +24,7 @@ const userValidationSchema = z.object({
     isVerified: z.boolean().optional(),
     contact_number: z.number().optional(),
     isActive: z.boolean().optional(),
-    verification: verificationSchema,
+    verification: verificationSchema.optional(),
   }),
 });
 

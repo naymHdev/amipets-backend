@@ -2,30 +2,32 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthService } from './auth.service';
+import { otpServices } from '../otp/otp.service';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
-//   console.log('register result', result);
+  // console.log('register result', result.isVerified);
 
-   let otptoken;
-
-    if (!result?.data?.isVerified) {
-        otptoken = await otpServices.resendOtp(result?.email);
-    }
+  let otpToken;
+  if (result?.isVerified == false) {
+    otpToken = await otpServices.resendOtp(result?.email);
+  }
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'You are registered successfully!',
-    data: result,
+    data: {
+      user: result,
+      otpToken: otpToken,
+    },
   });
 });
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUserFromDB(req.body);
   const { refreshToken, accessToken } = result;
-//   console.log('loginUser', result);
-
+  //   console.log('loginUser', result);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
