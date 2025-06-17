@@ -45,8 +45,23 @@ const resetPassValidation = z.object({
     .min(6, { message: 'Password must be at least 6 characters' }),
 });
 
+const userProfileUpdateValidationSchema = z.object({
+  data: z.object({
+    full_name: z
+      .string({ required_error: 'First name is required' })
+      .optional(),
+    email: z
+      .string()
+      .email({ message: 'Provide a valid email, try again' })
+      .optional(),
+    location: z.string({ required_error: 'Provide a valid location' }),
+    profile_image: z.string(),
+  }),
+});
+
 export const AuthValidation = {
   userValidationSchema,
   forgotPassValidation,
   resetPassValidation,
+  userProfileUpdateValidationSchema,
 };
