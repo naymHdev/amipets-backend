@@ -32,12 +32,15 @@ const verifyOtp = async (token: string, otp: string | number) => {
     'verification status ',
   );
 
-  console.log("user otp", user);
+  console.log('user otp', user);
 
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'User not found');
   }
-  if (new Date() > user?.verification?.expiresAt) {
+  if (
+    !user?.verification?.expiresAt ||
+    new Date() > new Date(user.verification.expiresAt)
+  ) {
     throw new AppError(
       StatusCodes.FORBIDDEN,
       'OTP has expired. Please resend it',
@@ -85,6 +88,13 @@ const verifyOtp = async (token: string, otp: string | number) => {
 
 const resendOtp = async (email: string) => {
   const user = await User.findOne({ email });
+
+  if (user?.verification?.status) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'You already verified, need to login',
+    );
+  }
 
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'User not found');

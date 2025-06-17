@@ -2,8 +2,6 @@ import { Router } from 'express';
 import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from './auth.validation';
 import { AuthController } from './auth.controller';
-import { otpController } from '../otp/otp.controller';
-import { otpValidation } from '../otp/otp.validation';
 
 const router = Router();
 
@@ -18,15 +16,15 @@ router.post('/login', AuthController.loginUser);
 router.post('/refresh-token', AuthController.refreshToken);
 
 router.post(
-  '/verify-otp',
-  otpController.verifyOtp,
-  validateRequest(otpValidation.otpVerifySchema),
+  '/forgot-password',
+  AuthController.fagotPassword,
+  validateRequest(AuthValidation.forgotPassValidation),
 );
 
 router.post(
-  '/resend-otp',
-  otpController.resendOtp,
-  validateRequest(otpValidation.otpResendSchema),
+  '/reset-password',
+  AuthController.resetPassword,
+  validateRequest(AuthValidation.resetPassValidation),
 );
 
 export const AuthRoutes = router;

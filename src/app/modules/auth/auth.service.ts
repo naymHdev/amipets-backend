@@ -5,7 +5,13 @@ import User from './auth.model';
 import mongoose from 'mongoose';
 import { createToken, verifyToken } from './auth.utils';
 import config from '../../config';
-import { Secret } from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import { generateOtp } from '../../utils/otpGenerator';
+import moment from 'moment';
+import path from 'path';
+import { sendEmail } from '../../utils/mailSender';
+import fs from 'fs';
+import bcrypt from 'bcrypt';
 
 const loginUserFromDB = async (payload: IAuth) => {
   const session = await mongoose.startSession();
@@ -108,7 +114,6 @@ const registerUserFromDB = async (userData: IUser) => {
   }
 };
 
-// refresh token logic here
 const refreshToken = async (token: string) => {
   let verifiedToken = null;
   try {
@@ -152,8 +157,113 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const forgotPassword = async (email: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'You are not registered!');
+  }
+
+  const jwtPayload = {
+    email: email,
+    userId: user?._id,
+  };
+
+  const token = jwt.sign(jwtPayload, config.jwt_access_secret as Secret, {
+    expiresIn: '3m',
+  });
+
+  const currentTime = new Date();
+  const otp = generateOtp();
+  const expiresAt = moment(currentTime).add(3, 'minute');
+
+  await User.findByIdAndUpdate(user?._id, {
+    verification: {
+      otp,
+      expiresAt,
+    },
+  });
+
+  const otpEmailPath = path.join(
+    __dirname,
+    '../../public/view/forgot_pass_mail.html',
+  );
+
+  await sendEmail(
+    user?.email,
+    'Your reset password OTP is',
+    fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{otp}}', otp)
+      .replace('{{email}}', user?.email),
+  );
+
+  return { email, token };
+};
+
+const resetPassword = async (
+  token: string,
+  payload: { newPassword: string; confirmPassword: string },
+) => {
+  let decode;
+  try {
+    decode = jwt.verify(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload;
+  } catch (err: any) {
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      'Session has expired. Please try again',
+    );
+  }
+
+  const user: IUser | null = await User.findById(decode?.userId).select(
+    'verification',
+  );
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
+  if (
+    !user?.verification?.expiresAt ||
+    new Date() > new Date(user.verification.expiresAt)
+  ) {
+    throw new AppError(StatusCodes.FORBIDDEN, 'Session has expired');
+  }
+
+  if (!user?.verification?.status) {
+    throw new AppError(StatusCodes.FORBIDDEN, 'OTP is not verified yet');
+  }
+
+  if (payload?.newPassword !== payload?.confirmPassword) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'New password and confirm password do not match',
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    payload?.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  const result = await User.findByIdAndUpdate(decode?.userId, {
+    password: hashedPassword,
+    verification: {
+      otp: 0,
+      status: true,
+    },
+  });
+
+  return result;
+};
+
 export const AuthService = {
   registerUserFromDB,
   loginUserFromDB,
   refreshToken,
+  forgotPassword,
+  resetPassword,
 };
