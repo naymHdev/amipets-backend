@@ -14,7 +14,7 @@ export default [
       'no-unused-vars': 'error',
       'no-unused-expressions': 'warn',
       'prefer-const': 'warn',
-      'no-console': 'warn',
+      // 'no-console': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },

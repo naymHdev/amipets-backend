@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use('/api/v1', router);
+app.use('/api/v1', router);
 
 // Test route
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,7 +34,7 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
 
   res.status(StatusCodes.OK).json({
     success: true,
-    message: 'Welcome to the PunarBay',
+    message: 'Welcome to the Ami Pets API',
     version: '1.0.0',
     clientDetails: {
       ipAddress: clientIp,

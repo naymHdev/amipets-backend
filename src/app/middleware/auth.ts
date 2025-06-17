@@ -4,10 +4,10 @@ import config from '../config';
 import AppError from '../errors/appError';
 import catchAsync from '../utils/catchAsync';
 import { StatusCodes } from 'http-status-codes';
+import { Role } from '../modules/auth/auth.interface';
 import User from '../modules/auth/auth.model';
-import { UserRole } from '../modules/auth/auth.interface';
 
-const auth = (...requiredRoles: UserRole[]) => {
+const auth = (...requiredRoles: Role[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     let token = req.headers.authorization;
 
