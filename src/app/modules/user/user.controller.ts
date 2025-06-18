@@ -49,8 +49,22 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+const deleteProfile = catchAsync(async (req, res) => {
+  const isUser = req.user as IJwtPayload;
+
+  const result = await UserService.deleteUserFromDB(isUser);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: `Profile deleted successfully`,
+    data: result,
+  });
+});
+
 export const UserController = {
   updateProfile,
   myProfile,
   changePassword,
+  deleteProfile,
 };

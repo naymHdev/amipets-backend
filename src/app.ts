@@ -13,13 +13,14 @@ const app: Application = express();
 // Middleware setup
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://punarbay.vercel.app'],
+    origin: ['http://localhost:3000'],
   }),
 );
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 app.use('/api/v1', router);
 

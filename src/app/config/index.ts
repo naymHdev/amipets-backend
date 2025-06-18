@@ -8,6 +8,8 @@ export default {
   port: process.env.PORT || 3000,
   db_url: process.env.MONGO_URL,
 
+  BASE_URL: process.env.BASE_URL,
+
   nodemailer_host_email: process.env.NODEMAILER_HOST_EMAIL,
   nodemailer_host_pass: process.env.NODEMAILER_HOST_PASS,
 

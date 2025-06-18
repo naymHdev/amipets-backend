@@ -15,7 +15,7 @@ router.get('/:id', auth(Role.USER), UserController.myProfile);
 router.put(
   '/:id',
   auth(Role.USER),
-  multerUpload.single('profile_image'),
+  multerUpload.single('pet_image'),
   parseBody,
   validateRequest(AuthValidation.userProfileUpdateValidationSchema),
   UserController.updateProfile,
@@ -27,5 +27,7 @@ router.patch(
   validateRequest(UserValidation.changePasswordUpdateValidationSchema),
   UserController.changePassword,
 );
+
+router.delete('/:id', auth(Role.USER), UserController.deleteProfile);
 
 export const UserRoutes = router;

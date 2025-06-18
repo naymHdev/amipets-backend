@@ -99,8 +99,28 @@ const changePassword = async (
   };
 };
 
+const deleteUserFromDB = async (authUser: IJwtPayload) => {
+  const user = await User.findById(authUser._id);
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'You are not authorized!');
+  }
+
+  if (!user.isActive) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Inactive users cannot be deleted!',
+    );
+  }
+
+  const deletedUser = await User.findByIdAndDelete(authUser._id);
+
+  return deletedUser;
+};
+
 export const UserService = {
   updateProfile,
   myProfile,
   changePassword,
+  deleteUserFromDB,
 };
