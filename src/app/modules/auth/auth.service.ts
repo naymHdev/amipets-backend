@@ -24,12 +24,12 @@ const loginUserFromDB = async (payload: IAuth) => {
       throw new AppError(StatusCodes.NOT_FOUND, 'You are not registered!');
     }
 
-    if (!user.verification?.status) {
-      throw new AppError(
-        StatusCodes.FORBIDDEN,
-        'You are not verified! Please verify your email address. Check your inbox.',
-      );
-    }
+    // if (!user.verification?.status) {
+    //   throw new AppError(
+    //     StatusCodes.FORBIDDEN,
+    //     'You are not verified! Please verify your email address. Check your inbox.',
+    //   );
+    // }
 
     if (!user.isActive) {
       throw new AppError(StatusCodes.FORBIDDEN, 'Your account is not active');

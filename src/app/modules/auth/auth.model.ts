@@ -7,6 +7,10 @@ import { StatusCodes } from 'http-status-codes';
 
 const userSchema = new Schema<IUser, UserModel>(
   {
+    full_name: {
+      type: String,
+      required: false,
+    },
     first_name: {
       type: String,
       required: true,

@@ -19,7 +19,6 @@ const userValidationSchema = z.object({
       .min(6, { message: 'Password must be at least 6 characters' }),
     role: z.enum([Role.ADMIN, Role.SHELTER, Role.USER]).default(Role.USER),
     location: z.string({ required_error: 'Provide a valid location' }),
-    profile_image: z.string().optional(),
     isDeleted: z.boolean().optional(),
     isVerified: z.boolean().optional(),
     contact_number: z.number().optional(),
@@ -46,17 +45,12 @@ const resetPassValidation = z.object({
 });
 
 const userProfileUpdateValidationSchema = z.object({
-  data: z.object({
-    full_name: z
-      .string({ required_error: 'First name is required' })
-      .optional(),
-    email: z
-      .string()
-      .email({ message: 'Provide a valid email, try again' })
-      .optional(),
-    location: z.string({ required_error: 'Provide a valid location' }),
-    profile_image: z.string(),
-  }),
+  full_name: z.string({ required_error: 'First name is required' }).optional(),
+  email: z
+    .string()
+    .email({ message: 'Provide a valid email, try again' })
+    .optional(),
+  location: z.string({ required_error: 'Provide a valid location' }).optional(),
 });
 
 export const AuthValidation = {
