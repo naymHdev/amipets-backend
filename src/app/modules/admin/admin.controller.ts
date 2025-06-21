@@ -25,6 +25,17 @@ const getAbout = catchAsync(async (req, res) => {
   });
 });
 
+const updateAbout = catchAsync(async (req, res) => {
+  const result = await AdminService.updateAbout(req.body);
+
+  sendResponse(res, {
+    success: true,
+    message: 'About section updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 const createPrivacyPolicy = catchAsync(async (req, res) => {
   const result = await AdminService.createPrivacyPolicyFromDB(req.body);
 
@@ -42,6 +53,17 @@ const getPrivacyPolicy = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     message: 'Privacy policy fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const updatePrivacyPolicy = catchAsync(async (req, res) => {
+  const result = await AdminService.updatePrivacyPolicy(req.body);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Privacy policy updated successfully',
     statusCode: StatusCodes.OK,
     data: result,
   });
@@ -69,6 +91,17 @@ const getTermsAndCondition = catchAsync(async (req, res) => {
   });
 });
 
+const updateTermsAndCondition = catchAsync(async (req, res) => {
+  const result = await AdminService.updateTermsOfService(req.body);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Terms and condition updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -76,4 +109,7 @@ export const AdminController = {
   getAbout,
   getPrivacyPolicy,
   getTermsAndCondition,
+  updateAbout,
+  updatePrivacyPolicy,
+  updateTermsAndCondition,
 };
