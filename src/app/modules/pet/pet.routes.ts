@@ -27,10 +27,11 @@ router.patch(
   PetController.updatePet,
 );
 
+router.get('/all-pets', PetController.getAllPets);
+
 router.get('/my-pets', auth(Role.USER), PetController.getMyPets);
 
 router.get('/:id', PetController.getSinglePet);
-router.get('/all-pets', PetController.getAllPets);
 
 router.delete('/:id', auth(Role.USER), PetController.deletePet);
 

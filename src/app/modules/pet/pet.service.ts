@@ -5,6 +5,8 @@ import { IJwtPayload } from '../auth/auth.interface';
 import User from '../auth/auth.model';
 import { IPet } from './pet.interface';
 import Pet from './pet.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { PetSearchableFields } from './pet.constant';
 
 const createPerFromDB = async (
   payload: IPet,
@@ -98,9 +100,23 @@ const updatePetFromDB = async (
   return updatedPet;
 };
 
-const getAllPetsFromDB = async () => {
-  const pets = await Pet.find();
-  return pets;
+const getAllPetsFromDB = async (query: Record<string, unknown>) => {
+  const { ...pQuery } = query;
+
+  const petsQuery = new QueryBuilder(Pet.find(), pQuery)
+    .search(PetSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await petsQuery.modelQuery;
+  const meta = await petsQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
 };
 
 const getMyPets = async (authUser: IJwtPayload) => {

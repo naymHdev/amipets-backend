@@ -55,7 +55,8 @@ const getMyPets = catchAsync(async (req, res) => {
 });
 
 const getAllPets = catchAsync(async (req, res) => {
-  const result = await PetServices.getAllPetsFromDB();
+  const result = await PetServices.getAllPetsFromDB(req.query);
+  // console.log('result', result);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

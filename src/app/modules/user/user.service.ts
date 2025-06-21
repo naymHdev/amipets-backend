@@ -41,7 +41,7 @@ const updateProfile = async (
 };
 
 const myProfile = async (authUser: IJwtPayload) => {
-  console.log('authUser', authUser);
+  // console.log('authUser', authUser);
 
   const isUserExists = await User.findById(authUser._id).populate('_id');
   if (!isUserExists) {
