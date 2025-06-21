@@ -1,6 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/appError';
-import { IImageFile } from '../../interface/IImageFile';
 import { IJwtPayload } from '../auth/auth.interface';
 import User from '../auth/auth.model';
 import { IPet } from './pet.interface';
@@ -10,7 +9,7 @@ import { PetSearchableFields } from './pet.constant';
 
 const createPerFromDB = async (
   payload: IPet,
-  file: IImageFile,
+  image: string,
   authUser: IJwtPayload,
 ) => {
   const isUserExists = await User.findById(authUser._id);
@@ -36,11 +35,7 @@ const createPerFromDB = async (
   //   );
   // }
 
-  if (file && file.path) {
-    payload.pet_image = file.path;
-  }
-
-  const pet = new Pet({ ...payload });
+  const pet = new Pet({ ...payload, pet_image: image });
   const result = await pet.save();
 
   return result;
@@ -49,7 +44,7 @@ const createPerFromDB = async (
 const updatePetFromDB = async (
   petId: string,
   payload: Partial<IPet>,
-  file: IImageFile | null,
+  image: string,
   authUser: IJwtPayload,
 ) => {
   // Verify user existence and status
@@ -84,17 +79,8 @@ const updatePetFromDB = async (
       'You are not authorized to update this pet.',
     );
   }
-
-  // Update pet_image if new file uploaded
-  if (file && file.path) {
-    const normalizedPath = file.path.startsWith('public/')
-      ? file.path.substring(7)
-      : file.path;
-    payload.pet_image = normalizedPath;
-  }
-
   // Update existing pet with new data
-  Object.assign(existingPet, payload);
+  Object.assign(existingPet, payload, { pet_image: image });
   const updatedPet = await existingPet.save();
 
   return updatedPet;

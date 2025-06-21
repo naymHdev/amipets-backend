@@ -1,16 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
-import { IImageFile } from '../../interface/IImageFile';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
+import config from '../../config';
 
 const createPet = catchAsync(async (req, res) => {
-  //   console.log('owner', req.body);
+  const image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
 
   const result = await PetServices.createPerFromDB(
     req.body,
-    req.file as IImageFile,
+    image as string,
     req.user as IJwtPayload,
   );
 
@@ -25,13 +27,15 @@ const createPet = catchAsync(async (req, res) => {
 const updatePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const payload = req.body;
-  const file = req.file as IImageFile | null;
+  const image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
   const authUser = req.user as IJwtPayload;
 
   const result = await PetServices.updatePetFromDB(
     petId,
     payload,
-    file,
+    image,
     authUser,
   );
 

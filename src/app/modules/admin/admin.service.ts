@@ -1,7 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/appError';
-import { IAbout, IPrivacyPolicy, ITermsOfService } from './admin.interface';
-import { About, PrivacyPolicy, TermsOfService } from './admin.model';
+import {
+  IAbout,
+  IBanner,
+  IPrivacyPolicy,
+  ITermsOfService,
+} from './admin.interface';
+import { About, Banner, PrivacyPolicy, TermsOfService } from './admin.model';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -79,6 +84,47 @@ const updateTermsOfService = async (termsOfService: ITermsOfService) => {
   return result;
 };
 
+// ---------------------------- Banner Service ----------------------------
+const createBannerFromDB = async (payload: IBanner, image: string) => {
+  const isExist = await Banner.findOne({});
+
+  if (isExist) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "A 'banner' entry already exists in the database. Please update it instead.",
+    );
+  }
+
+  const banner = new Banner({ ...payload, image });
+  const result = await banner.save();
+  return result;
+};
+
+const getBannerFromDB = async () => {
+  const result = await Banner.findOne();
+  return result;
+};
+
+const updateBanner = async (payload: IBanner, image: string) => {
+  const isExist = await Banner.findOne({});
+
+  if (!isExist) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "A 'banner' entry does not exist in the database. Please create it first.",
+    );
+  }
+
+  const result = await Banner.findOneAndUpdate(
+    {},
+    { ...payload, image },
+    {
+      new: true,
+    },
+  );
+  return result;
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -89,4 +135,7 @@ export const AdminService = {
   updateAbout,
   updatePrivacyPolicy,
   updateTermsOfService,
+  createBannerFromDB,
+  getBannerFromDB,
+  updateBanner,
 };

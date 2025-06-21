@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AdminService } from './admin.service';
+import config from '../../config';
 
 const createAbout = catchAsync(async (req, res) => {
   const result = await AdminService.createAboutFromDB(req.body);
@@ -102,6 +103,48 @@ const updateTermsAndCondition = catchAsync(async (req, res) => {
   });
 });
 
+// --------------------------------- Banner Controller ---------------------------------
+const createBanner = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.createBannerFromDB(payload, image);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Banner created successfully',
+    statusCode: StatusCodes.CREATED,
+    data: result,
+  });
+});
+
+const getBanner = catchAsync(async (req, res) => {
+  const result = await AdminService.getBannerFromDB();
+
+  sendResponse(res, {
+    success: true,
+    message: 'Banner fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const updateBanner = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.updateBanner(payload, image);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Banner updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -112,4 +155,7 @@ export const AdminController = {
   updateAbout,
   updatePrivacyPolicy,
   updateTermsAndCondition,
+  createBanner,
+  getBanner,
+  updateBanner,
 };

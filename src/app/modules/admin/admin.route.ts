@@ -2,6 +2,8 @@ import { Router } from 'express';
 import validateRequest from '../../middleware/validateRequest';
 import { AdminValidation } from './admin.validation';
 import { AdminController } from './admin.controller';
+import { single_image_Upload } from '../../utils/imageUploader';
+import { parseBody } from '../../middleware/bodyParser';
 
 const router = Router();
 
@@ -39,6 +41,25 @@ router.patch(
   '/update-terms-of-condition',
   validateRequest(AdminValidation.updateTermsOfServiceSchema),
   AdminController.updateTermsAndCondition,
+);
+
+// --------------------------------- Banner Routes ---------------------------------
+router.post(
+  '/create-banner',
+  single_image_Upload.single('image'),
+  parseBody,
+  validateRequest(AdminValidation.bannerSchema),
+  AdminController.createBanner,
+);
+
+router.get('/get-banner', AdminController.getBanner);
+
+router.patch(
+  '/update-banner',
+  single_image_Upload.single('image'),
+  parseBody,
+  validateRequest(AdminValidation.updateBannerSchema),
+  AdminController.updateBanner,
 );
 
 export const AdminRoutes = router;
