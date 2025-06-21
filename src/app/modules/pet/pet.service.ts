@@ -103,7 +103,7 @@ const updatePetFromDB = async (
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const { ...pQuery } = query;
 
-  const petsQuery = new QueryBuilder(Pet.find(), pQuery)
+  const petsQuery = new QueryBuilder(Pet.find().populate('owner'), pQuery)
     .search(PetSearchableFields)
     .filter()
     .sort()
@@ -125,7 +125,7 @@ const getMyPets = async (authUser: IJwtPayload) => {
 };
 
 const getSinglePet = async (petId: string) => {
-  const pet = await Pet.findById(petId);
+  const pet = await Pet.findById(petId).populate('owner');
   return pet;
 };
 

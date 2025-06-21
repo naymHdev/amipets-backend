@@ -34,7 +34,7 @@ const petSchema = new Schema<IPet>(
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: false,
+      required: true,
     },
   },
   {

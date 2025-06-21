@@ -1,4 +1,4 @@
-// interfaces/pet.interface.ts
+
 
 import { Types } from 'mongoose';
 
