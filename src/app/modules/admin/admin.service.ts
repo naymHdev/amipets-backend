@@ -17,6 +17,8 @@ import {
   TermsOfService,
 } from './admin.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import User from '../auth/auth.model';
+import { UserSearchableFields } from './admin.constant';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -213,6 +215,43 @@ const deleteWebsite = async (id: string) => {
   return result;
 };
 
+// ---------------------------- Users Service ----------------------------
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const { ...uQuery } = query;
+
+  const usersQuery = new QueryBuilder(User.find(), uQuery)
+    .search(UserSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await usersQuery.modelQuery;
+  const meta = await usersQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
+};
+
+const getUserDetailFromDB = async (id: string) => {
+  const result = await User.findById(id);
+  if (!result) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  return result;
+};
+
+const blockUser = async (id: string) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  user.isActive = false;
+  await user.save();
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -234,4 +273,7 @@ export const AdminService = {
   getWebsiteFromDB,
   deleteWebsite,
   getWebDetailFromDB,
+  getAllUsersFromDB,
+  getUserDetailFromDB,
+  blockUser,
 };

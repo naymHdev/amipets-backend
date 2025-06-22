@@ -111,4 +111,9 @@ router.delete(
   AdminController.deletedAddWebsite,
 );
 
+// ---------------------------- Users Routes ----------------------------
+router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);
+router.get('/user-detail/:id', auth(Role.ADMIN), AdminController.getUserDetail);
+router.patch('/block-user/:id', auth(Role.ADMIN), AdminController.blockUser);
+
 export const AdminRoutes = router;

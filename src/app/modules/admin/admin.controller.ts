@@ -251,6 +251,40 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
   });
 });
 
+// ---------------------------- Users Controller ----------------------------
+const getAllUsers = catchAsync(async (req, res) => {
+  const result = await AdminService.getAllUsersFromDB(req.query);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Users fetched successfully!',
+    data: result,
+  });
+});
+
+const getUserDetail = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await AdminService.getUserDetailFromDB(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'User fetched successfully!',
+    data: result,
+  });
+});
+
+const blockUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.blockUser(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'User blocked successfully!',
+    data: null,
+  });
+});
+
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -272,4 +306,7 @@ export const AdminController = {
   getAddWebsite,
   deletedAddWebsite,
   getAddWebsiteDetail,
+  getAllUsers,
+  getUserDetail,
+  blockUser,
 };
