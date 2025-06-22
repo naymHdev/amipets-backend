@@ -102,6 +102,20 @@ const updateServicesSchema = z.object({
   }),
 });
 
+// ---------------------------- Add website Validation Schemas ----------------------------
+
+const addWebsiteSchema = z.object({
+  body: z.object({
+    web_name: z.string().min(3, 'Website name cannot be empty'),
+    web_link: z.string({ required_error: 'Website link cannot be empty' }),
+    pet_type: z.enum(['dog', 'cat', 'both'], {
+      required_error: 'Pet type is required',
+    }),
+    description: z.string().min(10, 'Description cannot be empty'),
+    location: z.string().min(3, 'Location cannot be empty'),
+  }),
+});
+
 export const AdminValidation = {
   aboutSchema,
   updateAboutSchema,
@@ -113,4 +127,5 @@ export const AdminValidation = {
   updateBannerSchema,
   servicesSchema,
   updateServicesSchema,
+  addWebsiteSchema,
 };

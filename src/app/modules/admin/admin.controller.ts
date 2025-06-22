@@ -200,6 +200,57 @@ const deletedService = catchAsync(async (req, res) => {
   });
 });
 
+// -------------------------------- Add Website Controller --------------------------------
+const createAddWebsite = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const web_img =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.createWebsiteFromDB(payload, web_img);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Website added successfully',
+    statusCode: StatusCodes.CREATED,
+    data: result,
+  });
+});
+
+const getAddWebsite = catchAsync(async (req, res) => {
+  const result = await AdminService.getWebsiteFromDB(req.query);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Website fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const getAddWebsiteDetail = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await AdminService.getWebDetailFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Website fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const deletedAddWebsite = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.deleteWebsite(id);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Website deleted successfully',
+    statusCode: StatusCodes.OK,
+    data: null,
+  });
+});
+
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -217,4 +268,8 @@ export const AdminController = {
   getService,
   updateService,
   deletedService,
+  createAddWebsite,
+  getAddWebsite,
+  deletedAddWebsite,
+  getAddWebsiteDetail,
 };

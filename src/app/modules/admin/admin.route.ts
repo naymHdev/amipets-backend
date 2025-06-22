@@ -91,4 +91,24 @@ router.delete(
   AdminController.deletedService,
 );
 
+// --------------------------------- Add Website Routes ---------------------------------
+router.post(
+  '/add-website',
+  auth(Role.ADMIN),
+  single_image_Upload.single('web_img'),
+  parseBody,
+  validateRequest(AdminValidation.addWebsiteSchema),
+  AdminController.createAddWebsite,
+);
+
+router.get('/get-website', AdminController.getAddWebsite);
+
+router.get('/website-detail/:id', AdminController.getAddWebsiteDetail);
+
+router.delete(
+  '/delete-website/:id',
+  auth(Role.ADMIN),
+  AdminController.deletedAddWebsite,
+);
+
 export const AdminRoutes = router;

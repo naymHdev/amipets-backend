@@ -1,5 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { IAbout, IBanner, IPrivacyPolicy, IService } from './admin.interface';
+import {
+  IAbout,
+  IAddWebsite,
+  IBanner,
+  IPrivacyPolicy,
+  IService,
+} from './admin.interface';
 
 const AboutSchema = new Schema<IAbout>(
   {
@@ -97,6 +103,39 @@ const ServiceSchema = new Schema<IService>(
   },
 );
 
+const AddWebsiteSchema = new Schema<IAddWebsite>(
+  {
+    web_name: {
+      type: String,
+      required: true,
+    },
+    web_link: {
+      type: String,
+      required: true,
+    },
+    web_img: {
+      type: String,
+      required: false,
+    },
+    pet_type: {
+      type: String,
+      enum: ['dog', 'cat', 'both'],
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 export const About = model<IAbout>('About', AboutSchema);
 
 export const PrivacyPolicy = model<IPrivacyPolicy>(
@@ -112,3 +151,5 @@ export const TermsOfService = model<IPrivacyPolicy>(
 export const Banner = model<IBanner>('Banner', BannerSchema);
 
 export const Services = model<IService>('Service', ServiceSchema);
+
+export const AddWebsite = model<IAddWebsite>('AddWebsite', AddWebsiteSchema);

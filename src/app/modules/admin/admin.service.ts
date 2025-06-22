@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/appError';
 import {
   IAbout,
+  IAddWebsite,
   IBanner,
   IPrivacyPolicy,
   IService,
@@ -9,11 +10,13 @@ import {
 } from './admin.interface';
 import {
   About,
+  AddWebsite,
   Banner,
   PrivacyPolicy,
   Services,
   TermsOfService,
 } from './admin.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -174,6 +177,42 @@ const deleteService = async (id: string) => {
   return result;
 };
 
+// ---------------------------- Add website Service ----------------------------
+
+const createWebsiteFromDB = async (payload: IAddWebsite, web_img: string) => {
+  const result = await AddWebsite.create({ ...payload, web_img });
+  return result;
+};
+
+const getWebsiteFromDB = async (query: Record<string, unknown>) => {
+  const { ...wQuery } = query;
+
+  const websiteQuery = new QueryBuilder(AddWebsite.find(), wQuery)
+    .search(['web_name', 'web_link', 'location', 'pet_type'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await websiteQuery.modelQuery;
+  const meta = await websiteQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
+};
+
+const getWebDetailFromDB = async (id: string) => {
+  const result = await AddWebsite.findById(id);
+  return result;
+};
+
+const deleteWebsite = async (id: string) => {
+  const result = await AddWebsite.findByIdAndDelete(id);
+  return result;
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -191,4 +230,8 @@ export const AdminService = {
   getServiceFromDB,
   updateService,
   deleteService,
+  createWebsiteFromDB,
+  getWebsiteFromDB,
+  deleteWebsite,
+  getWebDetailFromDB,
 };
