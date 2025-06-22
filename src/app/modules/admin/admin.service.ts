@@ -4,9 +4,16 @@ import {
   IAbout,
   IBanner,
   IPrivacyPolicy,
+  IService,
   ITermsOfService,
 } from './admin.interface';
-import { About, Banner, PrivacyPolicy, TermsOfService } from './admin.model';
+import {
+  About,
+  Banner,
+  PrivacyPolicy,
+  Services,
+  TermsOfService,
+} from './admin.model';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -125,6 +132,48 @@ const updateBanner = async (payload: IBanner, image: string) => {
   return result;
 };
 
+// ---------------------------- Services Service ----------------------------
+const createServiceFromDB = async (payload: IService, icon: string) => {
+  const existsService = await Services.findOne({ name: payload.name });
+
+  if (existsService) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "A 'service' entry already exists in the database. Please update it instead.",
+    );
+  }
+
+  const result = await Services.create({ ...payload, icon });
+  return result;
+};
+
+const getServiceFromDB = async () => {
+  const result = await Services.find();
+  return result;
+};
+const updateService = async (id: string, payload: IService, icon: string) => {
+  const existsService = await Services.findById(id);
+
+  if (!existsService) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "A 'service' entry does not exist in the database. Please create it first.",
+    );
+  }
+
+  const result = await Services.findOneAndUpdate(
+    { _id: id },
+    { ...payload, icon },
+    { new: true },
+  );
+  return result;
+};
+
+const deleteService = async (id: string) => {
+  const result = await Services.findByIdAndDelete(id);
+  return result;
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -138,4 +187,8 @@ export const AdminService = {
   createBannerFromDB,
   getBannerFromDB,
   updateBanner,
+  createServiceFromDB,
+  getServiceFromDB,
+  updateService,
+  deleteService,
 };

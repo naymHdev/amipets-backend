@@ -145,6 +145,61 @@ const updateBanner = catchAsync(async (req, res) => {
   });
 });
 
+// ----------------------------- Services Controller ----------------------------
+const createService = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const icon =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.createServiceFromDB(payload, icon);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Service created successfully',
+    statusCode: StatusCodes.CREATED,
+    data: result,
+  });
+});
+
+const getService = catchAsync(async (req, res) => {
+  const result = await AdminService.getServiceFromDB();
+
+  sendResponse(res, {
+    success: true,
+    message: 'Service fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const updateService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const icon =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.updateService(id, payload, icon);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Service updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const deletedService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.deleteService(id);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Service deleted successfully',
+    statusCode: StatusCodes.OK,
+    data: null,
+  });
+});
+
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -158,4 +213,8 @@ export const AdminController = {
   createBanner,
   getBanner,
   updateBanner,
+  createService,
+  getService,
+  updateService,
+  deletedService,
 };

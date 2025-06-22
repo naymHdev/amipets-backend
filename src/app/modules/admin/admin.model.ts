@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { IAbout, IBanner, IPrivacyPolicy } from './admin.interface';
+import { IAbout, IBanner, IPrivacyPolicy, IService } from './admin.interface';
 
 const AboutSchema = new Schema<IAbout>(
   {
@@ -77,14 +77,38 @@ const BannerSchema = new Schema<IBanner>(
   },
 );
 
+const ServiceSchema = new Schema<IService>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 export const About = model<IAbout>('About', AboutSchema);
+
 export const PrivacyPolicy = model<IPrivacyPolicy>(
   'PrivacyPolicy',
   PrivacyPolicySchema,
 );
+
 export const TermsOfService = model<IPrivacyPolicy>(
   'TermsOfService',
   TermsOfServiceSchema,
 );
 
 export const Banner = model<IBanner>('Banner', BannerSchema);
+
+export const Services = model<IService>('Service', ServiceSchema);

@@ -19,3 +19,9 @@ export interface IBanner {
   link: string;
   websiteLink: string;
 }
+
+export interface IService {
+  name: string;
+  icon: string;
+  isActive: boolean;
+}

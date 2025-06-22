@@ -4,6 +4,8 @@ import { AdminValidation } from './admin.validation';
 import { AdminController } from './admin.controller';
 import { single_image_Upload } from '../../utils/imageUploader';
 import { parseBody } from '../../middleware/bodyParser';
+import auth from '../../middleware/auth';
+import { Role } from '../auth/auth.interface';
 
 const router = Router();
 
@@ -60,6 +62,33 @@ router.patch(
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),
   AdminController.updateBanner,
+);
+
+// --------------------------------- Services Routes ---------------------------------
+router.post(
+  '/create-service',
+  auth(Role.ADMIN),
+  single_image_Upload.single('icon'),
+  parseBody,
+  validateRequest(AdminValidation.servicesSchema),
+  AdminController.createService,
+);
+
+router.get('/get-service', AdminController.getService);
+
+router.patch(
+  '/update-service/:id',
+  auth(Role.ADMIN),
+  single_image_Upload.single('icon'),
+  parseBody,
+  validateRequest(AdminValidation.updateServicesSchema),
+  AdminController.updateService,
+);
+
+router.delete(
+  '/delete-service/:id',
+  auth(Role.ADMIN),
+  AdminController.deletedService,
 );
 
 export const AdminRoutes = router;
