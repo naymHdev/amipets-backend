@@ -19,6 +19,7 @@ import {
 import QueryBuilder from '../../builder/QueryBuilder';
 import User from '../auth/auth.model';
 import { UserSearchableFields } from './admin.constant';
+import { IJwtPayload, IUser } from '../auth/auth.interface';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -252,6 +253,40 @@ const blockUser = async (id: string) => {
   await user.save();
 };
 
+// --------------------------- Admin Profile Service ---------------------------
+
+const adminProfile = async (authUser: IJwtPayload) => {
+  const isUserExists = await User.findById(authUser._id);
+  if (!isUserExists) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found');
+  }
+  if (!isUserExists.isActive) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Admin is not active');
+  }
+
+  return {
+    ...isUserExists.toObject(),
+  };
+};
+const editProfileFromDB = async (
+  authUser: IJwtPayload,
+  payload: IUser,
+  profile_image: string,
+) => {
+  const isUserExists = await User.findById(authUser._id);
+  console.log('isUserExists admin', isUserExists);
+
+  if (!isUserExists) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found');
+  }
+  const result = await User.findOneAndUpdate(
+    { _id: authUser._id },
+    { ...payload, profile_image },
+    { new: true },
+  );
+  return result;
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -276,4 +311,6 @@ export const AdminService = {
   getAllUsersFromDB,
   getUserDetailFromDB,
   blockUser,
+  editProfileFromDB,
+  adminProfile,
 };

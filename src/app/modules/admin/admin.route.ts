@@ -116,4 +116,16 @@ router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);
 router.get('/user-detail/:id', auth(Role.ADMIN), AdminController.getUserDetail);
 router.patch('/block-user/:id', auth(Role.ADMIN), AdminController.blockUser);
 
+// --------------------------------- Admin Profile Routes ---------------------------------
+router.put(
+  '/update-admin-profile',
+  auth(Role.ADMIN),
+  single_image_Upload.single('profile_image'),
+  parseBody,
+  validateRequest(AdminValidation.adminProfileUpdateValidationSchema),
+  AdminController.editAdminProfile,
+);
+
+router.get('/admin-profile', auth(Role.ADMIN), AdminController.adminProfile);
+
 export const AdminRoutes = router;

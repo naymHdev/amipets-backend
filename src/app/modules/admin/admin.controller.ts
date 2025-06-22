@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AdminService } from './admin.service';
 import config from '../../config';
+import { IJwtPayload } from '../auth/auth.interface';
 
 const createAbout = catchAsync(async (req, res) => {
   const result = await AdminService.createAboutFromDB(req.body);
@@ -285,6 +286,36 @@ const blockUser = catchAsync(async (req, res) => {
   });
 });
 
+// ----------------------------- Admin Profile Controller ----------------------------
+const editAdminProfile = catchAsync(async (req, res) => {
+  const profile_image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const result = await AdminService.editProfileFromDB(
+    req.user as IJwtPayload,
+    req.body,
+    profile_image,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Admin profile updated successfully!',
+    data: result,
+  });
+});
+
+const adminProfile = catchAsync(async (req, res) => {
+  const result = await AdminService.adminProfile(req.user as IJwtPayload);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Admin profile fetched successfully!',
+    data: result,
+  });
+});
+
+// ----------------------------- Export Controller ----------------------------
 export const AdminController = {
   createAbout,
   createPrivacyPolicy,
@@ -309,4 +340,6 @@ export const AdminController = {
   getAllUsers,
   getUserDetail,
   blockUser,
+  editAdminProfile,
+  adminProfile,
 };

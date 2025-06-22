@@ -116,6 +116,15 @@ const addWebsiteSchema = z.object({
   }),
 });
 
+// ---------------------------- Admin Profile Validation Schemas ----------------------------
+const adminProfileUpdateValidationSchema = z.object({
+  body: z.object({
+    full_name: z.string().optional(),
+    email: z.string().email().optional(),
+    contact_number: z.number().optional(),
+  }),
+});
+
 export const AdminValidation = {
   aboutSchema,
   updateAboutSchema,
@@ -128,4 +137,5 @@ export const AdminValidation = {
   servicesSchema,
   updateServicesSchema,
   addWebsiteSchema,
+  adminProfileUpdateValidationSchema,
 };
