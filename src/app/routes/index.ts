@@ -4,6 +4,7 @@ import { OtpRoutes } from '../modules/otp/otp.routes';
 import { UserRoutes } from '../modules/user/user.routes';
 import { PetRoutes } from '../modules/pet/pet.routes';
 import { AdminRoutes } from '../modules/admin/admin.route';
+import ShelterRoutes from '../modules/shelter/shelter.routes';
 
 const router = Router();
 
@@ -23,6 +24,10 @@ const moduleRoutes = [
   {
     path: '/admin',
     route: AdminRoutes,
+  },
+  {
+    path: '/shelter',
+    route: ShelterRoutes,
   },
   {
     path: '/pets',
