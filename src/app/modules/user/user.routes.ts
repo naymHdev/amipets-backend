@@ -43,4 +43,25 @@ router.post(
   UserController.createMyPet,
 );
 
+router.patch(
+  '/update-my-pet/:id',
+  auth(Role.USER),
+  single_image_Upload.single('pet_image'),
+  parseBody,
+  validateRequest(UserValidation.updateMyPetValidationSchema),
+  UserController.updateMyPet,
+);
+
+router.delete(
+  '/delete-my-pet/:id',
+  auth(Role.USER),
+  UserController.deleteMyPet,
+);
+
+router.get(
+  '/my-single-pet/:id',
+  auth(Role.USER),
+  UserController.getMySinglePet,
+);
+
 export const UserRoutes = router;
