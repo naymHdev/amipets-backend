@@ -7,10 +7,11 @@ import { parseBody } from '../../middleware/bodyParser';
 import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from '../auth/auth.validation';
 import { UserValidation } from './user.validation';
+import { single_image_Upload } from '../../utils/imageUploader';
 
 const router = Router();
 
-router.get('/:id', auth(Role.USER), UserController.myProfile);
+router.get('/profile/:id', auth(Role.USER), UserController.myProfile);
 
 router.put(
   '/:id',
@@ -29,5 +30,17 @@ router.patch(
 );
 
 router.delete('/:id', auth(Role.USER), UserController.deleteProfile);
+
+// ------------------- My pet Routes ----------------------
+router.get('/my-pets', UserController.getMyAllPet);
+
+router.post(
+  '/create-my-pet',
+  auth(Role.USER),
+  single_image_Upload.single('pet_image'),
+  parseBody,
+  validateRequest(UserValidation.myPetValidationSchema),
+  UserController.createMyPet,
+);
 
 export const UserRoutes = router;

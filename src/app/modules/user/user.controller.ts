@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import { IImageFile } from '../../interface/IImageFile';
 import { IJwtPayload } from '../auth/auth.interface';
+import config from '../../config';
 
 const updateProfile = catchAsync(async (req, res) => {
   const result = await UserService.updateProfile(
@@ -62,9 +63,105 @@ const deleteProfile = catchAsync(async (req, res) => {
   });
 });
 
+// ------------------------  My Pet Controller ------------------------
+const createMyPet = catchAsync(async (req, res) => {
+  const pet_img =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+
+  const result = await UserService.createMyPetFromDB(
+    req.body,
+    pet_img,
+    req.user as IJwtPayload,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Your pet created successfully!',
+    data: result,
+  });
+});
+
+const updateMyPet = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const payload = req.body;
+  const pet_img =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+  const authUser = req.user as IJwtPayload;
+
+  const result = await UserService.updateMyPetFromDB(
+    petId,
+    payload,
+    pet_img,
+    authUser,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Your pet updated successfully!',
+    data: result,
+  });
+});
+
+const getMyPets = catchAsync(async (req, res) => {
+  const result = await UserService.getMyPets(req.user as IJwtPayload);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Your pets fetched successfully!',
+    data: result,
+  });
+});
+
+const getMyAllPet = catchAsync(async (req, res) => {
+  const result = await UserService.getMyAllPetsFromDB(req.query);
+  // console.log('result', result);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Pets fetched successfully!',
+    data: result,
+  });
+});
+
+const getMySinglePet = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const result = await UserService.getSinglePet(petId);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Pet fetched successfully!',
+    data: result,
+  });
+});
+
+const deleteMyPet = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const result = await UserService.deleteSinglePet(petId);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Pet deleted successfully!',
+    data: result,
+  });
+});
+
 export const UserController = {
   updateProfile,
   myProfile,
   changePassword,
   deleteProfile,
+
+  createMyPet,
+  updateMyPet,
+  getMyPets,
+  getMyAllPet,
+  getMySinglePet,
+  deleteMyPet,
 };

@@ -6,6 +6,10 @@ import { IImageFile } from '../../interface/IImageFile';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../../config';
+import { IMyPet } from './user.interface';
+import MyPet from './user.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { PetSearchableFields } from '../pet/pet.constant';
 
 const updateProfile = async (
   payload: IUser,
@@ -118,9 +122,130 @@ const deleteUserFromDB = async (authUser: IJwtPayload) => {
   return deletedUser;
 };
 
+// --------------------------- My Pet Logics ---------------------------
+const createMyPetFromDB = async (
+  payload: IMyPet,
+  image: string,
+  authUser: IJwtPayload,
+) => {
+  const isUserExists = await User.findById(authUser._id);
+
+  if (!isUserExists) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'You are not authorized! Than you can not create pet.',
+    );
+  }
+
+  if (!isUserExists.isActive) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Your account is not active. Than you can not create pet.',
+    );
+  }
+
+  // if (!isUserExists.verification?.status) {
+  //   throw new AppError(
+  //     StatusCodes.FORBIDDEN,
+  //     'You are not verified! Please verify your email address. Check your inbox.',
+  //   );
+  // }
+
+  const pet = new MyPet({ ...payload, pet_image: image });
+  const result = await pet.save();
+
+  return result;
+};
+
+const updateMyPetFromDB = async (
+  petId: string,
+  payload: Partial<IMyPet>,
+  image: string,
+  authUser: IJwtPayload,
+) => {
+  // Verify user existence and status
+  const isUserExists = await User.findById(authUser._id);
+
+  if (!isUserExists) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'You are not authorized! Then you cannot update pet.',
+    );
+  }
+
+  if (!isUserExists.isActive) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Your account is not active. Then you cannot update pet.',
+    );
+  }
+
+  // Find existing pet by ID
+  const existingPet = await MyPet.findById(petId);
+  if (!existingPet) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
+  }
+
+  // Optional: Check if user owns this pet or has rights to update
+  if (
+    existingPet?.owner &&
+    existingPet.owner.toString() !== isUserExists._id.toString()
+  ) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not authorized to update this pet.',
+    );
+  }
+  // Update existing pet with new data
+  Object.assign(existingPet, payload, { pet_image: image });
+  const updatedPet = await existingPet.save();
+
+  return updatedPet;
+};
+
+const getMyAllPetsFromDB = async (query: Record<string, unknown>) => {
+  const { ...pQuery } = query;
+
+  const petsQuery = new QueryBuilder(MyPet.find().populate('owner'), pQuery)
+    .search(PetSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await petsQuery.modelQuery;
+  const meta = await petsQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
+};
+
+const getMyPets = async (authUser: IJwtPayload) => {
+  const pets = await MyPet.find({ owner: authUser._id });
+  return pets;
+};
+
+const getSinglePet = async (petId: string) => {
+  const pet = await MyPet.findById(petId).populate('owner');
+  return pet;
+};
+
+const deleteSinglePet = async (petId: string) => {
+  const pet = await MyPet.findByIdAndDelete(petId);
+  return pet;
+};
+
 export const UserService = {
   updateProfile,
   myProfile,
   changePassword,
   deleteUserFromDB,
+  createMyPetFromDB,
+  updateMyPetFromDB,
+  getMyAllPetsFromDB,
+  getMyPets,
+  getSinglePet,
+  deleteSinglePet,
 };

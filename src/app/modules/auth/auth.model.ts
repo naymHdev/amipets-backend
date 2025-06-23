@@ -74,6 +74,10 @@ const userSchema = new Schema<IUser, UserModel>(
         type: Boolean,
         default: false,
       },
+      shelter_name: {
+        type: String,
+        required: false,
+      },
     },
   },
   {

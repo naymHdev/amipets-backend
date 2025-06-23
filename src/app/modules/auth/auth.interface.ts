@@ -31,6 +31,9 @@ export interface IUser {
     expiresAt: Date;
     status: boolean;
   };
+  
+  // For Shelter
+  shelter_name?: string;
 }
 
 //  For login

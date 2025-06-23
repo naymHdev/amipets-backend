@@ -24,6 +24,7 @@ const userValidationSchema = z.object({
     contact_number: z.number().optional(),
     isActive: z.boolean().optional(),
     verification: verificationSchema.optional(),
+    shelter_name: z.string().optional(),
   }),
 });
 
