@@ -6,13 +6,17 @@ import { PetServices } from './pet.service';
 import config from '../../config';
 
 const createPet = catchAsync(async (req, res) => {
-  const image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const files = req.files as Express.Multer.File[];
+
+  const filePaths = files.map((file) => {
+    return (
+      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
+    );
+  });
 
   const result = await PetServices.createPerFromDB(
     req.body,
-    image as string,
+    filePaths,
     req.user as IJwtPayload,
   );
 
@@ -27,15 +31,18 @@ const createPet = catchAsync(async (req, res) => {
 const updatePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const payload = req.body;
-  const image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const files = req.files as Express.Multer.File[];
+  const filePaths = files.map((file) => {
+    return (
+      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
+    );
+  });
   const authUser = req.user as IJwtPayload;
 
   const result = await PetServices.updatePetFromDB(
     petId,
     payload,
-    image,
+    filePaths,
     authUser,
   );
 

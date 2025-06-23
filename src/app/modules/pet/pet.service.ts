@@ -9,10 +9,17 @@ import { PetSearchableFields } from './pet.constant';
 
 const createPerFromDB = async (
   payload: IPet,
-  image: string,
+  image: string[],
   authUser: IJwtPayload,
 ) => {
   const isUserExists = await User.findById(authUser._id);
+
+  if (isUserExists?.role !== 'shelter') {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'You are not authorized! Than you can not create pet.',
+    );
+  }
 
   if (!isUserExists) {
     throw new AppError(
@@ -44,11 +51,19 @@ const createPerFromDB = async (
 const updatePetFromDB = async (
   petId: string,
   payload: Partial<IPet>,
-  image: string,
+  image: string[],
   authUser: IJwtPayload,
 ) => {
   // Verify user existence and status
   const isUserExists = await User.findById(authUser._id);
+
+  if (isUserExists?.role !== 'shelter') {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'You are not authorized! Then you cannot update pet.',
+    );
+  }
+
   if (!isUserExists) {
     throw new AppError(
       StatusCodes.NOT_FOUND,

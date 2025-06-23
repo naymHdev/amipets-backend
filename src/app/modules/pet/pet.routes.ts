@@ -11,8 +11,8 @@ const router = Router();
 
 router.post(
   '/create-pet',
-  auth(Role.USER, Role.SHELTER),
-  single_image_Upload.single('pet_image'),
+  auth(Role.SHELTER),
+  single_image_Upload.array('pet_image'),
   parseBody,
   validateRequest(petValidation.createPetSchema),
   PetController.createPet,
@@ -20,8 +20,8 @@ router.post(
 
 router.patch(
   '/:id',
-  auth(Role.USER, Role.SHELTER),
-  single_image_Upload.single('pet_image'),
+  auth(Role.SHELTER),
+  single_image_Upload.array('pet_image'),
   parseBody,
   validateRequest(petValidation.updatePetePetSchema),
   PetController.updatePet,
@@ -29,10 +29,10 @@ router.patch(
 
 router.get('/all-pets', PetController.getAllPets);
 
-router.get('/my-pets', auth(Role.USER), PetController.getMyPets);
+router.get('/my-pets', auth(Role.SHELTER), PetController.getMyPets);
 
 router.get('/:id', PetController.getSinglePet);
 
-router.delete('/:id', auth(Role.USER), PetController.deletePet);
+router.delete('/:id', auth(Role.SHELTER), PetController.deletePet);
 
 export const PetRoutes = router;

@@ -10,8 +10,28 @@ const petSchema = new Schema<IPet>(
       trim: true,
     },
     pet_image: {
-      type: String,
+      type: [String],
       required: false,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    neutered: {
+      type: Boolean,
+      required: true,
+    },
+    vaccinated: {
+      type: Boolean,
+      required: true,
+    },
+    weight: {
+      type: String,
+      required: true,
     },
     chip_number: {
       type: String,
@@ -27,7 +47,7 @@ const petSchema = new Schema<IPet>(
       enum: ['Male', 'Female'],
       required: true,
     },
-    date_of_birth: {
+    age: {
       type: String,
       required: true,
     },
