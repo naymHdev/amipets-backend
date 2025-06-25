@@ -111,10 +111,23 @@ router.delete(
   AdminController.deletedAddWebsite,
 );
 
-// ---------------------------- Users Routes ----------------------------
+// ---------------------------- Control Users Routes ----------------------------
 router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);
 router.get('/user-detail/:id', auth(Role.ADMIN), AdminController.getUserDetail);
 router.patch('/block-user/:id', auth(Role.ADMIN), AdminController.blockUser);
+
+// ---------------------------- Control Shelters Routes ----------------------------
+router.get('/get-shelters', auth(Role.ADMIN), AdminController.getAllShelter);
+router.get(
+  '/shelter-detail/:id',
+  auth(Role.ADMIN),
+  AdminController.getShelterDetail,
+);
+router.patch(
+  '/block-shelter/:id',
+  auth(Role.ADMIN),
+  AdminController.blockShelter,
+);
 
 // --------------------------------- Admin Profile Routes ---------------------------------
 router.put(

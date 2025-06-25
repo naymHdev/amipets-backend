@@ -253,6 +253,26 @@ const blockUser = async (id: string) => {
   await user.save();
 };
 
+// --------------------------- Shelter Services ---------------------------
+const getAllSheltersFromDB = async () => {
+  const result = await User.find({ role: 'shelter' });
+  return result;
+};
+
+const shelterDetailFromDB = async (id: string) => {
+  const result = await User.findById(id);
+  return result;
+};
+
+const blockShelter = async (id: string) => {
+  const shelter = await User.findById(id);
+  if (!shelter) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Shelter not found');
+  }
+  shelter.isActive = false;
+  await shelter.save();
+};
+
 // --------------------------- Admin Profile Service ---------------------------
 
 const adminProfile = async (authUser: IJwtPayload) => {
@@ -308,9 +328,14 @@ export const AdminService = {
   getWebsiteFromDB,
   deleteWebsite,
   getWebDetailFromDB,
+
   getAllUsersFromDB,
   getUserDetailFromDB,
   blockUser,
   editProfileFromDB,
   adminProfile,
+
+  getAllSheltersFromDB,
+  shelterDetailFromDB,
+  blockShelter,
 };

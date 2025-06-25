@@ -286,6 +286,40 @@ const blockUser = catchAsync(async (req, res) => {
   });
 });
 
+// ---------------------------- Shelter Controller ----------------------------
+const getAllShelter = catchAsync(async (req, res) => {
+  const result = await AdminService.getAllSheltersFromDB();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Shelters fetched successfully!',
+    data: result,
+  });
+});
+
+const getShelterDetail = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await AdminService.shelterDetailFromDB(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Shelter fetched successfully!',
+    data: result,
+  });
+});
+
+const blockShelter = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.blockShelter(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Shelter blocked successfully!',
+    data: null,
+  });
+});
+
 // ----------------------------- Admin Profile Controller ----------------------------
 const editAdminProfile = catchAsync(async (req, res) => {
   const profile_image =
@@ -342,4 +376,7 @@ export const AdminController = {
   blockUser,
   editAdminProfile,
   adminProfile,
+  getAllShelter,
+  getShelterDetail,
+  blockShelter,
 };
