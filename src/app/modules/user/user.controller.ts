@@ -152,16 +152,32 @@ const deleteMyPet = catchAsync(async (req, res) => {
   });
 });
 
+// ------------------------  Get Pet Adopt Controller ------------------------
+const getPetAdopt = catchAsync(async (req, res) => {
+  // console.log('adopt', req.body);
+  const result = await UserService.getPetAdoptFromDB(
+    req.user as IJwtPayload,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Pet adopted successfully!',
+    data: result,
+  });
+});
+
 export const UserController = {
   updateProfile,
   myProfile,
   changePassword,
   deleteProfile,
-
   createMyPet,
   updateMyPet,
   getMyPets,
   getMyAllPet,
   getMySinglePet,
   deleteMyPet,
+  getPetAdopt,
 };

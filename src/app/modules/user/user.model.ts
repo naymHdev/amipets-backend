@@ -1,6 +1,6 @@
 // models/pet.model.ts
 import mongoose, { Schema } from 'mongoose';
-import { IMyPet } from './user.interface';
+import { IMyPet, IPetAdopt } from './user.interface';
 
 const MyPetSchema = new Schema<IMyPet>(
   {
@@ -38,5 +38,36 @@ const MyPetSchema = new Schema<IMyPet>(
   },
 );
 
-const MyPet = mongoose.model<IMyPet>('MyPet', MyPetSchema);
-export default MyPet;
+const PetAdoptSchema = new Schema<IPetAdopt>(
+  {
+    adopted_pet: {
+      type: Schema.Types.ObjectId,
+      ref: 'Pet',
+      required: true,
+    },
+    adopter: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    answers: [
+      {
+        question: {
+          type: String,
+          required: true,
+        },
+        answer: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export const MyPet = mongoose.model<IMyPet>('MyPet', MyPetSchema);
+
+export const PetAdopt = mongoose.model<IPetAdopt>('PetAdopt', PetAdoptSchema);

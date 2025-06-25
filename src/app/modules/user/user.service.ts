@@ -6,10 +6,10 @@ import { IImageFile } from '../../interface/IImageFile';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../../config';
-import { IMyPet } from './user.interface';
-import MyPet from './user.model';
+import { IMyPet, IPetAdopt } from './user.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { PetSearchableFields } from '../pet/pet.constant';
+import { MyPet, PetAdopt } from './user.model';
 
 const updateProfile = async (
   payload: IUser,
@@ -237,6 +237,29 @@ const deleteSinglePet = async (petId: string) => {
   return pet;
 };
 
+// ---------------- Pet Adopt Service ----------------
+const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
+  const isUserExists = await User.findById(authUser._id);
+  console.log('isUserExists', isUserExists);
+
+  if (!isUserExists) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'You are not authorized! Than you can not create pet.',
+    );
+  }
+
+  if (!isUserExists.isActive) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Your account is not active. Than you can not create pet.',
+    );
+  }
+
+  const result = await PetAdopt.create(payload);
+  return result;
+};
+
 export const UserService = {
   updateProfile,
   myProfile,
@@ -248,4 +271,5 @@ export const UserService = {
   getMyPets,
   getSinglePet,
   deleteSinglePet,
+  getPetAdoptFromDB,
 };

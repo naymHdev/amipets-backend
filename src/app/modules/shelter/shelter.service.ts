@@ -9,13 +9,16 @@ const createSurveyFromDB = async (payload: ISurvey) => {
   return result;
 };
 
-const getSurveyFromDB = async (petId : string) => {
+const getSurveyFromDB = async (petId: string) => {
   const pet = await Pet.findById(petId);
-  if(!pet){
-    throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
+
+  if (!pet) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Your question not found!');
   }
 
-  const result = await Survey.find({shelter_owner : pet?.owner});
+  const result = await Survey.find({ shelter_owner: pet?.owner }).populate(
+    'shelter_owner',
+  );
   return result;
 };
 

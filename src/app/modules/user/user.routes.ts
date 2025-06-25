@@ -64,4 +64,12 @@ router.get(
   UserController.getMySinglePet,
 );
 
+// Get Pet Adopted
+router.post(
+  '/getPetAdopt',
+  auth(Role.USER),
+  validateRequest(UserValidation.petAdoptedValidationSchema),
+  UserController.getPetAdopt,
+);
+
 export const UserRoutes = router;

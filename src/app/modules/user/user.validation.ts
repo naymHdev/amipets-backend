@@ -56,8 +56,28 @@ const updateMyPetValidationSchema = z.object({
   }),
 });
 
+const petAdoptedValidationSchema = z.object({
+  body: z.object({
+    adopted_pet: z.string({ required_error: 'Pet id is required' }),
+    adopter: z.string({ required_error: 'Adopter id is required' }),
+    answers: z
+      .array(
+        z.object({
+          question: z
+            .string({ required_error: 'Question is required' })
+            .min(1, 'Question cannot be empty'),
+          answer: z
+            .string({ required_error: 'Answer is required' })
+            .min(1, 'Answer cannot be empty'),
+        }),
+      )
+      .nonempty({ message: 'At least one answer is required' }),
+  }),
+});
+
 export const UserValidation = {
   changePasswordUpdateValidationSchema,
   myPetValidationSchema,
   updateMyPetValidationSchema,
+  petAdoptedValidationSchema,
 };
