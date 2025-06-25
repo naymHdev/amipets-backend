@@ -13,7 +13,7 @@ const app: Application = express();
 // Middleware setup
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://amipets-backend.vercel.app'],
   }),
 );
 
@@ -50,7 +50,7 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
     },
     developerContact: {
       email: 'naymhossen09@gmail.com',
-      website: 'https://naym-hossen.vercel.app',
+      website: 'https://naymweb.vercel.app',
     },
   });
 });

@@ -13,7 +13,8 @@ router.post(
   validateRequest(ShelterValidation.surveyValidationSchema),
   ShelterController.createSurvey,
 );
-router.get('/get-survey', auth(Role.SHELTER), ShelterController.getSurvey);
+router.get('/get-survey/:id', auth(Role.SHELTER), ShelterController.getSurvey);
+
 router.get(
   '/get-single-survey/:id',
   auth(Role.SHELTER),

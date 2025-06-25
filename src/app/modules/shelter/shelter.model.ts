@@ -2,6 +2,11 @@ import { Schema, model } from 'mongoose';
 import { ISurvey } from './shelter.interface';
 
 const SurveySchema = new Schema<ISurvey>({
+  shelter_owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   question: {
     type: String,
     required: true,

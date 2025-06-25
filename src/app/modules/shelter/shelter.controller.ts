@@ -15,7 +15,7 @@ const createSurvey = catchAsync(async (req, res) => {
 });
 
 const getSurvey = catchAsync(async (req, res) => {
-  const result = await ShelterServices.getSurveyFromDB();
+  const result = await ShelterServices.getSurveyFromDB(req.params.id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

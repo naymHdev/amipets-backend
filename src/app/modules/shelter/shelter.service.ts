@@ -1,3 +1,6 @@
+import { StatusCodes } from 'http-status-codes';
+import AppError from '../../errors/appError';
+import Pet from '../pet/pet.model';
 import { ISurvey } from './shelter.interface';
 import { Survey } from './shelter.model';
 
@@ -6,8 +9,13 @@ const createSurveyFromDB = async (payload: ISurvey) => {
   return result;
 };
 
-const getSurveyFromDB = async () => {
-  const result = await Survey.find();
+const getSurveyFromDB = async (petId : string) => {
+  const pet = await Pet.findById(petId);
+  if(!pet){
+    throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
+  }
+
+  const result = await Survey.find({shelter_owner : pet?.owner});
   return result;
 };
 
