@@ -135,7 +135,10 @@ const resendOtp = async (email: string) => {
     expiresIn: '3m',
   });
 
-  const otpEmailPath = path.join(__dirname, '../../public/view/otp_mail.html');
+  const otpEmailPath = path.join(
+    __dirname,
+    './src/app/public/view/otp_mail.html',
+  );
 
   if (user) {
     await sendEmail(
