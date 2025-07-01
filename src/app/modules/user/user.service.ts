@@ -10,6 +10,7 @@ import { IMyPet, IPetAdopt } from './user.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { PetSearchableFields } from '../pet/pet.constant';
 import { MyPet, PetAdopt } from './user.model';
+import { Types } from 'mongoose';
 
 const updateProfile = async (
   payload: IUser,
@@ -144,12 +145,14 @@ const createMyPetFromDB = async (
     );
   }
 
-  // if (!isUserExists.verification?.status) {
-  //   throw new AppError(
-  //     StatusCodes.FORBIDDEN,
-  //     'You are not verified! Please verify your email address. Check your inbox.',
-  //   );
-  // }
+  if (!isUserExists.verification?.status) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not verified! Please verify your email address. Check your inbox.',
+    );
+  }
+
+  payload.owner = new Types.ObjectId(authUser._id);
 
   const pet = new MyPet({ ...payload, pet_image: image });
   const result = await pet.save();
@@ -185,6 +188,9 @@ const updateMyPetFromDB = async (
   if (!existingPet) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
   }
+
+  // console.log('existingPet', existingPet?.owner.toString());
+  // console.log('isUserExists', isUserExists._id.toString());
 
   // Optional: Check if user owns this pet or has rights to update
   if (

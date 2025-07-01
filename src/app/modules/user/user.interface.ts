@@ -7,7 +7,7 @@ export interface IMyPet {
   breed: string;
   gender: 'Male' | 'Female';
   chip_number: string;
-  owner?: Types.ObjectId;
+  owner: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -17,7 +17,7 @@ export interface IPetAdopt {
   _id?: string;
   adopted_pet: Types.ObjectId;
   adopter: Types.ObjectId;
-   answers: {
+  answers: {
     question: string;
     answer: string;
   }[];

@@ -29,7 +29,6 @@ const myPetValidationSchema = z.object({
     gender: z.enum(['Male', 'Female'], {
       required_error: 'Gender is required',
     }),
-    owner: z.string({ required_error: 'Owner id is required' }),
   }),
 });
 
@@ -52,7 +51,6 @@ const updateMyPetValidationSchema = z.object({
         required_error: 'Gender is required',
       })
       .optional(),
-    owner: z.string({ required_error: 'Owner id is required' }).optional(),
   }),
 });
 
