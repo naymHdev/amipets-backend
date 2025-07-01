@@ -103,7 +103,7 @@ const resendOtp = async (email: string) => {
   const otp = generateOtp();
   // console.log('new otp', otp);
 
-  const expiresAt = moment().add(3, 'minute');
+  const expiresAt = moment().add(5, 'minute');
 
   const updateOtp = await User.findByIdAndUpdate(
     user?._id,
@@ -135,9 +135,15 @@ const resendOtp = async (email: string) => {
     expiresIn: '3m',
   });
 
-  const otpEmailPath = path.join(
-    __dirname,
-    '/src/app/public/view/otp_mail.html',
+  // const otpEmailPath = path.join(__dirname, '../../public/view/otp_mail.html');
+
+  const otpEmailPath = path.resolve(
+    process.cwd(),
+    'src',
+    'app',
+    'public',
+    'view',
+    'otp_mail.html',
   );
 
   if (user) {
