@@ -2,7 +2,6 @@ import { Router } from 'express';
 import auth from '../../middleware/auth';
 import { Role } from '../auth/auth.interface';
 import { UserController } from './user.controller';
-import { multerUpload } from '../../config/multer.config';
 import { parseBody } from '../../middleware/bodyParser';
 import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from '../auth/auth.validation';
@@ -11,12 +10,16 @@ import { single_image_Upload } from '../../utils/imageUploader';
 
 const router = Router();
 
-router.get('/profile/:id', auth(Role.USER), UserController.myProfile);
+router.get(
+  '/profile',
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
+  UserController.myProfile,
+);
 
 router.put(
   '/:id',
   auth(Role.USER),
-  multerUpload.single('pet_image'),
+  single_image_Upload.single('profile_image'),
   parseBody,
   validateRequest(AuthValidation.userProfileUpdateValidationSchema),
   UserController.updateProfile,

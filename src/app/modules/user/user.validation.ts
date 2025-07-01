@@ -57,7 +57,6 @@ const updateMyPetValidationSchema = z.object({
 const petAdoptedValidationSchema = z.object({
   body: z.object({
     adopted_pet: z.string({ required_error: 'Pet id is required' }),
-    adopter: z.string({ required_error: 'Adopter id is required' }),
     answers: z
       .array(
         z.object({

@@ -2,14 +2,18 @@ import { StatusCodes } from 'http-status-codes';
 import sendResponse from '../../utils/sendResponse';
 import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
-import { IImageFile } from '../../interface/IImageFile';
 import { IJwtPayload } from '../auth/auth.interface';
 import config from '../../config';
 
 const updateProfile = catchAsync(async (req, res) => {
+
+    const profile_image =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+
   const result = await UserService.updateProfile(
     req.body,
-    req.file as IImageFile,
+    profile_image,
     req.user as IJwtPayload,
   );
   // console.log('updateProfile result', result);

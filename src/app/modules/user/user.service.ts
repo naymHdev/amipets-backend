@@ -2,7 +2,6 @@ import { StatusCodes } from 'http-status-codes';
 import AppError from '../../errors/appError';
 import { IJwtPayload, IUser } from '../auth/auth.interface';
 import User from '../auth/auth.model';
-import { IImageFile } from '../../interface/IImageFile';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../../config';
@@ -14,12 +13,10 @@ import { Types } from 'mongoose';
 
 const updateProfile = async (
   payload: IUser,
-  file: IImageFile,
+  profile_image: string,
   authUser: IJwtPayload,
 ) => {
-  // Fetch the current user
   const isUserExists = await User.findById(authUser._id);
-  // console.log('isUserExists', isUserExists);
 
   if (!isUserExists) {
     throw new AppError(StatusCodes.NOT_FOUND, 'You are not authorized!');
@@ -32,13 +29,9 @@ const updateProfile = async (
   // Preserve existing hashed password
   payload.password = isUserExists.password;
 
-  if (file && file.path) {
-    payload.profile_image = file.path;
-  }
-
   const result = await User.findOneAndUpdate(
     { _id: authUser._id },
-    { $set: payload },
+    { $set: payload, profile_image },
     { new: true, runValidators: true },
   );
 
@@ -246,7 +239,7 @@ const deleteSinglePet = async (petId: string) => {
 // ---------------- Pet Adopt Service ----------------
 const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
   const isUserExists = await User.findById(authUser._id);
-  console.log('isUserExists', isUserExists);
+  // console.log('isUserExists', isUserExists);
 
   if (!isUserExists) {
     throw new AppError(
@@ -261,6 +254,8 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
       'Your account is not active. Than you can not create pet.',
     );
   }
+
+  payload.adopter = new Types.ObjectId(authUser._id);
 
   const result = await PetAdopt.create(payload);
   return result;
