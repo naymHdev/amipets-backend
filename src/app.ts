@@ -13,7 +13,7 @@ const app: Application = express();
 // Middleware setup
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://amipets-backend.vercel.app'],
+    origin: [''],
   }),
 );
 

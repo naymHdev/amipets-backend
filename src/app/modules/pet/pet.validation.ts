@@ -20,7 +20,6 @@ const createPetSchema = z.object({
       required_error: 'Gender is required',
     }),
     age: z.string({ required_error: 'Date of birth is required' }),
-    owner: z.string({ required_error: 'Owner id is required' }),
   }),
 });
 
@@ -53,7 +52,6 @@ const updatePetePetSchema = z.object({
       })
       .optional(),
     age: z.string({ required_error: 'Date of birth is required' }).optional(),
-    owner: z.string({ required_error: 'Owner id is required' }).optional(),
   }),
 });
 

@@ -6,6 +6,7 @@ import { IPet } from './pet.interface';
 import Pet from './pet.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { PetSearchableFields } from './pet.constant';
+import { Types } from 'mongoose';
 
 const createPerFromDB = async (
   payload: IPet,
@@ -35,12 +36,14 @@ const createPerFromDB = async (
     );
   }
 
-  // if (!isUserExists.verification?.status) {
-  //   throw new AppError(
-  //     StatusCodes.FORBIDDEN,
-  //     'You are not verified! Please verify your email address. Check your inbox.',
-  //   );
-  // }
+  if (!isUserExists.verification?.status) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not verified! Please verify your email address. Check your inbox.',
+    );
+  }
+
+  payload.owner = new Types.ObjectId(authUser._id);
 
   const pet = new Pet({ ...payload, pet_image: image });
   const result = await pet.save();

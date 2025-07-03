@@ -147,6 +147,7 @@ const createMyPetFromDB = async (
 
   payload.owner = new Types.ObjectId(authUser._id);
 
+
   const pet = new MyPet({ ...payload, pet_image: image });
   const result = await pet.save();
 

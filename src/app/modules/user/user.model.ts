@@ -30,7 +30,7 @@ const MyPetSchema = new Schema<IMyPet>(
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
   },
   {
