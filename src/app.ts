@@ -7,6 +7,8 @@ import { StatusCodes } from 'http-status-codes';
 import globalErrorHandler from './app/middleware/globalErrorHandler';
 import notFound from './app/middleware/notFound';
 import router from './app/routes';
+import { createServer } from 'http';
+import { socketIo } from './app/config/socket.config';
 
 const app: Application = express();
 
@@ -16,6 +18,10 @@ app.use(
     origin: [''],
   }),
 );
+
+// HTTP socket Server setup
+export const httpServer = createServer(app);
+socketIo(httpServer);
 
 app.use(cookieParser());
 app.use(express.json());

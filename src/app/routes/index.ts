@@ -5,6 +5,7 @@ import { UserRoutes } from '../modules/user/user.routes';
 import { PetRoutes } from '../modules/pet/pet.routes';
 import { AdminRoutes } from '../modules/admin/admin.route';
 import ShelterRoutes from '../modules/shelter/shelter.routes';
+import { NotificationRoutes } from '../modules/notification/notification.route';
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: '/pets',
     route: PetRoutes,
+  },
+  {
+    path: '/notifications',
+    route: NotificationRoutes,
   },
 ];
 

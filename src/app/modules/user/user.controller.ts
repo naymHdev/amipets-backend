@@ -4,10 +4,10 @@ import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import { IJwtPayload } from '../auth/auth.interface';
 import config from '../../config';
+import { NotificationService } from '../notification/notification.service';
 
 const updateProfile = catchAsync(async (req, res) => {
-
-    const profile_image =
+  const profile_image =
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
 
@@ -78,6 +78,17 @@ const createMyPet = catchAsync(async (req, res) => {
     pet_img,
     req.user as IJwtPayload,
   );
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Your pet ${result?.full_name} created successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

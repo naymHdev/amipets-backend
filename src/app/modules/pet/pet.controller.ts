@@ -4,6 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
 import config from '../../config';
+import { NotificationService } from '../notification/notification.service';
 
 const createPet = catchAsync(async (req, res) => {
   const files = req.files as Express.Multer.File[];
@@ -19,6 +20,17 @@ const createPet = catchAsync(async (req, res) => {
     filePaths,
     req.user as IJwtPayload,
   );
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `New pet added`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
