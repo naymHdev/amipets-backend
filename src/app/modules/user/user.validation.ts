@@ -29,6 +29,7 @@ const myPetValidationSchema = z.object({
     gender: z.enum(['Male', 'Female'], {
       required_error: 'Gender is required',
     }),
+    date_of_birth: z.string({ required_error: 'Date of birth is required' }),
   }),
 });
 
@@ -50,6 +51,9 @@ const updateMyPetValidationSchema = z.object({
       .enum(['Male', 'Female'], {
         required_error: 'Gender is required',
       })
+      .optional(),
+    date_of_birth: z
+      .string({ required_error: 'Date of birth is required' })
       .optional(),
   }),
 });
