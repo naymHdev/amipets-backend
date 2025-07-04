@@ -70,6 +70,7 @@ const loginUserFromDB = async (payload: IAuth) => {
     return {
       accessToken,
       refreshToken,
+      role: user.role,
     };
   } catch (error) {
     await session.abortTransaction();
