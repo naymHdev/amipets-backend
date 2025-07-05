@@ -150,6 +150,6 @@ export const TermsOfService = model<IPrivacyPolicy>(
 
 export const Banner = model<IBanner>('Banner', BannerSchema);
 
-export const Services = model<IService>('Service', ServiceSchema);
+export const Service = model<IService>('Service', ServiceSchema);
 
 export const AddWebsite = model<IAddWebsite>('AddWebsite', AddWebsiteSchema);

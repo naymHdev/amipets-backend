@@ -64,6 +64,8 @@ const fagotPassword = catchAsync(async (req, res) => {
 });
 
 const resetPassword = catchAsync(async (req, res) => {
+  console.log('resetPassword', req?.headers?.authorization);
+
   const result = await AuthService.resetPassword(
     req?.headers?.authorization as string,
     req?.body,

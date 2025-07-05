@@ -13,7 +13,7 @@ import {
   AddWebsite,
   Banner,
   PrivacyPolicy,
-  Services,
+  Service,
   TermsOfService,
 } from './admin.model';
 import QueryBuilder from '../../builder/QueryBuilder';
@@ -140,7 +140,7 @@ const updateBanner = async (payload: IBanner, image: string) => {
 
 // ---------------------------- Services Service ----------------------------
 const createServiceFromDB = async (payload: IService, icon: string) => {
-  const existsService = await Services.findOne({ name: payload.name });
+  const existsService = await Service.findOne({ name: payload.name });
 
   if (existsService) {
     throw new AppError(
@@ -149,16 +149,16 @@ const createServiceFromDB = async (payload: IService, icon: string) => {
     );
   }
 
-  const result = await Services.create({ ...payload, icon });
+  const result = await Service.create({ ...payload, icon });
   return result;
 };
 
 const getServiceFromDB = async () => {
-  const result = await Services.find();
+  const result = await Service.find();
   return result;
 };
 const updateService = async (id: string, payload: IService, icon: string) => {
-  const existsService = await Services.findById(id);
+  const existsService = await Service.findById(id);
 
   if (!existsService) {
     throw new AppError(
@@ -167,7 +167,7 @@ const updateService = async (id: string, payload: IService, icon: string) => {
     );
   }
 
-  const result = await Services.findOneAndUpdate(
+  const result = await Service.findOneAndUpdate(
     { _id: id },
     { ...payload, icon },
     { new: true },
@@ -176,7 +176,7 @@ const updateService = async (id: string, payload: IService, icon: string) => {
 };
 
 const deleteService = async (id: string) => {
-  const result = await Services.findByIdAndDelete(id);
+  const result = await Service.findByIdAndDelete(id);
   return result;
 };
 

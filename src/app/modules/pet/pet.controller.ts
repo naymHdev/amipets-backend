@@ -5,6 +5,7 @@ import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
 import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
+import { Service } from '../admin/admin.model';
 
 const createPet = catchAsync(async (req, res) => {
   const files = req.files as Express.Multer.File[];
@@ -15,10 +16,14 @@ const createPet = catchAsync(async (req, res) => {
     );
   });
 
+  const service = await Service.findById(req.body.service);
+  const serviceName = service?.name;
+
   const result = await PetServices.createPerFromDB(
     req.body,
     filePaths,
     req.user as IJwtPayload,
+    serviceName as string,
   );
 
   await NotificationService.sendNotification({
@@ -36,7 +41,7 @@ const createPet = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Your pet created successfully!',
-    data: result,
+    data: { result },
   });
 });
 

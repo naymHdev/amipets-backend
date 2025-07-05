@@ -12,6 +12,7 @@ const createPerFromDB = async (
   payload: IPet,
   image: string[],
   authUser: IJwtPayload,
+  serviceName: string,
 ) => {
   const isUserExists = await User.findById(authUser._id);
 
@@ -45,7 +46,11 @@ const createPerFromDB = async (
 
   payload.owner = new Types.ObjectId(authUser._id);
 
-  const pet = new Pet({ ...payload, pet_image: image });
+  const pet = new Pet({
+    ...payload,
+    pet_image: image,
+    serviceName: serviceName,
+  });
   const result = await pet.save();
 
   return result;
@@ -107,7 +112,10 @@ const updatePetFromDB = async (
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const { ...pQuery } = query;
 
-  const petsQuery = new QueryBuilder(Pet.find().populate('owner'), pQuery)
+  const petsQuery = new QueryBuilder(
+    Pet.find().populate('owner').populate('service'),
+    pQuery,
+  )
     .search(PetSearchableFields)
     .filter()
     .sort()

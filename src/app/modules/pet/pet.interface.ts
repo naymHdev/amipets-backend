@@ -16,4 +16,7 @@ export interface IPet {
   createdAt?: Date;
   updatedAt?: Date;
   owner?: Types.ObjectId;
+  pet_category: 'dog' | 'cat' | 'other';
+  service: Types.ObjectId;
+  serviceName: string;
 }

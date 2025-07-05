@@ -20,6 +20,10 @@ const createPetSchema = z.object({
       required_error: 'Gender is required',
     }),
     age: z.string({ required_error: 'Date of birth is required' }),
+    pet_category: z.enum(['dog', 'cat'], {
+      required_error: 'Pet category is required',
+    }),
+    service: z.string({ required_error: 'Service is required' }),
   }),
 });
 
@@ -52,6 +56,15 @@ const updatePetePetSchema = z.object({
       })
       .optional(),
     age: z.string({ required_error: 'Date of birth is required' }).optional(),
+    pet_category: z
+      .enum(['dog', 'cat'], {
+        required_error: 'Pet category is required',
+      })
+      .optional(),
+    service: z.string({ required_error: 'Service is required' }).optional(),
+    serviceName: z
+      .string({ required_error: 'Service name is required' })
+      .optional(),
   }),
 });
 
