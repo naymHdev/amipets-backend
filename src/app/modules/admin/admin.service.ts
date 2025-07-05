@@ -182,8 +182,16 @@ const deleteService = async (id: string) => {
 
 // ---------------------------- Add website Service ----------------------------
 
-const createWebsiteFromDB = async (payload: IAddWebsite, web_img: string) => {
-  const result = await AddWebsite.create({ ...payload, web_img });
+const createWebsiteFromDB = async (
+  payload: IAddWebsite,
+  web_img: string,
+  serviceName: string,
+) => {
+  const result = await AddWebsite.create({
+    ...payload,
+    web_img,
+    serviceName: serviceName,
+  });
   return result;
 };
 

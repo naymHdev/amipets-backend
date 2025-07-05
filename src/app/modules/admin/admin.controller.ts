@@ -4,6 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import { AdminService } from './admin.service';
 import config from '../../config';
 import { IJwtPayload } from '../auth/auth.interface';
+import { Service } from './admin.model';
 
 const createAbout = catchAsync(async (req, res) => {
   const result = await AdminService.createAboutFromDB(req.body);
@@ -207,7 +208,14 @@ const createAddWebsite = catchAsync(async (req, res) => {
   const web_img =
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
-  const result = await AdminService.createWebsiteFromDB(payload, web_img);
+
+  const service = await Service.findById(req.body.service);
+  const serviceName = service?.name;
+  const result = await AdminService.createWebsiteFromDB(
+    payload,
+    web_img,
+    serviceName as string,
+  );
 
   sendResponse(res, {
     success: true,

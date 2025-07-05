@@ -32,10 +32,10 @@ router.patch(
   UserController.changePassword,
 );
 
-router.delete('/:id', auth(Role.USER), UserController.deleteProfile);
+router.delete('/delete', auth(Role.USER), UserController.deleteProfile);
 
 // ------------------- My pet Routes ----------------------
-router.get('/my-pets', UserController.getMyAllPet);
+router.get('/my-pets', auth(Role.USER), UserController.getMyPets);
 
 router.post(
   '/create-my-pet',

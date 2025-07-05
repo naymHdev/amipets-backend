@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface IAbout {
   title: string;
   description: string;
@@ -33,4 +35,7 @@ export interface IAddWebsite {
   pet_type: 'dog' | 'cat' | 'both';
   description: string;
   location: string;
+  pet_category: 'dog' | 'cat' | 'other';
+  service: Types.ObjectId;
+  serviceName: string;
 }

@@ -147,7 +147,6 @@ const createMyPetFromDB = async (
 
   payload.owner = new Types.ObjectId(authUser._id);
 
-
   const pet = new MyPet({ ...payload, pet_image: image });
   const result = await pet.save();
 
@@ -223,6 +222,8 @@ const getMyAllPetsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getMyPets = async (authUser: IJwtPayload) => {
+  console.log('myPet---auth', authUser);
+
   const pets = await MyPet.find({ owner: authUser._id });
   return pets;
 };
