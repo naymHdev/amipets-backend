@@ -118,7 +118,11 @@ const getBannerFromDB = async () => {
   return result;
 };
 
-const updateBanner = async (payload: IBanner, image: string, banner: string) => {
+const updateBanner = async (
+  payload: IBanner,
+  image: string,
+  banner: string,
+) => {
   const isExist = await Banner.findOne({});
 
   if (!isExist) {
@@ -204,7 +208,10 @@ const createWebsiteFromDB = async (
 const getWebsiteFromDB = async (query: Record<string, unknown>) => {
   const { ...wQuery } = query;
 
-  const websiteQuery = new QueryBuilder(AddWebsite.find(), wQuery)
+  const websiteQuery = new QueryBuilder(
+    AddWebsite.find().populate('service'),
+    wQuery,
+  )
     .search(['web_name', 'web_link', 'location', 'pet_type'])
     .filter()
     .sort()
@@ -221,13 +228,35 @@ const getWebsiteFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getWebDetailFromDB = async (id: string) => {
-  const result = await AddWebsite.findById(id);
+  const result = await AddWebsite.findById(id).populate('service');
   return result;
 };
 
 const deleteWebsite = async (id: string) => {
   const result = await AddWebsite.findByIdAndDelete(id);
   return result;
+};
+
+const getServiceBaseWeb = async (
+  serviceId: string,
+  query: Record<string, unknown>,
+) => {
+  const { ...wQuery } = query;
+  const baseQuery = AddWebsite.find({ service: serviceId }).populate('service');
+
+  const websiteQuery = new QueryBuilder(baseQuery, wQuery)
+    .search(['web_name', 'web_link', 'location', 'pet_type'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await websiteQuery.modelQuery;
+  const meta = await websiteQuery.countTotal();
+  return {
+    meta,
+    data: result,
+  };
 };
 
 // ---------------------------- Users Service ----------------------------
@@ -364,6 +393,7 @@ export const AdminService = {
   getSingleServices,
   updateService,
   deleteService,
+  getServiceBaseWeb,
 
   createWebsiteFromDB,
   getWebsiteFromDB,

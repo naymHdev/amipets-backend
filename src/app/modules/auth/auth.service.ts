@@ -121,6 +121,8 @@ const refreshToken = async (token: string) => {
   let verifiedToken = null;
   try {
     verifiedToken = verifyToken(token, config.jwt_refresh_secret as Secret);
+    console.log('verifiedToken', verifiedToken);
+    
   } catch (err: any) {
     console.log(err);
     throw new AppError(

@@ -100,7 +100,7 @@ router.post(
 );
 
 router.get('/get-website', AdminController.getAddWebsite);
-
+router.get('/service-base-webs/:id', AdminController.serviceBaseWeb);
 router.get('/website-detail/:id', AdminController.getAddWebsiteDetail);
 
 router.delete(

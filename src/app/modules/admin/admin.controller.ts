@@ -273,6 +273,18 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
   });
 });
 
+const serviceBaseWeb = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await AdminService.getServiceBaseWeb(id, req.query);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Website fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 // ---------------------------- Users Controller ----------------------------
 const getAllUsers = catchAsync(async (req, res) => {
   const result = await AdminService.getAllUsersFromDB(req.query);
@@ -401,6 +413,7 @@ export const AdminController = {
   updateService,
   deletedService,
   getSingleService,
+  serviceBaseWeb,
 
   createAddWebsite,
   getAddWebsite,

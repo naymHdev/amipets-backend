@@ -2,6 +2,8 @@ import { Router } from 'express';
 import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from './auth.validation';
 import { AuthController } from './auth.controller';
+import auth from '../../middleware/auth';
+import { Role } from './auth.interface';
 
 const router = Router();
 
@@ -15,6 +17,7 @@ router.post('/login', AuthController.loginUser);
 
 router.post(
   '/refresh-token',
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
   AuthController.refreshToken,
 );
 
