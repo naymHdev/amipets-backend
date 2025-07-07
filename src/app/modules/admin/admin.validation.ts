@@ -65,7 +65,9 @@ const bannerSchema = z.object({
   body: z.object({
     title: z.string().min(3, 'Banner title cannot be empty'),
     description: z.string().min(10, 'Banner description cannot be empty'),
-    link: z.string({ required_error: 'Banner link cannot be empty' }),
+    banner: z
+      .string({ required_error: 'Banner name cannot be empty' })
+      .default('banner'),
     websiteLink: z.string({ required_error: 'Website link cannot be empty' }),
   }),
 });
@@ -77,8 +79,9 @@ const updateBannerSchema = z.object({
       .string()
       .min(10, 'Banner description cannot be empty')
       .optional(),
-    link: z
-      .string({ required_error: 'Banner link cannot be empty' })
+    banner: z
+      .string({ required_error: 'Banner name cannot be empty' })
+      .default('banner')
       .optional(),
     websiteLink: z
       .string({ required_error: 'Website link cannot be empty' })

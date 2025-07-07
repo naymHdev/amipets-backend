@@ -18,8 +18,8 @@ export interface IBanner {
   title: string;
   description: string;
   image: string;
-  link: string;
   websiteLink: string;
+  banner: string;
 }
 
 export interface IService {

@@ -57,7 +57,7 @@ router.post(
 router.get('/get-banner', AdminController.getBanner);
 
 router.patch(
-  '/update-banner',
+  '/update-banner/:banner',
   single_image_Upload.single('image'),
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),
@@ -73,9 +73,8 @@ router.post(
   validateRequest(AdminValidation.servicesSchema),
   AdminController.createService,
 );
-
 router.get('/get-service', AdminController.getService);
-
+router.get('/service-detail/:id', AdminController.getSingleService);
 router.patch(
   '/update-service/:id',
   auth(Role.ADMIN),
@@ -84,7 +83,6 @@ router.patch(
   validateRequest(AdminValidation.updateServicesSchema),
   AdminController.updateService,
 );
-
 router.delete(
   '/delete-service/:id',
   auth(Role.ADMIN),
@@ -115,6 +113,11 @@ router.delete(
 router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);
 router.get('/user-detail/:id', auth(Role.ADMIN), AdminController.getUserDetail);
 router.patch('/block-user/:id', auth(Role.ADMIN), AdminController.blockUser);
+router.patch(
+  '/unblock-user/:id',
+  auth(Role.ADMIN),
+  AdminController.unblockUser,
+);
 
 // ---------------------------- Control Shelters Routes ----------------------------
 router.get('/get-shelters', auth(Role.ADMIN), AdminController.getAllShelter);

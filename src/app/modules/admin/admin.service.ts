@@ -118,7 +118,7 @@ const getBannerFromDB = async () => {
   return result;
 };
 
-const updateBanner = async (payload: IBanner, image: string) => {
+const updateBanner = async (payload: IBanner, image: string, banner: string) => {
   const isExist = await Banner.findOne({});
 
   if (!isExist) {
@@ -130,7 +130,7 @@ const updateBanner = async (payload: IBanner, image: string) => {
 
   const result = await Banner.findOneAndUpdate(
     {},
-    { ...payload, image },
+    { ...payload, image, banner },
     {
       new: true,
     },
@@ -157,6 +157,12 @@ const getServiceFromDB = async () => {
   const result = await Service.find();
   return result;
 };
+
+const getSingleServices = async (id: string) => {
+  const result = await Service.findById(id);
+  return result;
+};
+
 const updateService = async (id: string, payload: IService, icon: string) => {
   const existsService = await Service.findById(id);
 
@@ -261,10 +267,34 @@ const blockUser = async (id: string) => {
   await user.save();
 };
 
+const unblockUser = async (id: string) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  user.isActive = true;
+  await user.save();
+};
+
 // --------------------------- Shelter Services ---------------------------
-const getAllSheltersFromDB = async () => {
-  const result = await User.find({ role: 'shelter' });
-  return result;
+const getAllSheltersFromDB = async (query: Record<string, unknown>) => {
+  const { ...sQuery } = query;
+  const baseQuery = User.find({ role: 'shelter' });
+
+  const sheltersQuery = new QueryBuilder(baseQuery, sQuery)
+    .search(['gender', 'email', 'first_name', 'last_name', 'location'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await sheltersQuery.modelQuery;
+  const meta = await sheltersQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
 };
 
 const shelterDetailFromDB = async (id: string) => {
@@ -328,10 +358,13 @@ export const AdminService = {
   createBannerFromDB,
   getBannerFromDB,
   updateBanner,
+
   createServiceFromDB,
   getServiceFromDB,
+  getSingleServices,
   updateService,
   deleteService,
+
   createWebsiteFromDB,
   getWebsiteFromDB,
   deleteWebsite,
@@ -340,6 +373,7 @@ export const AdminService = {
   getAllUsersFromDB,
   getUserDetailFromDB,
   blockUser,
+  unblockUser,
   editProfileFromDB,
   adminProfile,
 

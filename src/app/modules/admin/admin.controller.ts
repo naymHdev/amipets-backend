@@ -137,7 +137,8 @@ const updateBanner = catchAsync(async (req, res) => {
   const image =
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
-  const result = await AdminService.updateBanner(payload, image);
+  const { banner } = req.params;
+  const result = await AdminService.updateBanner(payload, image, banner);
 
   sendResponse(res, {
     success: true,
@@ -165,6 +166,18 @@ const createService = catchAsync(async (req, res) => {
 
 const getService = catchAsync(async (req, res) => {
   const result = await AdminService.getServiceFromDB();
+
+  sendResponse(res, {
+    success: true,
+    message: 'Service fetched successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
+const getSingleService = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await AdminService.getSingleServices(id);
 
   sendResponse(res, {
     success: true,
@@ -294,9 +307,20 @@ const blockUser = catchAsync(async (req, res) => {
   });
 });
 
+const unblockUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.unblockUser(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'User unblocked successfully!',
+    data: null,
+  });
+});
+
 // ---------------------------- Shelter Controller ----------------------------
 const getAllShelter = catchAsync(async (req, res) => {
-  const result = await AdminService.getAllSheltersFromDB();
+  const result = await AdminService.getAllSheltersFromDB(req.query);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -371,17 +395,23 @@ export const AdminController = {
   createBanner,
   getBanner,
   updateBanner,
+
   createService,
   getService,
   updateService,
   deletedService,
+  getSingleService,
+
   createAddWebsite,
   getAddWebsite,
   deletedAddWebsite,
   getAddWebsiteDetail,
+
   getAllUsers,
   getUserDetail,
   blockUser,
+  unblockUser,
+
   editAdminProfile,
   adminProfile,
   getAllShelter,

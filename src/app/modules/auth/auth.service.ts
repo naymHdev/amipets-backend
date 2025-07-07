@@ -116,6 +116,8 @@ const registerUserFromDB = async (userData: IUser) => {
 };
 
 const refreshToken = async (token: string) => {
+  console.log('refreshToken', token);
+  console.log('🔑 Using secret:', config.jwt_access_secret);
   let verifiedToken = null;
   try {
     verifiedToken = verifyToken(token, config.jwt_refresh_secret as Secret);

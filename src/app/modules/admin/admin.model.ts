@@ -69,13 +69,13 @@ const BannerSchema = new Schema<IBanner>(
       type: String,
       required: false,
     },
-    link: {
-      type: String,
-      required: true,
-    },
     websiteLink: {
       type: String,
       required: true,
+    },
+    banner: {
+      type: String,
+      default: 'banner',
     },
   },
   {
