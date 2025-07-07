@@ -242,14 +242,9 @@ const getServiceBaseWeb = async (
   query: Record<string, unknown>,
 ) => {
   const { ...wQuery } = query;
-  const baseQuery = AddWebsite.find({ service: serviceId }).populate('service');
+  const baseQuery = AddWebsite.find({ service: serviceId });
 
-  const websiteQuery = new QueryBuilder(baseQuery, wQuery)
-    .search(['web_name', 'web_link', 'location', 'pet_type'])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+  const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields();
 
   const result = await websiteQuery.modelQuery;
   const meta = await websiteQuery.countTotal();
