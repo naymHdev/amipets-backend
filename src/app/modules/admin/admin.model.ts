@@ -130,11 +130,6 @@ const AddWebsiteSchema = new Schema<IAddWebsite>(
       type: String,
       required: true,
     },
-    pet_category: {
-      type: String,
-      enum: ['dog', 'cat', 'other'],
-      required: true,
-    },
     service: {
       type: Schema.Types.ObjectId,
       ref: 'Service',

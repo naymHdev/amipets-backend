@@ -113,9 +113,6 @@ const addWebsiteSchema = z.object({
     }),
     description: z.string().min(10, 'Description cannot be empty'),
     location: z.string().min(3, 'Location cannot be empty'),
-    pet_category: z.enum(['dog', 'cat'], {
-      required_error: 'Pet category is required',
-    }),
     service: z.string({ required_error: 'Service is required' }),
   }),
 });
