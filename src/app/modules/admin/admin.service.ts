@@ -247,11 +247,7 @@ const getServiceBaseWeb = async (
   const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields();
 
   const result = await websiteQuery.modelQuery;
-  const meta = await websiteQuery.countTotal();
-  return {
-    meta,
-    data: result,
-  };
+  return result;
 };
 
 // ---------------------------- Users Service ----------------------------
