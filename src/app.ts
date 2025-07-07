@@ -15,7 +15,7 @@ const app: Application = express();
 // Middleware setup
 app.use(
   cors({
-    origin: [''],
+    origin: ['http://10.10.10.9:3000'],
   }),
 );
 
