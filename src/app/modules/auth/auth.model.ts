@@ -45,6 +45,7 @@ const userSchema = new Schema<IUser, UserModel>(
     profile_image: {
       type: String,
       required: false,
+      default: '',
     },
     isDeleted: {
       type: Boolean,

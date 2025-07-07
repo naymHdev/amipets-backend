@@ -25,8 +25,9 @@ const registerUser = catchAsync(async (req, res) => {
 });
 
 const loginUser = catchAsync(async (req, res) => {
+
   const result = await AuthService.loginUserFromDB(req.body);
-  const { refreshToken, accessToken, role } = result;
+  const { refreshToken, accessToken, user } = result;
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -35,7 +36,7 @@ const loginUser = catchAsync(async (req, res) => {
     data: {
       accessToken,
       refreshToken,
-      role: role,
+      user
     },
   });
 });

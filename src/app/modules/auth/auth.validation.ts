@@ -14,6 +14,7 @@ const userValidationSchema = z.object({
       .min(3, { message: 'First name must be at least 3 characters' }),
     last_name: z.string().optional(),
     email: z.string().email({ message: 'Provide a valid email, try again' }),
+    profile_image: z.string().default('').optional(),
     password: z
       .string()
       .min(6, { message: 'Password must be at least 6 characters' }),

@@ -18,7 +18,7 @@ router.get(
 
 router.put(
   '/:id',
-  auth(Role.USER),
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
   single_image_Upload.single('profile_image'),
   parseBody,
   validateRequest(AuthValidation.userProfileUpdateValidationSchema),
