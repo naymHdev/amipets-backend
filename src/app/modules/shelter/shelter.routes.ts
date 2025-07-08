@@ -13,11 +13,11 @@ router.post(
   validateRequest(ShelterValidation.surveyValidationSchema),
   ShelterController.createSurvey,
 );
-router.get('/get-survey/:id', auth(Role.SHELTER), ShelterController.getSurvey);
+router.get('/get-survey/:id', auth(Role.SHELTER, Role.ADMIN, Role.USER), ShelterController.getSurvey);
 
 router.get(
   '/get-single-survey/:id',
-  auth(Role.SHELTER),
+  auth(Role.SHELTER, Role.ADMIN, Role.USER),
   ShelterController.getSingleSurveyFromDB,
 );
 router.delete(
