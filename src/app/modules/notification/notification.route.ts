@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
   '/all-notifications',
-  auth(Role.ADMIN),
+  auth(Role.ADMIN, Role.SHELTER, Role.USER),
   NotificationController.getAllNotifications,
 );
 
