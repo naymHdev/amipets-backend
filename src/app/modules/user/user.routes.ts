@@ -27,12 +27,12 @@ router.put(
 
 router.patch(
   '/change-password',
-  auth(Role.USER),
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
   validateRequest(UserValidation.changePasswordUpdateValidationSchema),
   UserController.changePassword,
 );
 
-router.delete('/delete', auth(Role.USER), UserController.deleteProfile);
+router.delete('/delete', auth(Role.USER, Role.ADMIN, Role.SHELTER), UserController.deleteProfile);
 
 // ------------------- My pet Routes ----------------------
 router.get('/my-pets', auth(Role.USER), UserController.getMyPets);

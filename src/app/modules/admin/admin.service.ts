@@ -352,14 +352,24 @@ const editProfileFromDB = async (
   profile_image: string,
 ) => {
   const isUserExists = await User.findById(authUser._id);
-  console.log('isUserExists admin', isUserExists);
+  // console.log('isUserExists admin', isUserExists);
 
   if (!isUserExists) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Admin not found');
   }
+
+  // Get current profile image from DB
+  const existUser = await User.findById(authUser._id).select('profile_image');
+
+  // If new image is not provided, keep existing one
+  const finalProfileImage =
+    profile_image && profile_image !== ''
+      ? profile_image
+      : existUser?.profile_image || '';
+
   const result = await User.findOneAndUpdate(
     { _id: authUser._id },
-    { ...payload, profile_image },
+    { ...payload, profile_image: finalProfileImage },
     { new: true },
   );
   return result;

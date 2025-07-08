@@ -22,6 +22,7 @@ const userValidationSchema = z.object({
     location: z.string({ required_error: 'Provide a valid location' }),
     isDeleted: z.boolean().optional(),
     isVerified: z.boolean().optional(),
+    webLink: z.string().optional(),
     contact_number: z.number().optional(),
     isActive: z.boolean().optional(),
     verification: verificationSchema.optional(),
@@ -53,6 +54,7 @@ const userProfileUpdateValidationSchema = z.object({
     .email({ message: 'Provide a valid email, try again' })
     .optional(),
   location: z.string({ required_error: 'Provide a valid location' }).optional(),
+  webLink: z.string().optional(),
 });
 
 export const AuthValidation = {

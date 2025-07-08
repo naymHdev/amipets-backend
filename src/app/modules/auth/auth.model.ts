@@ -63,6 +63,10 @@ const userSchema = new Schema<IUser, UserModel>(
       type: Boolean,
       default: true,
     },
+    webLink: {
+      type: String,
+      required: false,
+    },
     verification: {
       otp: {
         type: Schema.Types.Mixed,

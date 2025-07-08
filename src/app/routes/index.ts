@@ -7,6 +7,7 @@ import { AdminRoutes } from '../modules/admin/admin.route';
 import ShelterRoutes from '../modules/shelter/shelter.routes';
 import { NotificationRoutes } from '../modules/notification/notification.route';
 import { BookmarkRoutes } from '../modules/bookmarks/bookmarks.routes';
+import { DashboardRoutes } from '../modules/dashboard/dashboard.routes';
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: '/bookmarks',
     route: BookmarkRoutes,
+  },
+  {
+    path: '/dashboards',
+    route: DashboardRoutes,
   },
 ];
 

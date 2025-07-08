@@ -12,11 +12,13 @@ const router = Router();
 router.get('/get-about', AdminController.getAbout);
 router.post(
   '/create-about',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.aboutSchema),
   AdminController.createAbout,
 );
 router.patch(
   '/update-about',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.updateAboutSchema),
   AdminController.updateAbout,
 );
@@ -24,11 +26,13 @@ router.patch(
 router.get('/get-privacy-policy', AdminController.getPrivacyPolicy);
 router.post(
   '/create-privacy-policy',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.privacyPolicySchema),
   AdminController.createPrivacyPolicy,
 );
 router.patch(
   '/update-privacy-policy',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.updatePrivacyPolicySchema),
   AdminController.updatePrivacyPolicy,
 );
@@ -36,11 +40,13 @@ router.patch(
 router.get('/get-terms-of-condition', AdminController.getTermsAndCondition);
 router.post(
   '/create-terms-of-condition',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.termsOfServiceSchema),
   AdminController.createTermsAndCondition,
 );
 router.patch(
   '/update-terms-of-condition',
+  auth(Role.ADMIN),
   validateRequest(AdminValidation.updateTermsOfServiceSchema),
   AdminController.updateTermsAndCondition,
 );
@@ -48,6 +54,7 @@ router.patch(
 // --------------------------------- Banner Routes ---------------------------------
 router.post(
   '/create-banner',
+  auth(Role.ADMIN),
   single_image_Upload.single('image'),
   parseBody,
   validateRequest(AdminValidation.bannerSchema),
@@ -58,6 +65,7 @@ router.get('/get-banner', AdminController.getBanner);
 
 router.patch(
   '/update-banner/:banner',
+  auth(Role.ADMIN),
   single_image_Upload.single('image'),
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),

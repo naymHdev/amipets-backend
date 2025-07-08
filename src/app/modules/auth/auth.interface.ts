@@ -26,6 +26,7 @@ export interface IUser {
   isActive?: boolean;
   isDeleted?: boolean;
   isVerified?: boolean;
+  webLink?: string;
   verification?: {
     otp: string | number;
     expiresAt: Date;

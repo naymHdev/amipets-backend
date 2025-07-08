@@ -17,7 +17,7 @@ router.post('/login', AuthController.loginUser);
 
 router.post(
   '/refresh-token',
-  auth(Role.USER, Role.ADMIN, Role.SHELTER),
+  // auth(Role.USER, Role.ADMIN, Role.SHELTER),
   AuthController.refreshToken,
 );
 

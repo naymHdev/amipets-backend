@@ -25,7 +25,6 @@ const registerUser = catchAsync(async (req, res) => {
 });
 
 const loginUser = catchAsync(async (req, res) => {
-
   const result = await AuthService.loginUserFromDB(req.body);
   const { refreshToken, accessToken, user } = result;
 
@@ -36,15 +35,15 @@ const loginUser = catchAsync(async (req, res) => {
     data: {
       accessToken,
       refreshToken,
-      user
+      user,
     },
   });
 });
 
 const refreshToken = catchAsync(async (req, res) => {
-  const { authorization } = req.headers;
+  const { refreshToken } = req.body;
 
-  const result = await AuthService.refreshToken(authorization as string);
+  const result = await AuthService.refreshToken(refreshToken as string);
 
   sendResponse(res, {
     statusCode: 200,

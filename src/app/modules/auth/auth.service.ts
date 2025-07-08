@@ -70,7 +70,7 @@ const loginUserFromDB = async (payload: IAuth) => {
     return {
       accessToken,
       refreshToken,
-      user: user
+      user: user,
     };
   } catch (error) {
     await session.abortTransaction();
@@ -116,13 +116,11 @@ const registerUserFromDB = async (userData: IUser) => {
 };
 
 const refreshToken = async (token: string) => {
-  console.log('refreshToken', token);
-  console.log('🔑 Using secret:', config.jwt_access_secret);
+  // console.log('refreshToken', token);
+  // console.log('🔑 Using secret:', config.jwt_access_secret);
   let verifiedToken = null;
   try {
     verifiedToken = verifyToken(token, config.jwt_refresh_secret as Secret);
-    console.log('verifiedToken', verifiedToken);
-    
   } catch (err: any) {
     console.log(err);
     throw new AppError(
@@ -131,9 +129,9 @@ const refreshToken = async (token: string) => {
     );
   }
 
-  const { userId } = verifiedToken;
+  const { _id } = verifiedToken;
 
-  const isUserExist = await User.findById(userId);
+  const isUserExist = await User.findById(_id);
   if (!isUserExist) {
     throw new AppError(StatusCodes.NOT_FOUND, 'You are not authorized!');
   }
