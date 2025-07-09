@@ -2,9 +2,21 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { EarningService } from './earning.service';
+import { NotificationService } from '../notification/notification.service';
 
 const addIncome = catchAsync(async (req, res) => {
   const result = await EarningService.addIncomeFromDB(req.body);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} added income`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

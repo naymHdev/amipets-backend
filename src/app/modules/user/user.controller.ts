@@ -16,7 +16,17 @@ const updateProfile = catchAsync(async (req, res) => {
     profile_image,
     req.user as IJwtPayload,
   );
-  // console.log('updateProfile result', result);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `${result?.full_name} updated successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -27,8 +37,6 @@ const updateProfile = catchAsync(async (req, res) => {
 });
 
 const myProfile = catchAsync(async (req, res) => {
-  // console.log('req.user', req.user);
-
   const isUser = req.user as IJwtPayload;
   const result = await UserService.myProfile(isUser);
 
@@ -46,6 +54,17 @@ const changePassword = catchAsync(async (req, res) => {
     req?.body,
   );
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} changed password`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -58,6 +77,17 @@ const deleteProfile = catchAsync(async (req, res) => {
   const isUser = req.user as IJwtPayload;
 
   const result = await UserService.deleteUserFromDB(isUser);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Your profile deleted successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -113,6 +143,17 @@ const updateMyPet = catchAsync(async (req, res) => {
     authUser,
   );
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Pet ${result?.full_name} updated successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -134,7 +175,6 @@ const getMyPets = catchAsync(async (req, res) => {
 
 const getMyAllPet = catchAsync(async (req, res) => {
   const result = await UserService.getMyAllPetsFromDB(req.query);
-  // console.log('result', result);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -159,6 +199,17 @@ const deleteMyPet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const result = await UserService.deleteSinglePet(petId);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Your pet ${result?.full_name} deleted successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -169,7 +220,6 @@ const deleteMyPet = catchAsync(async (req, res) => {
 
 // ------------------------  Get Pet Adopt Controller ------------------------
 const getPetAdopt = catchAsync(async (req, res) => {
-  // console.log('adopt', req.body);
   const result = await UserService.getPetAdoptFromDB(
     req.user as IJwtPayload,
     req.body,

@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthService } from './auth.service';
 import { otpServices } from '../otp/otp.service';
+import { NotificationService } from '../notification/notification.service';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
@@ -12,6 +13,17 @@ const registerUser = catchAsync(async (req, res) => {
   if (result?.isVerified == false) {
     otpToken = await otpServices.resendOtp(result?.email);
   }
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} registered`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -27,6 +39,17 @@ const registerUser = catchAsync(async (req, res) => {
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUserFromDB(req.body);
   const { refreshToken, accessToken, user } = result;
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?.user._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} logged in`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -55,6 +78,18 @@ const refreshToken = catchAsync(async (req, res) => {
 
 const fagotPassword = catchAsync(async (req, res) => {
   const result = await AuthService.forgotPassword(req?.body?.email);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} forgot password`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -70,6 +105,17 @@ const resetPassword = catchAsync(async (req, res) => {
     req?.headers?.authorization as string,
     req?.body,
   );
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} reset password`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

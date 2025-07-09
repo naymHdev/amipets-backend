@@ -5,9 +5,21 @@ import { AdminService } from './admin.service';
 import config from '../../config';
 import { IJwtPayload } from '../auth/auth.interface';
 import { Service } from './admin.model';
+import { NotificationService } from '../notification/notification.service';
 
 const createAbout = catchAsync(async (req, res) => {
   const result = await AdminService.createAboutFromDB(req.body);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `${req.user?.firstName} ${req.user?.lastName} created about section`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     success: true,
@@ -31,6 +43,17 @@ const getAbout = catchAsync(async (req, res) => {
 const updateAbout = catchAsync(async (req, res) => {
   const result = await AdminService.updateAbout(req.body);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated about section`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     success: true,
     message: 'About section updated successfully',
@@ -41,6 +64,17 @@ const updateAbout = catchAsync(async (req, res) => {
 
 const createPrivacyPolicy = catchAsync(async (req, res) => {
   const result = await AdminService.createPrivacyPolicyFromDB(req.body);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created privacy policy`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     success: true,
@@ -64,6 +98,17 @@ const getPrivacyPolicy = catchAsync(async (req, res) => {
 const updatePrivacyPolicy = catchAsync(async (req, res) => {
   const result = await AdminService.updatePrivacyPolicy(req.body);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated privacy policy`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     success: true,
     message: 'Privacy policy updated successfully',
@@ -75,6 +120,16 @@ const updatePrivacyPolicy = catchAsync(async (req, res) => {
 const createTermsAndCondition = catchAsync(async (req, res) => {
   const result = await AdminService.createTermsOfServiceFromDB(req.body);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created terms and condition`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Terms and condition created successfully',
@@ -97,6 +152,16 @@ const getTermsAndCondition = catchAsync(async (req, res) => {
 const updateTermsAndCondition = catchAsync(async (req, res) => {
   const result = await AdminService.updateTermsOfService(req.body);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated terms and condition`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Terms and condition updated successfully',
@@ -112,7 +177,16 @@ const createBanner = catchAsync(async (req, res) => {
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
   const result = await AdminService.createBannerFromDB(payload, image);
-
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created banner`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Banner created successfully',
@@ -139,7 +213,16 @@ const updateBanner = catchAsync(async (req, res) => {
     '';
   const { banner } = req.params;
   const result = await AdminService.updateBanner(payload, image, banner);
-
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated banner`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Banner updated successfully',
@@ -155,7 +238,16 @@ const createService = catchAsync(async (req, res) => {
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
   const result = await AdminService.createServiceFromDB(payload, icon);
-
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created service`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Service created successfully',
@@ -195,6 +287,16 @@ const updateService = catchAsync(async (req, res) => {
     '';
   const result = await AdminService.updateService(id, payload, icon);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated service`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Service updated successfully',
@@ -207,6 +309,16 @@ const deletedService = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.deleteService(id);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: `${req.user?.firstName} ${req.user?.lastName} deleted service`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Service deleted successfully',
@@ -230,6 +342,16 @@ const createAddWebsite = catchAsync(async (req, res) => {
     serviceName as string,
   );
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created website`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Website added successfully',
@@ -265,6 +387,16 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.deleteWebsite(id);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: `  ${req.user?.firstName} ${req.user?.lastName} deleted website`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     success: true,
     message: 'Website deleted successfully',
@@ -311,6 +443,18 @@ const getUserDetail = catchAsync(async (req, res) => {
 const blockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.blockUser(id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} blocked user`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -322,6 +466,18 @@ const blockUser = catchAsync(async (req, res) => {
 const unblockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.unblockUser(id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} unblocked user`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -356,6 +512,18 @@ const getShelterDetail = catchAsync(async (req, res) => {
 const blockShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.blockShelter(id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} blocked shelter`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -374,6 +542,17 @@ const editAdminProfile = catchAsync(async (req, res) => {
     req.body,
     profile_image,
   );
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated admin profile`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

@@ -63,6 +63,17 @@ const updatePet = catchAsync(async (req, res) => {
     authUser,
   );
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated pet`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -109,6 +120,16 @@ const deletePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const result = await PetServices.deleteSinglePet(petId);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted pet`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

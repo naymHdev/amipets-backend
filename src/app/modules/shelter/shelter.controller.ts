@@ -2,10 +2,21 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { ShelterServices } from './shelter.service';
+import { NotificationService } from '../notification/notification.service';
 
 const createSurvey = catchAsync(async (req, res) => {
   const result = await ShelterServices.createSurveyFromDB(req.body);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created survey question`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -39,6 +50,17 @@ const getSingleSurveyFromDB = catchAsync(async (req, res) => {
 const deleteSurvey = catchAsync(async (req, res) => {
   const result = await ShelterServices.deleteSurvey(req.params.id);
 
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted survey question`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -49,6 +71,17 @@ const deleteSurvey = catchAsync(async (req, res) => {
 
 const updateSurvey = catchAsync(async (req, res) => {
   const result = await ShelterServices.updateSurvey(req.params.id, req.body);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated survey question`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

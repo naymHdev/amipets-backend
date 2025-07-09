@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { BookmarksService } from './bookmarks.service';
 import AppError from '../../errors/appError';
+import { NotificationService } from '../notification/notification.service';
 
 const createBookmark = catchAsync(async (req, res) => {
   const userId = req?.user?._id as string;
@@ -13,6 +14,17 @@ const createBookmark = catchAsync(async (req, res) => {
   }
 
   const result = await BookmarksService.createBookmarksFromDB(petId, userId);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} created bookmark`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
@@ -46,6 +58,18 @@ const getDetails = catchAsync(async (req, res) => {
 const deleteBookmarks = catchAsync(async (req, res) => {
   const { id } = req.params;
   await BookmarksService.deletedBookmarksFromDB(id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted bookmark`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
