@@ -5,7 +5,12 @@ import { ShelterServices } from './shelter.service';
 import { NotificationService } from '../notification/notification.service';
 
 const createSurvey = catchAsync(async (req, res) => {
-  const result = await ShelterServices.createSurveyFromDB(req.body);
+  const userId = req.user?._id as string;
+  if (!userId) {
+    throw new Error('You are not authorized! ');
+  }
+
+  const result = await ShelterServices.createSurveyFromDB(req.body, userId);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,

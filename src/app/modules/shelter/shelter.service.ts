@@ -3,8 +3,11 @@ import AppError from '../../errors/appError';
 import Pet from '../pet/pet.model';
 import { ISurvey } from './shelter.interface';
 import { Survey } from './shelter.model';
+import { Types } from 'mongoose';
 
-const createSurveyFromDB = async (payload: ISurvey) => {
+const createSurveyFromDB = async (payload: ISurvey, userId: string) => {
+  payload.shelter_owner = new Types.ObjectId(userId);
+
   const result = await Survey.create(payload);
   return result;
 };
