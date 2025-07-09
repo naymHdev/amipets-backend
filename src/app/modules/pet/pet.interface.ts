@@ -17,6 +17,6 @@ export interface IPet {
   updatedAt?: Date;
   owner?: Types.ObjectId;
   pet_category: 'dog' | 'cat' | 'other';
-  serviceName: string;
   isAdopted?: boolean;
+  isBookmarked?: boolean;
 }

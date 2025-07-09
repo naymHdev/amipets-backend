@@ -233,6 +233,17 @@ const getPetAdopt = catchAsync(async (req, res) => {
   });
 });
 
+const findAllAdoptions = catchAsync(async (req, res) => {
+  const result = await UserService.findAllDonationsFromDB();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Adoptions fetched successfully!',
+    data: result,
+  });
+});
+
 export const UserController = {
   updateProfile,
   myProfile,
@@ -245,4 +256,6 @@ export const UserController = {
   getMySinglePet,
   deleteMyPet,
   getPetAdopt,
+
+  findAllAdoptions,
 };

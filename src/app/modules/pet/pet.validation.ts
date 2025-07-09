@@ -10,9 +10,7 @@ const createPetSchema = z.object({
     neutered: z.boolean({ required_error: 'Neutered is required' }),
     vaccinated: z.boolean({ required_error: 'Vaccinated is required' }),
     weight: z.string({ required_error: 'Weight is required' }),
-    chip_number: z
-      .string({ required_error: 'Chip number is required' })
-      .length(10, 'Chip number must be exactly 10 digits'),
+    chip_number: z.string({ required_error: 'Chip number is required' }),
     breed: z
       .string({ required_error: 'Breed is required' })
       .min(2, 'Breed must be at least 2 characters'),
@@ -24,6 +22,7 @@ const createPetSchema = z.object({
       required_error: 'Pet category is required',
     }),
     isAdopted: z.boolean().optional(),
+    isBookmarked: z.boolean().optional(),
   }),
 });
 
@@ -44,7 +43,6 @@ const updatePetePetSchema = z.object({
     weight: z.string({ required_error: 'Weight is required' }).optional(),
     chip_number: z
       .string({ required_error: 'Chip number is required' })
-      .length(10, 'Chip number must be exactly 10 digits')
       .optional(),
     breed: z
       .string({ required_error: 'Breed is required' })
@@ -61,8 +59,8 @@ const updatePetePetSchema = z.object({
         required_error: 'Pet category is required',
       })
       .optional(),
-    service: z.string({ required_error: 'Service is required' }).optional(),
     isAdopted: z.boolean().optional(),
+    isBookmarked: z.boolean().optional(),
   }),
 });
 

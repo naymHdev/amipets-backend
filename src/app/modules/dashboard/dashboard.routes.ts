@@ -21,4 +21,28 @@ router.get(
 
 //  -------------------------------------- Shelter Dashboard --------------------------------------
 
+router.get(
+  '/shelter-total-status',
+  auth(Role.SHELTER),
+  DashboardController.shelterTotalStats,
+);
+
+router.get(
+  '/pets-overview',
+  auth(Role.SHELTER),
+  DashboardController.petsOverView,
+);
+
+router.get(
+  '/pets-donets-overview',
+  auth(Role.SHELTER),
+  DashboardController.petsDonetsOverView,
+);
+
+router.get(
+  '/find-recent-adopters',
+  auth(Role.SHELTER),
+  DashboardController.findRecentAdopters,
+);
+
 export const DashboardRoutes = router;

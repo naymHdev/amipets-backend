@@ -78,5 +78,6 @@ router.post(
   validateRequest(UserValidation.petAdoptedValidationSchema),
   UserController.getPetAdopt,
 );
+router.get('/getAdoptedPets', UserController.findAllAdoptions);
 
 export const UserRoutes = router;

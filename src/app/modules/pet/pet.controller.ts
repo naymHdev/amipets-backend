@@ -5,7 +5,6 @@ import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
 import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
-import { Service } from '../admin/admin.model';
 
 const createPet = catchAsync(async (req, res) => {
   const files = req.files as Express.Multer.File[];
@@ -16,14 +15,10 @@ const createPet = catchAsync(async (req, res) => {
     );
   });
 
-  const service = await Service.findById(req.body.service);
-  const serviceName = service?.name;
-
   const result = await PetServices.createPerFromDB(
     req.body,
     filePaths,
     req.user as IJwtPayload,
-    serviceName as string,
   );
 
   await NotificationService.sendNotification({
@@ -82,8 +77,24 @@ const updatePet = catchAsync(async (req, res) => {
   });
 });
 
+const deletedPetImg = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const img = req.body.img;
+
+  const result = await PetServices.deletedPetImg(petId, img);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Your pet updated successfully!',
+    data: result,
+  });
+});
+
 const getMyPets = catchAsync(async (req, res) => {
-  const result = await PetServices.getMyPets(req.user as IJwtPayload);
+  const result = await PetServices.getMyPets(
+    req.user as IJwtPayload,
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -145,4 +156,5 @@ export const PetController = {
   getMyPets,
   getSinglePet,
   deletePet,
+  deletedPetImg,
 };

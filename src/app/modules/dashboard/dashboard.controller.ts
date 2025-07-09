@@ -39,8 +39,64 @@ const dbShelterStats = catchAsync(async (req, res) => {
 
 //  -------------------------------------- Shelter Dashboard --------------------------------------
 
+const shelterTotalStats = catchAsync(async (req, res) => {
+  const result = await DashboardService.shelterTotalStats();
+  res.status(200).json({
+    success: true,
+    message: 'Dashboard status fetched successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
+const petsOverView = catchAsync(async (req, res) => {
+  const userId = req?.user?._id as string;
+
+  const filterYear = Number(req.query.year) || new Date().getFullYear();
+
+  const result = await DashboardService.petsOverView(filterYear, userId);
+  res.status(200).json({
+    success: true,
+    message: 'Dashboard pets overview fetched successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
+const petsDonetsOverView = catchAsync(async (req, res) => {
+  const userId = req?.user?._id as string;
+  const filterYear = Number(req.query.year) || new Date().getFullYear();
+
+  const result = await DashboardService.petsDonetsOverView(filterYear, userId);
+  res.status(200).json({
+    success: true,
+    message: 'Dashboard pets overview fetched successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
+const findRecentAdopters = catchAsync(async (req, res) => {
+
+  const shelterId = req?.user?._id as string;
+
+  const result = await DashboardService.findRecentAdopters(shelterId, req.query);
+  res.status(200).json({
+    success: true,
+    message: 'Dashboard pets overview fetched successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
 export const DashboardController = {
   dashboardUsersStats,
   dbShelterStats,
   dbTotalStats,
+
+  //  -------------------------------------- Shelter Dashboard --------------------------------------
+  shelterTotalStats,
+  petsOverView,
+  petsDonetsOverView,
+  findRecentAdopters,
 };

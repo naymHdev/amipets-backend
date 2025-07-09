@@ -3,6 +3,7 @@ import { IBookmarks } from './bookmarks.interface';
 import { Bookmarks } from './bookmarks.model';
 import AppError from '../../errors/appError';
 import { StatusCodes } from 'http-status-codes';
+import Pet from '../pet/pet.model';
 
 const createBookmarksFromDB = async (petId: string, userId: string) => {
   const payload: IBookmarks = {
@@ -13,6 +14,14 @@ const createBookmarksFromDB = async (petId: string, userId: string) => {
   };
 
   const result = await Bookmarks.create(payload);
+
+  // update pet isBookmarked
+  await Pet.findOneAndUpdate(
+    { _id: payload.pet_id },
+    { $set: { isBookmarked: true } },
+    { new: true },
+  );
+
   return result;
 };
 
@@ -36,6 +45,14 @@ const deletedBookmarksFromDB = async (id: string) => {
   }
 
   const result = await Bookmarks.findByIdAndDelete(id);
+
+  // update pet isBookmarked
+  await Pet.findOneAndUpdate(
+    { _id: id },
+    { $set: { isBookmarked: false } },
+    { new: true },
+  );
+
   return result;
 };
 

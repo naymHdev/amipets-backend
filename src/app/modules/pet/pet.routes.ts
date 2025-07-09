@@ -26,6 +26,7 @@ router.patch(
   validateRequest(petValidation.updatePetePetSchema),
   PetController.updatePet,
 );
+router.delete('/petImg/:id', auth(Role.SHELTER), PetController.deletedPetImg);
 
 router.get('/all-pets', PetController.getAllPets);
 

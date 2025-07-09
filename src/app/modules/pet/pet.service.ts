@@ -5,14 +5,12 @@ import User from '../auth/auth.model';
 import { IPet } from './pet.interface';
 import Pet from './pet.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { PetSearchableFields } from './pet.constant';
 import { Types } from 'mongoose';
 
 const createPerFromDB = async (
   payload: IPet,
   image: string[],
   authUser: IJwtPayload,
-  serviceName: string,
 ) => {
   const isUserExists = await User.findById(authUser._id);
 
@@ -49,7 +47,6 @@ const createPerFromDB = async (
   const pet = new Pet({
     ...payload,
     pet_image: image,
-    serviceName: serviceName,
   });
   const result = await pet.save();
 
@@ -109,14 +106,26 @@ const updatePetFromDB = async (
   return updatedPet;
 };
 
+const deletedPetImg = async (petId: string, img: string) => {
+  const pet = await Pet.findById(petId);
+  if (!pet) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
+  }
+
+  const newPet = await Pet.findByIdAndUpdate(
+    petId,
+    { $pull: { pet_image: img } },
+    { new: true },
+  );
+
+  return newPet;
+};
+
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const { ...pQuery } = query;
 
-  const petsQuery = new QueryBuilder(
-    Pet.find().populate('owner').populate('service'),
-    pQuery,
-  )
-    .search(PetSearchableFields)
+  const petsQuery = new QueryBuilder(Pet.find().populate('owner'), pQuery)
+    .search(['full_name', 'breed', 'description', 'pet_category'])
     .filter()
     .sort()
     .paginate()
@@ -131,9 +140,28 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
-const getMyPets = async (authUser: IJwtPayload) => {
-  const pets = await Pet.find({ owner: authUser._id });
-  return pets;
+const getMyPets = async (
+  authUser: IJwtPayload,
+  query: Record<string, unknown>,
+) => {
+  const { ...pQuery } = query;
+
+  const baseQuery = Pet.find({ owner: authUser._id });
+
+  const petsQuery = new QueryBuilder(baseQuery, pQuery)
+    .search(['full_name', 'location', 'breed', 'pet_category', 'gender'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const pets = await petsQuery.modelQuery;
+  const meta = await petsQuery.countTotal();
+
+  return {
+    meta,
+    data: pets,
+  };
 };
 
 const getSinglePet = async (petId: string) => {
@@ -153,4 +181,5 @@ export const PetServices = {
   getMyPets,
   getSinglePet,
   deleteSinglePet,
+  deletedPetImg,
 };

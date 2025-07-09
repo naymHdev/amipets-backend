@@ -276,6 +276,13 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
   return result;
 };
 
+const findAllDonationsFromDB = async () => {
+  const donations = await PetAdopt.find()
+    .populate('adopter')
+    .populate('adopted_pet');
+  return donations;
+};
+
 export const UserService = {
   updateProfile,
   myProfile,
@@ -288,4 +295,5 @@ export const UserService = {
   getSinglePet,
   deleteSinglePet,
   getPetAdoptFromDB,
+  findAllDonationsFromDB,
 };
