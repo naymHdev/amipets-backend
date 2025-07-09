@@ -246,8 +246,28 @@ const getServiceBaseWeb = async (
 
   const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields();
 
-  const result = await websiteQuery.modelQuery;
+  const result = await websiteQuery.modelQuery.sort({ position: 1 });
   return result;
+};
+
+const swapPosition = async (id1: string, id2: string) => {
+  // Step 1: Get both documents
+  const website1 = await AddWebsite.findById(id1);
+  const website2 = await AddWebsite.findById(id2);
+
+  if (!website1 || !website2) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'One or both websites not found');
+  }
+
+  // Step 2: Swap the positions
+  const pos1 = website1.position;
+  const pos2 = website2.position;
+
+  // Step 3: Update both positions
+  await AddWebsite.findByIdAndUpdate(id1, { position: pos2 });
+  await AddWebsite.findByIdAndUpdate(id2, { position: pos1 });
+
+  return { message: 'Positions swapped', website1: id1, website2: id2 };
 };
 
 // ---------------------------- Users Service ----------------------------
@@ -400,6 +420,7 @@ export const AdminService = {
   getWebsiteFromDB,
   deleteWebsite,
   getWebDetailFromDB,
+  swapPosition,
 
   getAllUsersFromDB,
   getUserDetailFromDB,

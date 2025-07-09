@@ -37,4 +37,5 @@ export interface IAddWebsite {
   location: string;
   service: Types.ObjectId;
   serviceName: string;
+  position: number;
 }

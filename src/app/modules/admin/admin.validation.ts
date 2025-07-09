@@ -117,6 +117,7 @@ const addWebsiteSchema = z.object({
     description: z.string().min(10, 'Description cannot be empty'),
     location: z.string().min(3, 'Location cannot be empty'),
     service: z.string({ required_error: 'Service is required' }),
+    position: z.number().optional(),
   }),
 });
 

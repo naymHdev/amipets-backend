@@ -417,6 +417,19 @@ const serviceBaseWeb = catchAsync(async (req, res) => {
   });
 });
 
+const swapPosition = catchAsync(async (req, res) => {
+  const { id1, id2 } = req.body;
+
+  const result = await AdminService.swapPosition(id1, id2);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Position swapped successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 // ---------------------------- Users Controller ----------------------------
 const getAllUsers = catchAsync(async (req, res) => {
   const result = await AdminService.getAllUsersFromDB(req.query);
@@ -598,6 +611,7 @@ export const AdminController = {
   getAddWebsite,
   deletedAddWebsite,
   getAddWebsiteDetail,
+  swapPosition,
 
   getAllUsers,
   getUserDetail,

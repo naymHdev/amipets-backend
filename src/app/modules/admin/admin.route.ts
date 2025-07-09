@@ -117,6 +117,8 @@ router.delete(
   AdminController.deletedAddWebsite,
 );
 
+router.patch('/swap-website', AdminController.swapPosition);
+
 // ---------------------------- Control Users Routes ----------------------------
 router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);
 router.get('/user-detail/:id', auth(Role.ADMIN), AdminController.getUserDetail);
