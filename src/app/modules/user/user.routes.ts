@@ -32,7 +32,11 @@ router.patch(
   UserController.changePassword,
 );
 
-router.delete('/delete', auth(Role.USER, Role.ADMIN, Role.SHELTER), UserController.deleteProfile);
+router.delete(
+  '/delete',
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
+  UserController.deleteProfile,
+);
 
 // ------------------- My pet Routes ----------------------
 router.get('/my-pets', auth(Role.USER), UserController.getMyPets);
@@ -70,7 +74,7 @@ router.get(
 // Get Pet Adopted
 router.post(
   '/getPetAdopt',
-  auth(Role.USER),
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
   validateRequest(UserValidation.petAdoptedValidationSchema),
   UserController.getPetAdopt,
 );

@@ -10,6 +10,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import { PetSearchableFields } from '../pet/pet.constant';
 import { MyPet, PetAdopt } from './user.model';
 import { Types } from 'mongoose';
+import Pet from '../pet/pet.model';
 
 const updateProfile = async (
   payload: IUser,
@@ -241,7 +242,6 @@ const deleteSinglePet = async (petId: string) => {
 // ---------------- Pet Adopt Service ----------------
 const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
   const isUserExists = await User.findById(authUser._id);
-  // console.log('isUserExists', isUserExists);
 
   if (!isUserExists) {
     throw new AppError(
@@ -257,9 +257,22 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
     );
   }
 
+  const isAdopted = await Pet.findById(payload.adopted_pet);
+
+  if (isAdopted?.isAdopted) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'This pet is already adopted.');
+  }
+
   payload.adopter = new Types.ObjectId(authUser._id);
 
   const result = await PetAdopt.create(payload);
+
+  await Pet.findOneAndUpdate(
+    { _id: payload.adopted_pet },
+    { $set: { isAdopted: true } },
+    { new: true },
+  );
+
   return result;
 };
 

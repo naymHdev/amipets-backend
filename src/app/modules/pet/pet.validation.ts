@@ -23,7 +23,7 @@ const createPetSchema = z.object({
     pet_category: z.enum(['dog', 'cat'], {
       required_error: 'Pet category is required',
     }),
-    service: z.string({ required_error: 'Service is required' }),
+    isAdopted: z.boolean().optional(),
   }),
 });
 
@@ -62,9 +62,7 @@ const updatePetePetSchema = z.object({
       })
       .optional(),
     service: z.string({ required_error: 'Service is required' }).optional(),
-    serviceName: z
-      .string({ required_error: 'Service name is required' })
-      .optional(),
+    isAdopted: z.boolean().optional(),
   }),
 });
 

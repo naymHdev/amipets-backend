@@ -1,7 +1,15 @@
 import User from '../auth/auth.model';
 import Pet from '../pet/pet.model';
 
-const getDashboardStats = async () => {
+//  -------------------------------------- Admin Dashboard Start --------------------------------------
+const dbTotalStats = async () => {
+  const totalUser = await User.countDocuments();
+  const totalShelter = await User.countDocuments({ role: 'shelter' });
+  const totalPet = await Pet.countDocuments();
+  return { totalUser, totalShelter, totalPet };
+};
+
+const getDashboardUsersStats = async (filterYear: number) => {
   const monthNames = [
     'January',
     'February',
@@ -17,28 +25,99 @@ const getDashboardStats = async () => {
     'December',
   ];
 
-  const totalUser = await User.countDocuments();
-  const totalShelter = await User.find({ role: 'shelter' }).countDocuments();
-  const totalPet = await Pet.countDocuments();
+  // Filtered total counts for the selected year
+  const startOfYear = new Date(`${filterYear}-01-01`);
+  const endOfYear = new Date(`${filterYear + 1}-01-01`);
 
-  // Get all user join counts grouped by month
+  const totalUser = await User.countDocuments({
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  const totalShelter = await User.countDocuments({
+    role: 'shelter',
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  const totalPet = await Pet.countDocuments({
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  // Monthly User Stats
   const allMonthUserStats = await User.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startOfYear, $lt: endOfYear },
+      },
+    },
     {
       $group: {
         _id: { month: { $month: '$createdAt' } },
         count: { $sum: 1 },
       },
     },
-    {
-      $sort: { '_id.month': 1 },
-    },
+    { $sort: { '_id.month': 1 } },
   ]);
 
-  // Monthly joined shelters only
+  // Initialize response objects
+  const monthlyJoinedUser: Record<string, number> = {};
+
+  monthNames.forEach((month) => {
+    monthlyJoinedUser[month] = 0;
+  });
+
+  allMonthUserStats.forEach((item) => {
+    const monthName = monthNames[item._id.month - 1];
+    monthlyJoinedUser[monthName] = item.count;
+  });
+
+  return {
+    totalUser,
+    totalShelter,
+    totalPet,
+    filterYear,
+    monthlyJoinedUser,
+  };
+};
+
+const getDashboardShelterStats = async (filterYear: number) => {
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // Filtered total counts for the selected year
+  const startOfYear = new Date(`${filterYear}-01-01`);
+  const endOfYear = new Date(`${filterYear + 1}-01-01`);
+
+  const totalUser = await User.countDocuments({
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  const totalShelter = await User.countDocuments({
+    role: 'shelter',
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  const totalPet = await Pet.countDocuments({
+    createdAt: { $gte: startOfYear, $lt: endOfYear },
+  });
+
+  // Monthly Shelter Stats
   const allMonthShelterStats = await User.aggregate([
     {
       $match: {
         role: 'shelter',
+        createdAt: { $gte: startOfYear, $lt: endOfYear },
       },
     },
     {
@@ -47,12 +126,10 @@ const getDashboardStats = async () => {
         count: { $sum: 1 },
       },
     },
-    {
-      $sort: { '_id.month': 1 },
-    },
+    { $sort: { '_id.month': 1 } },
   ]);
 
-  // Initialize result with all months as 0
+  // Initialize response objects
   const monthlyJoinedUser: Record<string, number> = {};
   const monthlyJoinedShelter: Record<string, number> = {};
 
@@ -61,17 +138,8 @@ const getDashboardStats = async () => {
     monthlyJoinedShelter[month] = 0;
   });
 
-  // Map results from aggregation into the monthlyJoinedUser object
-  allMonthUserStats.forEach((item) => {
-    const monthIndex = item._id.month - 1;
-    const monthName = monthNames[monthIndex];
-    monthlyJoinedUser[monthName] = item.count;
-  });
-
-  // Populate monthly shelter data
   allMonthShelterStats.forEach((item) => {
-    const monthIndex = item._id.month - 1;
-    const monthName = monthNames[monthIndex];
+    const monthName = monthNames[item._id.month - 1];
     monthlyJoinedShelter[monthName] = item.count;
   });
 
@@ -79,11 +147,25 @@ const getDashboardStats = async () => {
     totalUser,
     totalShelter,
     totalPet,
-    monthlyJoinedUser,
+    filterYear,
     monthlyJoinedShelter,
   };
 };
 
+//  -------------------------------------- Admin Dashboard End --------------------------------------
+
+//  -------------------------------------- Shelter Dashboard Start --------------------------------------
+
+const shelterTotalStats = async () => {
+  const totalShelter = await User.countDocuments({ role: 'shelter' });
+  const totalPet = await Pet.countDocuments();
+  return { totalShelter, totalPet };
+};
 export const DashboardService = {
-  getDashboardStats,
+  getDashboardUsersStats,
+  getDashboardShelterStats,
+  dbTotalStats,
+
+  //  -------------------------------------- Shelter Dashboard --------------------------------------
+  shelterTotalStats,
 };

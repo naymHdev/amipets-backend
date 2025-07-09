@@ -61,14 +61,13 @@ const petSchema = new Schema<IPet>(
       enum: ['dog', 'cat', 'other'],
       required: true,
     },
-    service: {
-      type: Schema.Types.ObjectId,
-      ref: 'Service',
-      required: true,
-    },
     serviceName: {
       type: String,
       required: true,
+    },
+    isAdopted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
