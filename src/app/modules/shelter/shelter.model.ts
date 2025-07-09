@@ -19,7 +19,7 @@ const SurveySchema = new Schema<ISurvey>({
     type: String,
     enum: ['required', 'optional'],
     required: true,
-  },
+  }
 });
 
 export const Survey = model<ISurvey>('Survey', SurveySchema);

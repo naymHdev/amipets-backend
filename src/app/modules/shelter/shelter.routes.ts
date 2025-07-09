@@ -13,7 +13,11 @@ router.post(
   validateRequest(ShelterValidation.surveyValidationSchema),
   ShelterController.createSurvey,
 );
-router.get('/get-survey/:id', auth(Role.SHELTER, Role.ADMIN, Role.USER), ShelterController.getSurvey);
+router.get(
+  '/get-survey/:id',
+  auth(Role.SHELTER, Role.ADMIN, Role.USER),
+  ShelterController.getSurvey,
+);
 
 router.get(
   '/get-single-survey/:id',
@@ -30,6 +34,14 @@ router.patch(
   auth(Role.SHELTER),
   validateRequest(ShelterValidation.surveyValidationSchema),
   ShelterController.updateSurvey,
+);
+
+router.get('/my-survey', auth(Role.SHELTER), ShelterController.mySurveyQs);
+
+router.patch(
+  '/update-user-request/:id',
+  auth(Role.SHELTER),
+  ShelterController.updateUserRequest,
 );
 
 const ShelterRoutes = router;

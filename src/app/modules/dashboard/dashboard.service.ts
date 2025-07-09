@@ -298,47 +298,107 @@ const findRecentAdopters = async (
   shelterId: string,
   query: Record<string, unknown>,
 ) => {
-  const { ...pQuery } = query;
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+  } = query;
 
-  const adoptedPets = PetAdopt.find()
-    .populate('adopter')
-    .populate('adopted_pet')
-    .populate({
-      path: 'adopted_pet',
-      populate: {
-        path: 'owner',
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const pipeline: any[] = [
+    {
+      $lookup: {
+        from: 'pets',
+        localField: 'adopted_pet',
+        foreignField: '_id',
+        as: 'adopted_pet',
       },
-    });
+    },
+    { $unwind: '$adopted_pet' },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'adopted_pet.owner',
+        foreignField: '_id',
+        as: 'adopted_pet.owner',
+      },
+    },
+    { $unwind: '$adopted_pet.owner' },
+    {
+      $match: {
+        'adopted_pet.owner._id': new Types.ObjectId(shelterId),
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'adopter',
+        foreignField: '_id',
+        as: 'adopter',
+      },
+    },
+    { $unwind: '$adopter' },
 
-  const petsQuery = new QueryBuilder(adoptedPets, pQuery)
-    .search([''])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+    // Optional: Filter by search keyword or fields here
+    // Add extra match stage if query includes search fields
 
-  const result = await petsQuery.modelQuery;
+    // Sort stage
+    {
+      $sort: {
+        [sortBy as string]: sortOrder === 'asc' ? 1 : -1,
+      },
+    },
 
-  // Type-safe filtering
-  const isOwner = result?.filter((item) => {
-    const adoptedPet = item.adopted_pet as any;
+    // Pagination
+    { $skip: skip },
+    { $limit: Number(limit) },
 
-    console.log('adoptedPet', adoptedPet);
+    // Projection: Only send needed fields
+    {
+      $project: {
+        _id: 1,
+        adopted_pet: 1,
+        adopter: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ];
 
-    if (adoptedPet && typeof adoptedPet === 'object' && 'owner' in adoptedPet) {
-      const ownerId = adoptedPet.owner?._id?.toString();
-      return ownerId === shelterId.toString();
-    }
-
-    return false;
+  // Count total for meta
+  const countPipeline = pipeline.slice(
+    0,
+    pipeline.findIndex((stage) => '$sort' in stage),
+  );
+  countPipeline.push({
+    $count: 'total',
   });
 
-  const meta = await petsQuery.countTotal();
+  const [data, countResult] = await Promise.all([
+    PetAdopt.aggregate(pipeline),
+    PetAdopt.aggregate(countPipeline),
+  ]);
+
+  const total = countResult[0]?.total || 0;
 
   return {
-    meta,
-    data: isOwner,
+    meta: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+    },
+    data,
   };
+};
+
+const detailsRecentAdopters = async (petId: string) => {
+  const adopter = await PetAdopt.findById({ _id: petId })
+    .populate('adopter')
+    .populate('adopted_pet');
+
+  return adopter;
 };
 
 export const DashboardService = {
@@ -351,4 +411,5 @@ export const DashboardService = {
   petsOverView,
   petsDonetsOverView,
   findRecentAdopters,
+  detailsRecentAdopters,
 };

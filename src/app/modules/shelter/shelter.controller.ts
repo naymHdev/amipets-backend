@@ -96,10 +96,36 @@ const updateSurvey = catchAsync(async (req, res) => {
   });
 });
 
+const mySurveyQs = catchAsync(async (req, res) => {
+  const userId = req.user?._id as string;
+  const result = await ShelterServices.mySurveyQs(userId, req.query);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'My survey questions fetched successfully',
+    data: result,
+  });
+});
+
+const updateUserRequest = catchAsync(async (req, res) => {
+  const result = await ShelterServices.updateUserRequest(
+    req.params.id,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'User request updated successfully',
+    data: result,
+  });
+});
+
 export const ShelterController = {
   createSurvey,
   getSurvey,
   deleteSurvey,
   getSingleSurveyFromDB,
   updateSurvey,
+  mySurveyQs,
+  updateUserRequest,
 };

@@ -45,4 +45,10 @@ router.get(
   DashboardController.findRecentAdopters,
 );
 
+router.get(
+  '/details-recent-adopters/:id',
+  auth(Role.SHELTER),
+  DashboardController.detailsRecentAdopters,
+);
+
 export const DashboardRoutes = router;

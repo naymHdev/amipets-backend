@@ -66,6 +66,11 @@ const PetAdoptSchema = new Schema<IPetAdopt>(
         },
       },
     ],
+    status: {
+      type: String,
+      enum: ['accepted', 'rejected', 'pending'],
+      required: true,
+    },
   },
   {
     timestamps: true,

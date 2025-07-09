@@ -77,10 +77,24 @@ const petsDonetsOverView = catchAsync(async (req, res) => {
 });
 
 const findRecentAdopters = catchAsync(async (req, res) => {
-
   const shelterId = req?.user?._id as string;
 
-  const result = await DashboardService.findRecentAdopters(shelterId, req.query);
+  const result = await DashboardService.findRecentAdopters(
+    shelterId,
+    req.query,
+  );
+  res.status(200).json({
+    success: true,
+    message: 'Dashboard pets overview fetched successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
+const detailsRecentAdopters = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const result = await DashboardService.detailsRecentAdopters(petId);
+
   res.status(200).json({
     success: true,
     message: 'Dashboard pets overview fetched successfully',
@@ -99,4 +113,5 @@ export const DashboardController = {
   petsOverView,
   petsDonetsOverView,
   findRecentAdopters,
+  detailsRecentAdopters,
 };

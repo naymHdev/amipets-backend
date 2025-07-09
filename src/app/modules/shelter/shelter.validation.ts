@@ -5,7 +5,10 @@ const surveyValidationSchema = z.object({
     question: z.string({ required_error: 'Question is required' }),
     answer: z.string({ required_error: 'Answer is required' }).optional(),
     priority: z.enum(['required', 'optional'], {
-      required_error: 'Priority is required',
+      required_error: 'Priority is required! (required or optional)',
+    }),
+    status: z.enum(['accepted', 'rejected', 'pending'], {
+      required_error: 'Status is required! (accepted or rejected or pending)',
     }),
   }),
 });
@@ -22,7 +25,18 @@ const EditSurveyValidationSchema = z.object({
   }),
 });
 
+const updateUserRequestStatus = z.object({
+  body: z
+    .object({
+      status: z.enum(['accepted', 'rejected', 'pending'], {
+        required_error: 'Status is required! (accepted or rejected or pending)',
+      }),
+    })
+    .optional(),
+});
+
 export const ShelterValidation = {
   surveyValidationSchema,
   EditSurveyValidationSchema,
+  updateUserRequestStatus,
 };
