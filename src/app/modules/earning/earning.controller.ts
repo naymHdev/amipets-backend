@@ -12,7 +12,7 @@ const addIncome = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} added income`,
+      message: `${result.clientName} added income`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -56,9 +56,31 @@ const incomeStatus = catchAsync(async (req, res) => {
   });
 });
 
+const deleteIncome = catchAsync(async (req, res) => {
+  const result = await EarningService.deletedEarning(req.params.id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${result?.clientName} deleted income`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Income deleted successfully',
+    data: result,
+  });
+});
+
 export const EarningController = {
   addIncome,
   findAllEarnings,
   transactionDetails,
   incomeStatus,
+  deleteIncome,
 };

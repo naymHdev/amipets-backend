@@ -37,7 +37,7 @@ const resendOtp = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} resend otp`,
+      message: `User resend otp`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,

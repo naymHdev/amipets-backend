@@ -67,10 +67,21 @@ const incomeStatus = async () => {
     },
   ]);
 
+  const totalEarning =
+    totalEarnings.length > 0 ? totalEarnings[0].totalEarnings : 0;
+
+  const todayEarnings =
+    todayEarningsAgg.length > 0 ? todayEarningsAgg[0].todayEarnings : 0;
+
   return {
-    totalEarnings,
-    todayEarningsAgg,
+    totalEarning,
+    todayEarnings,
   };
+};
+
+const deletedEarning = async (id: string) => {
+  const result = await Income.findByIdAndDelete(id);
+  return result;
 };
 
 export const EarningService = {
@@ -78,4 +89,5 @@ export const EarningService = {
   findAllEarnings,
   transactionDetails,
   incomeStatus,
+  deletedEarning,
 };
