@@ -24,5 +24,5 @@ export interface IPetAdopt {
   }[];
   createdAt?: Date;
   updatedAt?: Date;
-   status: 'accepted' | 'rejected' | 'pending';
+  status: 'accepted' | 'rejected' | 'pending';
 }

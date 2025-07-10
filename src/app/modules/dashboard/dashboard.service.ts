@@ -32,19 +32,6 @@ const getDashboardUsersStats = async (filterYear: number) => {
   const startOfYear = new Date(`${filterYear}-01-01`);
   const endOfYear = new Date(`${filterYear + 1}-01-01`);
 
-  const totalUser = await User.countDocuments({
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
-  const totalShelter = await User.countDocuments({
-    role: 'shelter',
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
-  const totalPet = await Pet.countDocuments({
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
   // Monthly User Stats
   const allMonthUserStats = await User.aggregate([
     {
@@ -74,9 +61,6 @@ const getDashboardUsersStats = async (filterYear: number) => {
   });
 
   return {
-    totalUser,
-    totalShelter,
-    totalPet,
     filterYear,
     monthlyJoinedUser,
   };
@@ -102,19 +86,6 @@ const getDashboardShelterStats = async (filterYear: number) => {
   const startOfYear = new Date(`${filterYear}-01-01`);
   const endOfYear = new Date(`${filterYear + 1}-01-01`);
 
-  const totalUser = await User.countDocuments({
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
-  const totalShelter = await User.countDocuments({
-    role: 'shelter',
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
-  const totalPet = await Pet.countDocuments({
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
   // Monthly Shelter Stats
   const allMonthShelterStats = await User.aggregate([
     {
@@ -133,11 +104,9 @@ const getDashboardShelterStats = async (filterYear: number) => {
   ]);
 
   // Initialize response objects
-  const monthlyJoinedUser: Record<string, number> = {};
   const monthlyJoinedShelter: Record<string, number> = {};
 
   monthNames.forEach((month) => {
-    monthlyJoinedUser[month] = 0;
     monthlyJoinedShelter[month] = 0;
   });
 
@@ -147,9 +116,6 @@ const getDashboardShelterStats = async (filterYear: number) => {
   });
 
   return {
-    totalUser,
-    totalShelter,
-    totalPet,
     filterYear,
     monthlyJoinedShelter,
   };
@@ -294,102 +260,131 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
   };
 };
 
+// const findRecentAdopters = async (
+//   shelterId: string,
+//   query: Record<string, unknown>,
+// ) => {
+//   const {
+//     page = 1,
+//     limit = 10,
+//     sortBy = 'createdAt',
+//     sortOrder = 'desc',
+//   } = query;
+
+//   const skip = (Number(page) - 1) * Number(limit);
+
+//   const pipeline: any[] = [
+//     {
+//       $lookup: {
+//         from: 'pets',
+//         localField: 'adopted_pet',
+//         foreignField: '_id',
+//         as: 'adopted_pet',
+//       },
+//     },
+//     { $unwind: '$adopted_pet' },
+//     {
+//       $lookup: {
+//         from: 'users',
+//         localField: 'adopted_pet.owner',
+//         foreignField: '_id',
+//         as: 'adopted_pet.owner',
+//       },
+//     },
+//     { $unwind: '$adopted_pet.owner' },
+//     {
+//       $match: {
+//         'adopted_pet.owner._id': new Types.ObjectId(shelterId),
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: 'users',
+//         localField: 'adopter',
+//         foreignField: '_id',
+//         as: 'adopter',
+//       },
+//     },
+//     { $unwind: '$adopter' },
+
+//     // Optional: Filter by search keyword or fields here
+//     // Add extra match stage if query includes search fields
+
+//     // Sort stage
+//     {
+//       $sort: {
+//         [sortBy as string]: sortOrder === 'asc' ? 1 : -1,
+//       },
+//     },
+
+//     // Pagination
+//     { $skip: skip },
+//     { $limit: Number(limit) },
+
+//     // Projection: Only send needed fields
+//     {
+//       $project: {
+//         _id: 1,
+//         adopted_pet: 1,
+//         adopter: 1,
+//         createdAt: 1,
+//         updatedAt: 1,
+//       },
+//     },
+//   ];
+
+//   // Count total for meta
+//   const countPipeline = pipeline.slice(
+//     0,
+//     pipeline.findIndex((stage) => '$sort' in stage),
+//   );
+//   countPipeline.push({
+//     $count: 'total',
+//   });
+
+//   const [data, countResult] = await Promise.all([
+//     PetAdopt.aggregate(pipeline),
+//     PetAdopt.aggregate(countPipeline),
+//   ]);
+
+//   const total = countResult[0]?.total || 0;
+
+//   return {
+//     meta: {
+//       page: Number(page),
+//       limit: Number(limit),
+//       total,
+//     },
+//     data,
+//   };
+// };
+
 const findRecentAdopters = async (
   shelterId: string,
   query: Record<string, unknown>,
 ) => {
-  const {
-    page = 1,
-    limit = 10,
-    sortBy = 'createdAt',
-    sortOrder = 'desc',
-  } = query;
+  const { ...pQuery } = query;
 
-  const skip = (Number(page) - 1) * Number(limit);
+  const baseQuery = PetAdopt.find().populate('adopted_pet').populate('adopter');
 
-  const pipeline: any[] = [
-    {
-      $lookup: {
-        from: 'pets',
-        localField: 'adopted_pet',
-        foreignField: '_id',
-        as: 'adopted_pet',
-      },
-    },
-    { $unwind: '$adopted_pet' },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'adopted_pet.owner',
-        foreignField: '_id',
-        as: 'adopted_pet.owner',
-      },
-    },
-    { $unwind: '$adopted_pet.owner' },
-    {
-      $match: {
-        'adopted_pet.owner._id': new Types.ObjectId(shelterId),
-      },
-    },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'adopter',
-        foreignField: '_id',
-        as: 'adopter',
-      },
-    },
-    { $unwind: '$adopter' },
+  const recentAdaptors = new QueryBuilder(baseQuery, pQuery)
+    .search([
+      'adopted_pet.full_name',
+      'adopted_pet.breed',
+      'adopted_pet.description',
+      'adopted_pet.pet_category',
+    ])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    // Optional: Filter by search keyword or fields here
-    // Add extra match stage if query includes search fields
-
-    // Sort stage
-    {
-      $sort: {
-        [sortBy as string]: sortOrder === 'asc' ? 1 : -1,
-      },
-    },
-
-    // Pagination
-    { $skip: skip },
-    { $limit: Number(limit) },
-
-    // Projection: Only send needed fields
-    {
-      $project: {
-        _id: 1,
-        adopted_pet: 1,
-        adopter: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-  ];
-
-  // Count total for meta
-  const countPipeline = pipeline.slice(
-    0,
-    pipeline.findIndex((stage) => '$sort' in stage),
-  );
-  countPipeline.push({
-    $count: 'total',
-  });
-
-  const [data, countResult] = await Promise.all([
-    PetAdopt.aggregate(pipeline),
-    PetAdopt.aggregate(countPipeline),
-  ]);
-
-  const total = countResult[0]?.total || 0;
+  const result = await recentAdaptors.modelQuery;
+  const meta = await recentAdaptors.countTotal();
 
   return {
-    meta: {
-      page: Number(page),
-      limit: Number(limit),
-      total,
-    },
-    data,
+    meta,
+    data: result,
   };
 };
 

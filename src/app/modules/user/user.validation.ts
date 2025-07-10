@@ -78,7 +78,8 @@ const petAdoptedValidationSchema = z.object({
     .enum(['accepted', 'rejected', 'pending'], {
       required_error: 'Status is required! (accepted or rejected or pending)',
     })
-    .default('pending'),
+    .default('pending')
+    .optional(),
 });
 
 export const UserValidation = {

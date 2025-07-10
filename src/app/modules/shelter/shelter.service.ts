@@ -5,6 +5,7 @@ import { ISurvey } from './shelter.interface';
 import { Survey } from './shelter.model';
 import { Types } from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { PetAdopt } from '../user/user.model';
 
 const createSurveyFromDB = async (payload: ISurvey, userId: string) => {
   payload.shelter_owner = new Types.ObjectId(userId);
@@ -61,20 +62,34 @@ const mySurveyQs = async (userId: string, query: Record<string, unknown>) => {
 };
 
 const updateUserRequest = async (id: string, payload: ISurvey) => {
-  // console.log('payload', payload, 'id______', id);
+  try {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new Error('Invalid ID format');
+    }
 
-  const result = await Survey.findOneAndUpdate(
-    { _id: id },
-    { $set: payload },
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+    // console.log('Updating PetAdopt entry with ID:', id);
+    // console.log('Payload:', payload);
 
-  console.log('result', result);
+    const result = await PetAdopt.findOneAndUpdate(
+      { _id: id },
+      { $set: payload },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
-  return result;
+    if (!result) {
+      throw new Error('PetAdopt entry not found or update failed');
+    }
+
+    // console.log('Update successful:', result);
+
+    return result;
+  } catch (error) {
+    console.error('Error in updateUserRequest:', error);
+    throw error;
+  }
 };
 
 export const ShelterServices = {

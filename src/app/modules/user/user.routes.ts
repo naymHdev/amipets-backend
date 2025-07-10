@@ -17,7 +17,7 @@ router.get(
 );
 
 router.put(
-  '/:id',
+  '/update-profile',
   auth(Role.USER, Role.ADMIN, Role.SHELTER),
   single_image_Upload.single('profile_image'),
   parseBody,

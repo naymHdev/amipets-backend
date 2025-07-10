@@ -96,6 +96,7 @@ router.delete(
   auth(Role.ADMIN),
   AdminController.deletedService,
 );
+router.get('/web-locations', AdminController.getWebLocations);
 
 // --------------------------------- Add Website Routes ---------------------------------
 router.post(

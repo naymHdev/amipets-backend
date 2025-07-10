@@ -241,10 +241,13 @@ const getServiceBaseWeb = async (
   serviceId: string,
   query: Record<string, unknown>,
 ) => {
+
+  console.log('query', query);
+
   const { ...wQuery } = query;
   const baseQuery = AddWebsite.find({ service: serviceId });
 
-  const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields();
+  const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields().filter();
 
   const result = await websiteQuery.modelQuery.sort({ position: 1 });
   return result;
@@ -269,6 +272,11 @@ const swapPosition = async (id1: string, id2: string) => {
 
   return { message: 'Positions swapped', website1: id1, website2: id2 };
 };
+
+const getWebLocations = async () => {
+  const result = await AddWebsite.distinct('location');
+  return result;
+}
 
 // ---------------------------- Users Service ----------------------------
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
@@ -415,6 +423,7 @@ export const AdminService = {
   updateService,
   deleteService,
   getServiceBaseWeb,
+  getWebLocations,
 
   createWebsiteFromDB,
   getWebsiteFromDB,
