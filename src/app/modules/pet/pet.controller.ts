@@ -149,6 +149,17 @@ const deletePet = catchAsync(async (req, res) => {
   });
 });
 
+const findBreeds = catchAsync(async (req, res) => {
+  const result = await PetServices.findPetBreads();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Breeds fetched successfully!',
+    data: result,
+  });
+});
+
 export const PetController = {
   createPet,
   updatePet,
@@ -157,4 +168,5 @@ export const PetController = {
   getSinglePet,
   deletePet,
   deletedPetImg,
+  findBreeds,
 };

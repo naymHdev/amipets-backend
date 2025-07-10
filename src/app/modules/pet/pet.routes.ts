@@ -8,6 +8,7 @@ import validateRequest from '../../middleware/validateRequest';
 import { single_image_Upload } from '../../utils/imageUploader';
 
 const router = Router();
+router.get('/breeds', PetController.findBreeds);
 
 router.post(
   '/create-pet',

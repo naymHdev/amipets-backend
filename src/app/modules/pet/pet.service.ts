@@ -174,6 +174,11 @@ const deleteSinglePet = async (petId: string) => {
   return pet;
 };
 
+const findPetBreads = async () => {
+  const pet = await Pet.distinct('breed');
+  return pet;
+};
+
 export const PetServices = {
   createPerFromDB,
   updatePetFromDB,
@@ -182,4 +187,5 @@ export const PetServices = {
   getSinglePet,
   deleteSinglePet,
   deletedPetImg,
+  findPetBreads,
 };
