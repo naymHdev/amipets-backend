@@ -418,9 +418,9 @@ const serviceBaseWeb = catchAsync(async (req, res) => {
 });
 
 const swapPosition = catchAsync(async (req, res) => {
-  const { id1, id2 } = req.body;
+  const { pos1, pos2 } = req.body;
 
-  const result = await AdminService.swapPosition(id1, id2);
+  const result = await AdminService.swapPosition(pos1, pos2);
 
   sendResponse(res, {
     success: true,
@@ -429,6 +429,7 @@ const swapPosition = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 
 const getWebLocations = catchAsync(async (req, res) => {
   const result = await AdminService.getWebLocations();

@@ -155,12 +155,6 @@ const petsOverView = async (filterYear: number, userId: string) => {
   const startOfYear = new Date(`${filterYear}-01-01`);
   const endOfYear = new Date(`${filterYear + 1}-01-01`);
 
-  // ✅ Total pets posted by this user in this year
-  const totalPet = await Pet.countDocuments({
-    owner: userId,
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
-
   // ✅ Monthly posted pets by this user in this year
   const monthlyPostedStats = await Pet.aggregate([
     {
@@ -191,7 +185,6 @@ const petsOverView = async (filterYear: number, userId: string) => {
   });
 
   return {
-    totalPet,
     filterYear,
     monthlyPostPet,
   };
@@ -215,13 +208,6 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
 
   const startOfYear = new Date(`${filterYear}-01-01`);
   const endOfYear = new Date(`${filterYear + 1}-01-01`);
-
-  // ✅ Total donated pets by this shelter owner (isAdopted: true)
-  const totalDonatedPets = await Pet.countDocuments({
-    owner: userId,
-    isAdopted: true,
-    createdAt: { $gte: startOfYear, $lt: endOfYear },
-  });
 
   // ✅ Monthly donated pets aggregation
   const monthlyDonatedStats = await Pet.aggregate([
@@ -254,7 +240,6 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
   });
 
   return {
-    totalDonatedPets,
     filterYear,
     monthlyDonatedPet,
   };

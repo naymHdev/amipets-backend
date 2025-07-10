@@ -4,7 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import { NotificationService } from './notification.service';
 
 const getAllNotifications = catchAsync(async (req, res) => {
-  const result = await NotificationService.getAllNotifications();
+  const result = await NotificationService.getAllNotifications(req.query);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

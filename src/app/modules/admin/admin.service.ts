@@ -241,42 +241,48 @@ const getServiceBaseWeb = async (
   serviceId: string,
   query: Record<string, unknown>,
 ) => {
-
   console.log('query', query);
 
   const { ...wQuery } = query;
   const baseQuery = AddWebsite.find({ service: serviceId });
 
-  const websiteQuery = new QueryBuilder(baseQuery, wQuery).sort().fields().filter();
+  const websiteQuery = new QueryBuilder(baseQuery, wQuery)
+    .sort()
+    .fields()
+    .filter();
 
   const result = await websiteQuery.modelQuery.sort({ position: 1 });
   return result;
 };
 
-const swapPosition = async (id1: string, id2: string) => {
-  // Step 1: Get both documents
-  const website1 = await AddWebsite.findById(id1);
-  const website2 = await AddWebsite.findById(id2);
+const swapPosition = async (pos1: number | string, pos2: number | string) => {
+  const position1 = Number(pos1);
+  const position2 = Number(pos2);
+
+  const website1 = await AddWebsite.findOne({ position: position1 });
+  const website2 = await AddWebsite.findOne({ position: position2 });
 
   if (!website1 || !website2) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'One or both websites not found');
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'One or both positions not found',
+    );
   }
 
-  // Step 2: Swap the positions
-  const pos1 = website1.position;
-  const pos2 = website2.position;
+  await AddWebsite.findByIdAndUpdate(website1._id, { position: position2 });
+  await AddWebsite.findByIdAndUpdate(website2._id, { position: position1 });
 
-  // Step 3: Update both positions
-  await AddWebsite.findByIdAndUpdate(id1, { position: pos2 });
-  await AddWebsite.findByIdAndUpdate(id2, { position: pos1 });
-
-  return { message: 'Positions swapped', website1: id1, website2: id2 };
+  return {
+    message: 'Positions swapped',
+    website1: website1._id,
+    website2: website2._id,
+  };
 };
 
 const getWebLocations = async () => {
   const result = await AddWebsite.distinct('location');
   return result;
-}
+};
 
 // ---------------------------- Users Service ----------------------------
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
