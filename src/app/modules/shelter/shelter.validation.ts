@@ -7,9 +7,6 @@ const surveyValidationSchema = z.object({
     priority: z.enum(['required', 'optional'], {
       required_error: 'Priority is required! (required or optional)',
     }),
-    status: z.enum(['accepted', 'rejected', 'pending'], {
-      required_error: 'Status is required! (accepted or rejected or pending)',
-    }),
   }),
 });
 

@@ -70,6 +70,7 @@ const PetAdoptSchema = new Schema<IPetAdopt>(
       type: String,
       enum: ['accepted', 'rejected', 'pending'],
       default: 'pending',
+      required: false,
     },
   },
   {
