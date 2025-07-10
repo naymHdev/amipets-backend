@@ -40,7 +40,10 @@ const dbShelterStats = catchAsync(async (req, res) => {
 //  -------------------------------------- Shelter Dashboard --------------------------------------
 
 const shelterTotalStats = catchAsync(async (req, res) => {
-  const result = await DashboardService.shelterTotalStats();
+
+  const shelterId = req?.user?._id as string;
+
+  const result = await DashboardService.shelterTotalStats(shelterId);
   res.status(200).json({
     success: true,
     message: 'Dashboard status fetched successfully',

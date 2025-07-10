@@ -225,9 +225,9 @@ const resetPassword = async (
     );
   }
 
-  const user: IUser | null = await User.findById(decode?.userId).select(
-    'verification',
-  );
+  console.log('decode', decode);
+
+  const user: IUser | null = await User.findById(decode?.userId)
 
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
