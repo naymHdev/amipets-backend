@@ -225,7 +225,7 @@ const resetPassword = async (
     );
   }
 
-  console.log('decode', decode);
+  // console.log('decode', decode);
 
   const user: IUser | null = await User.findById(decode?.userId)
 
