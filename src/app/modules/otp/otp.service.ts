@@ -135,6 +135,8 @@ const resendOtp = async (email: string) => {
     expiresIn: '3m',
   });
 
+  console.log("token-----------------------------------", token);
+
   const otpEmailPath = path.resolve(
     process.cwd(),
     'src',
