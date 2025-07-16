@@ -145,7 +145,7 @@ const resendOtp = async (email: string) => {
   );
 
   if (user) {
-    await sendEmail(
+   const res =  await sendEmail(
       user?.email,
       'Your One Time OTP',
       fs
@@ -153,6 +153,9 @@ const resendOtp = async (email: string) => {
         .replace('{{otp}}', otp)
         .replace('{{email}}', user?.email),
     );
+
+    console.log('res___________', res);
+
   }
 
   return { token };
