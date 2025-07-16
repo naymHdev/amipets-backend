@@ -40,7 +40,7 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     location: {
       type: String,
-      required: true,
+      required: false,
     },
     profile_image: {
       type: String,

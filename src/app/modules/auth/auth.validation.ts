@@ -19,7 +19,9 @@ const userValidationSchema = z.object({
       .string()
       .min(6, { message: 'Password must be at least 6 characters' }),
     role: z.enum([Role.ADMIN, Role.SHELTER, Role.USER]).default(Role.USER),
-    location: z.string({ required_error: 'Provide a valid location' }),
+    location: z
+      .string({ required_error: 'Provide a valid location' })
+      .optional(),
     isDeleted: z.boolean().optional(),
     isVerified: z.boolean().optional(),
     webLink: z.string().optional(),

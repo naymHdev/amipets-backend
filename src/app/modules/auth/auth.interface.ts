@@ -15,7 +15,7 @@ export interface IUser {
   first_name: string;
   last_name: string;
   gender: TUserGender;
-  location: string;
+  location?: string;
   contact_number?: number;
   email: string;
   password: string;
