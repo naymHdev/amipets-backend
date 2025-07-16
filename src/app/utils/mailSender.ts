@@ -1,8 +1,11 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
+import AppError from '../errors/appError';
+import { StatusCodes } from 'http-status-codes';
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
-  const transporter = nodemailer.createTransport({
+ try{
+   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     // port: process.env.EMAIL_ENV === 'production' ? 465 : 587,
     port: 465,
@@ -20,4 +23,8 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     text: '', // plain text body
     html, // html body
   });
+ }catch(err){
+   console.log(err);
+   throw new AppError(StatusCodes.BAD_REQUEST, 'Email send failed, try agian');
+ }
 };
