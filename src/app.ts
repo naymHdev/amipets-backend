@@ -12,10 +12,15 @@ import { socketIo } from './app/config/socket.config';
 
 const app: Application = express();
 
-// Middleware setup
 app.use(
   cors({
-    origin: '*',
+    origin: [
+      'https://amipeta.lt',
+      'https://www.amipeta.lt',
+      'http://localhost:3000',
+      'https://api.amipeta.lt',
+      'https://dashboard.amipeta.lt',
+    ],
     credentials: true,
   }),
 );
