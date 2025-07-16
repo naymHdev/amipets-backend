@@ -17,7 +17,7 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     last_name: {
       type: String,
-      required: true,
+      required: false,
     },
     gender: {
       type: String,
