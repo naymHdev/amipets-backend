@@ -5,7 +5,18 @@ const createPetSchema = z.object({
     full_name: z
       .string({ required_error: 'Full name is required' })
       .min(2, 'Full name must be at least 2 characters'),
-    location: z.string({ required_error: 'Location is required' }),
+    location: z.object({
+      type: z.literal('Point'),
+      coordinates: z
+        .tuple([
+          z.number().min(-180).max(180), // lng
+          z.number().min(-90).max(90), // lat
+        ])
+        .refine((coords) => coords.length === 2, {
+          message: 'Coordinates must be [lng, lat]',
+        }),
+      address: z.string().min(3, 'Address is required'),
+    }),
     description: z.string({ required_error: 'Description is required' }),
     neutered: z.boolean({ required_error: 'Neutered is required' }),
     vaccinated: z.boolean({ required_error: 'Vaccinated is required' }),
@@ -32,7 +43,19 @@ const updatePetePetSchema = z.object({
       .string({ required_error: 'Full name is required' })
       .min(2, 'Full name must be at least 2 characters')
       .optional(),
-    location: z.string({ required_error: 'Location is required' }).optional(),
+    location: z.object({
+      type: z.literal('Point').optional(),
+      coordinates: z
+        .tuple([
+          z.number().min(-180).max(180), // lng
+          z.number().min(-90).max(90), // lat
+        ])
+        .refine((coords) => coords.length === 2, {
+          message: 'Coordinates must be [lng, lat]',
+        })
+        .optional(),
+      address: z.string().min(3, 'Address is required').optional(),
+    }),
     description: z
       .string({ required_error: 'Description is required' })
       .optional(),

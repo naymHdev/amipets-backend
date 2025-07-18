@@ -14,8 +14,19 @@ const petSchema = new Schema<IPet>(
       required: false,
     },
     location: {
-      type: String,
-      required: true,
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+      },
+      coordinates: {
+        type: [Number], // [lng, lat]
+        required: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
     },
     description: {
       type: String,
@@ -67,7 +78,7 @@ const petSchema = new Schema<IPet>(
     isBookmarked: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   {
     timestamps: true,

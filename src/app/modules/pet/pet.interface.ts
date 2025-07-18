@@ -4,7 +4,11 @@ export interface IPet {
   _id?: string;
   pet_image: string[];
   full_name: string;
-  location: string;
+  location: {
+    type: 'Point';
+    coordinates: [number, number]; // [lng, lat]
+    address: string;
+  };
   description: string;
   breed: string;
   gender: 'Male' | 'Female';
