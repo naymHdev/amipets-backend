@@ -5,12 +5,11 @@ import config from '../../config';
 import User from '../auth/auth.model';
 import moment from 'moment';
 import { generateOtp } from '../../utils/otpGenerator';
-import { sendEmail } from '../../utils/mailSender';
 import path from 'path';
 import fs from 'fs';
+import emailSender from '../../utils/emailSender';
 
 const verifyOtp = async (token: string, otp: string | number) => {
-  // console.log('token', token);
   if (!token) {
     throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
   }
@@ -31,8 +30,6 @@ const verifyOtp = async (token: string, otp: string | number) => {
   const user = await User.findById(decode?.userId).select(
     'verification status ',
   );
-
-  console.log('user otp', user);
 
   if (!user) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'User not found');
@@ -101,7 +98,6 @@ const resendOtp = async (email: string) => {
   }
 
   const otp = generateOtp();
-  // console.log('new otp', otp);
 
   const expiresAt = moment().add(5, 'minute');
 
@@ -135,8 +131,6 @@ const resendOtp = async (email: string) => {
     expiresIn: '3m',
   });
 
-  console.log("token-----------------------------------", token);
-
   const otpEmailPath = path.resolve(
     process.cwd(),
     'src',
@@ -147,7 +141,7 @@ const resendOtp = async (email: string) => {
   );
 
   if (user) {
-   const res =  await sendEmail(
+    await emailSender(
       user?.email,
       'Your One Time OTP',
       fs
@@ -155,9 +149,6 @@ const resendOtp = async (email: string) => {
         .replace('{{otp}}', otp)
         .replace('{{email}}', user?.email),
     );
-
-    console.log('res___________', res);
-
   }
 
   return { token };

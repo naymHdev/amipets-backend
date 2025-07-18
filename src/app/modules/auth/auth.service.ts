@@ -9,9 +9,9 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import { generateOtp } from '../../utils/otpGenerator';
 import moment from 'moment';
 import path from 'path';
-import { sendEmail } from '../../utils/mailSender';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
+import emailSender from '../../utils/emailSender';
 
 const loginUserFromDB = async (payload: IAuth) => {
   const session = await mongoose.startSession();
@@ -196,7 +196,7 @@ const forgotPassword = async (email: string) => {
     'forgot_pass_mail.html',
   );
 
-  await sendEmail(
+  await emailSender(
     user?.email,
     'Your reset password OTP is',
     fs
@@ -227,7 +227,7 @@ const resetPassword = async (
 
   // console.log('decode', decode);
 
-  const user: IUser | null = await User.findById(decode?.userId)
+  const user: IUser | null = await User.findById(decode?.userId);
 
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');

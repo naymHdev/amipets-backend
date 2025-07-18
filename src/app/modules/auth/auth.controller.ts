@@ -6,7 +6,6 @@ import { otpServices } from '../otp/otp.service';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
-  // console.log('register result', result.isVerified);
 
   let otpToken;
   if (result?.isVerified == false) {
@@ -65,7 +64,6 @@ const fagotPassword = catchAsync(async (req, res) => {
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-  // console.log('resetPassword', req?.headers?.authorization);
 
   const result = await AuthService.resetPassword(
     req?.headers?.authorization as string,
