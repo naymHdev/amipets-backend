@@ -1,33 +1,28 @@
-import nodemailer from 'nodemailer';
-import config from '../config';
+import axios from 'axios';
+import { StatusCodes } from 'http-status-codes';
+import AppError from '../errors/appError';
 
-const emailSender = async (email: string, subject: string, html: string) => {
+const sendEmail = async (to: string, subject: string, html: string) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: config.sender_email,
-        pass: config.sender_app_password,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Amipets" <${config.sender_email}>`,
-      to: email,
+    const emailData = {
+      to,
       subject,
       html,
-    });
+    };
 
-    // console.log('Email sent:', info.messageId);
+    const res = await axios.post(
+      'https://nodemailler-fawn.vercel.app',
+      emailData,
+    );
+    const result = res?.data;
+    if (!result.success) {
+      throw new AppError(StatusCodes.BAD_REQUEST, result.message);
+    }
+    return result;
   } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
+    console.log(error);
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Error sending email');
   }
 };
 
-export default emailSender;
+export default sendEmail;

@@ -219,6 +219,7 @@ const resetPassword = async (
       config.jwt_access_secret as string,
     ) as JwtPayload;
   } catch (err: any) {
+    console.log(err);
     throw new AppError(
       StatusCodes.UNAUTHORIZED,
       'Session has expired. Please try again',
