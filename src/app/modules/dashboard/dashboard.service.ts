@@ -346,7 +346,7 @@ const findRecentAdopters = async (
 const detailsRecentAdopters = async (petId: string) => {
   const adopter = await PetAdopt.findById({ _id: petId }).populate(
     'adopted_pet',
-  );
+  ).populate('adopter');
 
   return adopter;
 };
