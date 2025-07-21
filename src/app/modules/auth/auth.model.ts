@@ -107,9 +107,16 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
+// userSchema.set('toJSON', {
+//   transform: (_doc, ret) => {
+//     delete ret.password;
+//     return ret;
+//   },
+// });
+
 userSchema.set('toJSON', {
   transform: (_doc, ret) => {
-    delete ret.password;
+    delete (ret as any).password;
     return ret;
   },
 });
