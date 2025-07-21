@@ -293,10 +293,7 @@ const findRecentAdopters = async (
     },
     { $unwind: '$adopter' },
 
-    // Optional: Filter by search keyword or fields here
-    // Add extra match stage if query includes search fields
-
-    // Sort stage
+    // Sort
     {
       $sort: {
         [sortBy as string]: sortOrder === 'asc' ? 1 : -1,
@@ -307,10 +304,12 @@ const findRecentAdopters = async (
     { $skip: skip },
     { $limit: Number(limit) },
 
-    // Projection: Only send needed fields
+    // Project final output
     {
       $project: {
         _id: 1,
+        // answers: 1, 
+        status: 1, 
         adopted_pet: 1,
         adopter: 1,
         createdAt: 1,
@@ -319,7 +318,7 @@ const findRecentAdopters = async (
     },
   ];
 
-  // Count total for meta
+  // Count total
   const countPipeline = pipeline.slice(
     0,
     pipeline.findIndex((stage) => '$sort' in stage),
@@ -344,11 +343,10 @@ const findRecentAdopters = async (
     data,
   };
 };
-
 const detailsRecentAdopters = async (petId: string) => {
-  const adopter = await PetAdopt.findById({ _id: petId })
-    .populate('adopter')
-    .populate('adopted_pet');
+  const adopter = await PetAdopt.findById({ _id: petId }).populate(
+    'adopted_pet',
+  );
 
   return adopter;
 };
