@@ -146,7 +146,13 @@ const socialLogin = async ({
 
     user = (await User.findOneAndUpdate(
       { email },
-      { email, profile_image:image, first_name, isverified: true, isSocialLogin: true },
+      {
+        email,
+        profile_image: image,
+        first_name,
+        isverified: true,
+        isSocialLogin: true,
+      },
       { upsert: true, new: true },
     )) as IUser;
   }
@@ -156,19 +162,23 @@ const socialLogin = async ({
 
   const jwtPayload: IJwtPayload = {
     _id: user?._id?.toString() as string,
+    email: user?.email as string,
+    first_name: user?.first_name as string,
+    last_name: user?.last_name as string,
+    isActive: user?.isActive as boolean,
     role: user?.role,
   };
 
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    60 * 60 * 24 * 7, //7 days
+    (60 * 60 * 24 * 7).toString(), //7 days
   );
 
   const refreshToken = createToken(
     jwtPayload,
     config.jwt_refresh_secret as string,
-    60 * 60 * 24 * 30, //  30 days
+    (60 * 60 * 24 * 30).toString(), //  30 days
   );
 
   return {

@@ -27,12 +27,29 @@ const updateProfile = async (
     throw new AppError(StatusCodes.BAD_REQUEST, 'Your account is not active.');
   }
 
+  // If user not set input than save existing value
+  if (!payload.full_name) {
+    payload.full_name = isUserExists.full_name;
+  }
+  if (!payload.gender) {
+    payload.gender = isUserExists.gender;
+  }
+  if (!payload.email) {
+    payload.email = isUserExists.email;
+  }
+  if (!payload.location) {
+    payload.location = isUserExists.location;
+  }
+
+  // Fallback to existing image if new one not provided
+  const finalProfileImage = profile_image || isUserExists.profile_image;
+
   // Preserve existing hashed password
   payload.password = isUserExists.password;
 
   const result = await User.findOneAndUpdate(
     { _id: authUser._id },
-    { $set: payload, profile_image },
+    { $set: payload, profile_image: finalProfileImage },
     { new: true, runValidators: true },
   );
 

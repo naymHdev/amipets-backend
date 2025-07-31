@@ -16,7 +16,7 @@ router.get(
   UserController.myProfile,
 );
 
-router.put(
+router.patch(
   '/update-profile',
   auth(Role.USER, Role.ADMIN, Role.SHELTER),
   single_image_Upload.single('profile_image'),
