@@ -59,9 +59,18 @@ const userProfileUpdateValidationSchema = z.object({
   webLink: z.string().optional(),
 });
 
+const socialLoginValidationSchema = z.object({
+  body: z.object({
+    email: z.string().email({ message: 'Provide a valid email, try again' }),
+    image: z.string().url({ message: 'Provide a valid image URL' }),
+    first_name: z.string().min(2).max(100),
+  }),
+});
+
 export const AuthValidation = {
   userValidationSchema,
   forgotPassValidation,
   resetPassValidation,
+  socialLoginValidationSchema,
   userProfileUpdateValidationSchema,
 };

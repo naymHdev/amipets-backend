@@ -64,7 +64,6 @@ const fagotPassword = catchAsync(async (req, res) => {
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-
   const result = await AuthService.resetPassword(
     req?.headers?.authorization as string,
     req?.body,
@@ -78,10 +77,23 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+//social login
+const socialLogin = catchAsync(async (req, res) => {
+  const result = await AuthService.socialLogin(req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Logged in successfully',
+    data: result,
+  });
+});
+
 export const AuthController = {
   registerUser,
   loginUser,
   refreshToken,
   fagotPassword,
   resetPassword,
+  socialLogin,
 };

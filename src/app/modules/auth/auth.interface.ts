@@ -10,7 +10,7 @@ export enum Role {
 export type TUserGender = 'male' | 'female' | 'other';
 
 export interface IUser {
-  _id?: string; 
+  _id?: string;
   full_name?: string;
   first_name: string;
   last_name?: string;
@@ -32,9 +32,10 @@ export interface IUser {
     expiresAt: Date;
     status: boolean;
   };
-  
+
   // For Shelter
   shelter_name?: string;
+  isSocialLogin: boolean;
 }
 
 //  For login

@@ -14,6 +14,12 @@ router.post(
 router.post('/login', AuthController.loginUser);
 
 router.post(
+  '/social-login',
+  validateRequest(AuthValidation.socialLoginValidationSchema),
+  AuthController.socialLogin,
+);
+
+router.post(
   '/refresh-token',
   // auth(Role.USER, Role.ADMIN, Role.SHELTER),
   AuthController.refreshToken,

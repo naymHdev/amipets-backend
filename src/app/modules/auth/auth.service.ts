@@ -115,6 +115,69 @@ const registerUserFromDB = async (userData: IUser) => {
   }
 };
 
+const socialLogin = async ({
+  email,
+  image,
+  first_name,
+}: {
+  email: string;
+  image: string;
+  first_name: string;
+}) => {
+  let user: IUser | null = await User.findOne({
+    email: email,
+    role: { $ne: 'admin' },
+  });
+
+  if (user && !user?.isSocialLogin) {
+    // If user not found, throw error
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You account is connected by another login system',
+    );
+  } else {
+    // if (user && !user?.verification?.status) {
+    //   throw new AppError(StatusCodes.FORBIDDEN, 'Your account is blocked');
+    // }
+
+    if (user && user?.isDeleted) {
+      throw new AppError(StatusCodes.FORBIDDEN, 'Your account is deleted');
+    }
+
+    user = (await User.findOneAndUpdate(
+      { email },
+      { email, profile_image:image, first_name, isverified: true, isSocialLogin: true },
+      { upsert: true, new: true },
+    )) as IUser;
+  }
+
+  const userDoc = (user as any).toObject();
+  delete userDoc.password;
+
+  const jwtPayload: IJwtPayload = {
+    _id: user?._id?.toString() as string,
+    role: user?.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    60 * 60 * 24 * 7, //7 days
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    60 * 60 * 24 * 30, //  30 days
+  );
+
+  return {
+    user: userDoc,
+    accessToken,
+    refreshToken,
+  };
+};
+
 const refreshToken = async (token: string) => {
   // console.log('refreshToken', token);
   // console.log('🔑 Using secret:', config.jwt_access_secret);
@@ -274,4 +337,5 @@ export const AuthService = {
   refreshToken,
   forgotPassword,
   resetPassword,
+  socialLogin,
 };
