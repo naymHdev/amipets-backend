@@ -21,7 +21,7 @@ const createPetSchema = z.object({
     neutered: z.boolean({ required_error: 'Neutered is required' }),
     vaccinated: z.boolean({ required_error: 'Vaccinated is required' }),
     weight: z.string({ required_error: 'Weight is required' }),
-    chip_number: z.string({ required_error: 'Chip number is required' }),
+    chip_number: z.number({ required_error: 'Chip number is required' }),
     breed: z
       .string({ required_error: 'Breed is required' })
       .min(2, 'Breed must be at least 2 characters'),
@@ -29,7 +29,7 @@ const createPetSchema = z.object({
       required_error: 'Gender is required',
     }),
     age: z.string({ required_error: 'Date of birth is required' }),
-    pet_category: z.enum(['dog', 'cat'], {
+    pet_category: z.enum(['dog', 'cat', 'both'], {
       required_error: 'Pet category is required',
     }),
     isAdopted: z.boolean().optional(),
@@ -65,7 +65,7 @@ const updatePetePetSchema = z.object({
       .optional(),
     weight: z.string({ required_error: 'Weight is required' }).optional(),
     chip_number: z
-      .string({ required_error: 'Chip number is required' })
+      .number({ required_error: 'Chip number is required' })
       .optional(),
     breed: z
       .string({ required_error: 'Breed is required' })
@@ -78,7 +78,7 @@ const updatePetePetSchema = z.object({
       .optional(),
     age: z.string({ required_error: 'Date of birth is required' }).optional(),
     pet_category: z
-      .enum(['dog', 'cat'], {
+      .enum(['dog', 'cat', 'both'], {
         required_error: 'Pet category is required',
       })
       .optional(),

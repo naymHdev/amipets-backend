@@ -13,14 +13,14 @@ export interface IPet {
   breed: string;
   gender: 'Male' | 'Female';
   neutered: boolean;
-  chip_number: string;
+  chip_number: number;
   vaccinated: boolean;
   weight: string;
   age: string;
   createdAt?: Date;
   updatedAt?: Date;
   owner?: Types.ObjectId;
-  pet_category: 'dog' | 'cat' | 'other';
+  pet_category: 'dog' | 'cat' | 'both';
   isAdopted?: boolean;
   isBookmarked?: boolean;
 }

@@ -177,12 +177,13 @@ const createBanner = catchAsync(async (req, res) => {
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
   const result = await AdminService.createBannerFromDB(payload, image);
+
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created banner`,
+      message: `${req.user?.email?.split('@')[0]} updated banner`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -212,13 +213,14 @@ const updateBanner = catchAsync(async (req, res) => {
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
   const { banner } = req.params;
+
   const result = await AdminService.updateBanner(payload, image, banner);
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated banner`,
+      message: `${req.user?.email?.split('@')[0]} updated banner`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -360,6 +362,33 @@ const createAddWebsite = catchAsync(async (req, res) => {
   });
 });
 
+const updateAddWebsite = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const web_img =
+    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
+    '';
+
+  const result = await AdminService.updateWebFromDB(id, payload, web_img);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} updated website`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+  sendResponse(res, {
+    success: true,
+    message: 'Website updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 const getAddWebsite = catchAsync(async (req, res) => {
   const result = await AdminService.getWebsiteFromDB(req.query);
 
@@ -429,7 +458,6 @@ const swapPosition = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
 
 const getWebLocations = catchAsync(async (req, res) => {
   const result = await AdminService.getWebLocations();
@@ -624,6 +652,7 @@ export const AdminController = {
   deletedAddWebsite,
   getAddWebsiteDetail,
   swapPosition,
+  updateAddWebsite,
 
   getAllUsers,
   getUserDetail,

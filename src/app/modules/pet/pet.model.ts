@@ -45,7 +45,7 @@ const petSchema = new Schema<IPet>(
       required: true,
     },
     chip_number: {
-      type: String,
+      type: Number,
       required: true,
     },
     breed: {
@@ -68,7 +68,7 @@ const petSchema = new Schema<IPet>(
     },
     pet_category: {
       type: String,
-      enum: ['dog', 'cat', 'other'],
+      enum: ['dog', 'cat', 'both'],
       required: true,
     },
     isAdopted: {

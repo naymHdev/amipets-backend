@@ -132,9 +132,11 @@ const updateBanner = async (
     );
   }
 
+  const finalImg = image || isExist.image;
+
   const result = await Banner.findOneAndUpdate(
     {},
-    { ...payload, image, banner },
+    { ...payload, image: finalImg, banner },
     {
       new: true,
     },
@@ -201,6 +203,33 @@ const createWebsiteFromDB = async (
     ...payload,
     web_img,
     serviceName: serviceName,
+  });
+  return result;
+};
+
+const updateWebFromDB = async (
+  id: string,
+  payload: IAddWebsite,
+  web_img: string,
+) => {
+  const existsWebsite = await AddWebsite.findById(id);
+
+  if (!existsWebsite) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "A 'website' entry does not exist in the database. Please create it first.",
+    );
+  }
+
+  const finalImg = web_img || existsWebsite.web_img;
+
+  const updatedData = {
+    ...payload,
+    web_img: finalImg,
+  };
+
+  const result = await AddWebsite.findOneAndUpdate({ _id: id }, updatedData, {
+    new: true,
   });
   return result;
 };
@@ -436,6 +465,7 @@ export const AdminService = {
   deleteWebsite,
   getWebDetailFromDB,
   swapPosition,
+  updateWebFromDB,
 
   getAllUsersFromDB,
   getUserDetailFromDB,

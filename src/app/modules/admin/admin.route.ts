@@ -107,6 +107,14 @@ router.post(
   validateRequest(AdminValidation.addWebsiteSchema),
   AdminController.createAddWebsite,
 );
+router.patch(
+  '/update-website/:id',
+  auth(Role.ADMIN),
+  single_image_Upload.single('web_img'),
+  parseBody,
+  validateRequest(AdminValidation.updateWebsiteSchema),
+  AdminController.updateAddWebsite,
+);
 
 router.get('/get-website', AdminController.getAddWebsite);
 router.get('/service-base-webs/:id', AdminController.serviceBaseWeb);

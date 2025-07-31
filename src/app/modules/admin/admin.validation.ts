@@ -63,8 +63,6 @@ const updateTermsOfServiceSchema = z.object({
 // ------------------------------- Banner Validation -------------------------------
 const bannerSchema = z.object({
   body: z.object({
-    title: z.string().min(3, 'Banner title cannot be empty'),
-    description: z.string().min(10, 'Banner description cannot be empty'),
     banner: z
       .string({ required_error: 'Banner name cannot be empty' })
       .default('banner'),
@@ -74,11 +72,6 @@ const bannerSchema = z.object({
 
 const updateBannerSchema = z.object({
   body: z.object({
-    title: z.string().min(3, 'Banner title cannot be empty').optional(),
-    description: z
-      .string()
-      .min(10, 'Banner description cannot be empty')
-      .optional(),
     banner: z
       .string({ required_error: 'Banner name cannot be empty' })
       .default('banner')
@@ -121,6 +114,24 @@ const addWebsiteSchema = z.object({
   }),
 });
 
+const updateWebsiteSchema = z.object({
+  body: z.object({
+    web_name: z.string().min(3, 'Website name cannot be empty').optional(),
+    web_link: z
+      .string({ required_error: 'Website link cannot be empty' })
+      .optional(),
+    pet_type: z
+      .enum(['dog', 'cat', 'both'], {
+        required_error: 'Pet type is required',
+      })
+      .optional(),
+    description: z.string().min(10, 'Description cannot be empty').optional(),
+    location: z.string().min(3, 'Location cannot be empty').optional(),
+    service: z.string({ required_error: 'Service is required' }).optional(),
+    position: z.number().optional(),
+  }),
+});
+
 // ---------------------------- Admin Profile Validation Schemas ----------------------------
 const adminProfileUpdateValidationSchema = z.object({
   body: z.object({
@@ -143,4 +154,5 @@ export const AdminValidation = {
   updateServicesSchema,
   addWebsiteSchema,
   adminProfileUpdateValidationSchema,
+  updateWebsiteSchema,
 };

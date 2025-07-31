@@ -15,8 +15,6 @@ export interface ITermsOfService {
 }
 
 export interface IBanner {
-  title: string;
-  description: string;
   image: string;
   websiteLink: string;
   banner: string;
