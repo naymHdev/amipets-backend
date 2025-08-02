@@ -12,7 +12,7 @@ const userValidationSchema = z.object({
     first_name: z
       .string({ required_error: 'First name is required' })
       .min(3, { message: 'First name must be at least 3 characters' }),
-    last_name: z.string().optional(),
+    last_name: z.string().default('').optional(),
     email: z.string().email({ message: 'Provide a valid email, try again' }),
     profile_image: z.string().default('').optional(),
     password: z
@@ -61,7 +61,10 @@ const userProfileUpdateValidationSchema = z.object({
 
 const socialLoginValidationSchema = z.object({
   body: z.object({
-    email: z.string().email({ message: 'Provide a valid email, try again' }).optional(),
+    email: z
+      .string()
+      .email({ message: 'Provide a valid email, try again' })
+      .optional(),
     image: z.string().url({ message: 'Provide a valid image URL' }).optional(),
     first_name: z.string().min(2).max(100).optional(),
   }),
