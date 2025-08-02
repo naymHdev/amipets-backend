@@ -61,9 +61,9 @@ const userProfileUpdateValidationSchema = z.object({
 
 const socialLoginValidationSchema = z.object({
   body: z.object({
-    email: z.string().email({ message: 'Provide a valid email, try again' }),
-    image: z.string().url({ message: 'Provide a valid image URL' }),
-    first_name: z.string().min(2).max(100),
+    email: z.string().email({ message: 'Provide a valid email, try again' }).optional(),
+    image: z.string().url({ message: 'Provide a valid image URL' }).optional(),
+    first_name: z.string().min(2).max(100).optional(),
   }),
 });
 

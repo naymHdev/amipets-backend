@@ -35,7 +35,7 @@ export interface IUser {
 
   // For Shelter
   shelter_name?: string;
-  isSocialLogin: boolean;
+  isSocialLogin?: boolean;
 }
 
 //  For login
