@@ -20,6 +20,7 @@ app.use(
       'http://localhost:3000',
       'https://api.amipeta.lt',
       'https://dashboard.amipeta.lt',
+      'https://www.dashboard.amipeta.lt',
     ],
     credentials: true,
   }),
