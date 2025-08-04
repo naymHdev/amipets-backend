@@ -19,6 +19,7 @@ app.use(
       'https://www.amipeta.lt',
       'http://localhost:3000',
       'https://api.amipeta.lt',
+      'https://www.api.amipeta.lt',
       'https://dashboard.amipeta.lt',
       'https://www.dashboard.amipeta.lt',
     ],
