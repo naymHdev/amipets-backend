@@ -47,7 +47,19 @@ const getAllNotifications = async (query: Record<string, unknown>) => {
   };
 };
 
+const deleteNotification = async (id: string) => {
+  const result = await Notification.findByIdAndDelete(id);
+  return result;
+};
+
+const deleteAllNotifications = async () => {
+  const result = await Notification.deleteMany({});
+  return result;
+};
+
 export const NotificationService = {
   sendNotification,
   getAllNotifications,
+  deleteNotification,
+  deleteAllNotifications,
 };

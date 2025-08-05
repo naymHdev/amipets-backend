@@ -13,6 +13,29 @@ const getAllNotifications = catchAsync(async (req, res) => {
   });
 });
 
+const deleteNotification = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await NotificationService.deleteNotification(id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Notification deleted successfully',
+    data: null,
+  });
+});
+
+const deleteAllNotifications = catchAsync(async (req, res) => {
+  await NotificationService.deleteAllNotifications();
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'All notifications deleted successfully',
+    data: null,
+  });
+});
+
 export const NotificationController = {
   getAllNotifications,
+  deleteNotification,
+  deleteAllNotifications,
 };
