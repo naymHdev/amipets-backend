@@ -3,6 +3,8 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthService } from './auth.service';
 import { otpServices } from '../otp/otp.service';
+import { NotificationService } from '../notification/notification.service';
+import { Types } from 'mongoose';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
@@ -11,6 +13,16 @@ const registerUser = catchAsync(async (req, res) => {
   if (result?.isVerified == false) {
     otpToken = await otpServices.resendOtp(result?.email);
   }
+  await NotificationService.sendNotification({
+    ownerId: new Types.ObjectId(result._id),
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${result?.first_name} ${result?.last_name} created account`,
+    },
+    receiverId: [new Types.ObjectId(result._id)],
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -25,7 +37,30 @@ const registerUser = catchAsync(async (req, res) => {
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUserFromDB(req.body);
+
   const { refreshToken, accessToken, user } = result;
+
+  await NotificationService.sendNotification({
+    ownerId: new Types.ObjectId(user._id),
+    key: 'notification',
+    data: {
+      id: user?._id.toString(),
+      message: ` ${user?.first_name} ${user?.last_name} last login time ${new Date()}`,
+    },
+    receiverId: [new Types.ObjectId(user._id)],
+    notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: new Types.ObjectId(user._id),
+    key: 'notification',
+    data: {
+      id: user?._id.toString(),
+      message: `Hay ${user?.first_name} ${user?.last_name} you are logged in successfully! Your last login time ${new Date()}`,
+    },
+    receiverId: [new Types.ObjectId(user._id)],
+    notifyUser: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

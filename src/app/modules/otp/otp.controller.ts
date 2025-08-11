@@ -13,7 +13,7 @@ const verifyOtp = catchAsync(async (req, res) => {
   //   key: 'notification',
   //   data: {
   //     id: null,
-  //     message: `  ${req.user?.firstName} ${req.user?.lastName} verified otp`,
+  //     message: `  ${req.user?.first_name} ${req.user?.last_name} verified otp`,
   //   },
   //   receiverId: [req.user?._id],
   //   notifyAdmin: true,

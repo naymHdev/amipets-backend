@@ -20,10 +20,21 @@ const createBookmark = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created bookmark`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created bookmark`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created bookmark`,
+    },
+    receiverId: [req.user?._id],
+    notifyUser: true,
   });
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
@@ -64,10 +75,21 @@ const deleteBookmarks = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted bookmark`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} deleted your bookmark`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: null,
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} you deleted bookmark successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyUser: true,
   });
 
   sendResponse(res, {

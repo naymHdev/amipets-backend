@@ -17,11 +17,23 @@ const createSurvey = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created survey question`,
+      message: `${req.user?.first_name} ${req.user?.last_name} Created Survey Question!`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
   });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} your survey question created successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -60,10 +72,21 @@ const deleteSurvey = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted survey question`,
+      message: `${req.user?.first_name} ${req.user?.last_name} deleted survey question`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name}your survey question deleted successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
   });
 
   sendResponse(res, {
@@ -82,10 +105,21 @@ const updateSurvey = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated survey question`,
+      message: `${req.user?.first_name} ${req.user?.last_name} updated survey question`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} your survey question updated successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
   });
 
   sendResponse(res, {
@@ -112,6 +146,28 @@ const updateUserRequest = catchAsync(async (req, res) => {
     req.params.id,
     req.body,
   );
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `${req.user?.first_name} ${req.user?.last_name} updated user request`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} your user request updated successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
+  });
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

@@ -15,7 +15,7 @@ const createAbout = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `${req.user?.firstName} ${req.user?.lastName} created about section`,
+      message: `${req.user?.first_name} ${req.user?.last_name} created about section`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -48,7 +48,7 @@ const updateAbout = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated about section`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated about section`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -70,7 +70,7 @@ const createPrivacyPolicy = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created privacy policy`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created privacy policy`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -103,7 +103,7 @@ const updatePrivacyPolicy = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated privacy policy`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated privacy policy`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -125,7 +125,7 @@ const createTermsAndCondition = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created terms and condition`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created terms and condition`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -157,7 +157,7 @@ const updateTermsAndCondition = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated terms and condition`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated terms and condition`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -245,7 +245,7 @@ const createService = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} created service`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created service`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -294,7 +294,7 @@ const updateService = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated service`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated service`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -316,7 +316,7 @@ const deletedService = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: `${req.user?.firstName} ${req.user?.lastName} deleted service`,
+      message: `${req.user?.first_name} ${req.user?.last_name} deleted service`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -376,7 +376,7 @@ const updateAddWebsite = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated website`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated website`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -421,7 +421,7 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: `  ${req.user?.firstName} ${req.user?.lastName} deleted website`,
+      message: `  ${req.user?.first_name} ${req.user?.last_name} deleted website`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -501,7 +501,7 @@ const blockUser = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} blocked user`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} blocked user`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -524,7 +524,7 @@ const unblockUser = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} unblocked user`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} unblocked user`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -570,7 +570,7 @@ const blockShelter = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} blocked shelter`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} blocked shelter`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -600,7 +600,7 @@ const editAdminProfile = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated admin profile`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated admin profile`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,

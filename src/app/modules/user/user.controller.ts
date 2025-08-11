@@ -59,7 +59,7 @@ const changePassword = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: null,
-      message: ` ${req.user?.firstName} ${req.user?.lastName} changed password`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} changed password`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -94,7 +94,7 @@ const deleteProfile = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted profile`,
+      message: ` ${req.user?.first_name} ${req.user?.last_name} deleted profile`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,

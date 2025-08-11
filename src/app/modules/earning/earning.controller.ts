@@ -11,7 +11,7 @@ const addIncome = catchAsync(async (req, res) => {
     ownerId: req.user?._id,
     key: 'notification',
     data: {
-      id: null,
+      id: req.user?._id.toString(),
       message: `${result.clientName} added income`,
     },
     receiverId: [req.user?._id],

@@ -26,10 +26,21 @@ const createPet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `New pet added`,
+      message: `${req.user?.first_name} ${req.user?.last_name} created pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} you created pet successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
   });
 
   sendResponse(res, {
@@ -63,10 +74,21 @@ const updatePet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `Pet updated successfully!`,
+      message: `${req.user?.first_name} ${req.user?.last_name} updated pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} you updated pet successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
   });
 
   sendResponse(res, {
@@ -82,6 +104,7 @@ const deletedPetImg = catchAsync(async (req, res) => {
   const img = req.body.img;
 
   const result = await PetServices.deletedPetImg(petId, img);
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -136,11 +159,23 @@ const deletePet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted pet`,
+      message: `${req.user?.first_name} ${req.user?.last_name} deleted pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
   });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: `Hay ${req.user?.first_name} ${req.user?.last_name} your pet deleted successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyShelter: true,
+  });
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
