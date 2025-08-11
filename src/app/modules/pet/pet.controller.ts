@@ -63,7 +63,7 @@ const updatePet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${req.user?.firstName} ${req.user?.lastName} updated pet`,
+      message: `Pet updated successfully!`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,

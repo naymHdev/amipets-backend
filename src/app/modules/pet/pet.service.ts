@@ -99,8 +99,15 @@ const updatePetFromDB = async (
       'You are not authorized to update this pet.',
     );
   }
+
+  // Handle image update → append new images to existing ones
+  let finalProfileImages = existingPet.pet_image || [];
+  if (image && image.length > 0) {
+    finalProfileImages = [...finalProfileImages, ...image];
+  }
+
   // Update existing pet with new data
-  Object.assign(existingPet, payload, { pet_image: image });
+  Object.assign(existingPet, payload, { pet_image: finalProfileImages });
   const updatedPet = await existingPet.save();
 
   return updatedPet;

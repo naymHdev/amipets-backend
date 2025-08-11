@@ -259,7 +259,7 @@ const createService = catchAsync(async (req, res) => {
 });
 
 const getService = catchAsync(async (req, res) => {
-  const result = await AdminService.getServiceFromDB();
+  const result = await AdminService.getServiceFromDB(req.query);
 
   sendResponse(res, {
     success: true,

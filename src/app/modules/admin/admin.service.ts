@@ -159,8 +159,13 @@ const createServiceFromDB = async (payload: IService, icon: string) => {
   return result;
 };
 
-const getServiceFromDB = async () => {
-  const result = await Service.find();
+const getServiceFromDB = async (query: Record<string, unknown>) => {
+  const { ...wQuery } = query;
+  const baseQuery = Service.find();
+
+  const serviceQuery = new QueryBuilder(baseQuery, wQuery).search(['name']);
+
+  const result = await serviceQuery.modelQuery;
   return result;
 };
 

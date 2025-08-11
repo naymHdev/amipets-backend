@@ -15,20 +15,22 @@ const createPetSchema = z.object({
         .refine((coords) => coords.length === 2, {
           message: 'Coordinates must be [lng, lat]',
         }),
-      address: z.string().min(3, 'Address is required'),
+      address: z.string().min(3, 'Address is required').optional(),
     }),
-    description: z.string({ required_error: 'Description is required' }),
-    neutered: z.boolean({ required_error: 'Neutered is required' }),
-    vaccinated: z.boolean({ required_error: 'Vaccinated is required' }),
-    weight: z.string({ required_error: 'Weight is required' }),
-    chip_number: z.number({ required_error: 'Chip number is required' }),
-    breed: z
-      .string({ required_error: 'Breed is required' })
-      .min(2, 'Breed must be at least 2 characters'),
+    description: z
+      .string({ required_error: 'Description is required' })
+      .optional(),
+    neutered: z.boolean({ required_error: 'Neutered is required' }).optional(),
+    vaccinated: z
+      .boolean({ required_error: 'Vaccinated is required' })
+      .optional(),
+    weight: z.string({ required_error: 'Weight is required' }).optional(),
+    chipped: z.boolean({ required_error: 'chipped is required' }).optional(),
+    breed: z.string({ required_error: 'Breed is required' }).optional(),
     gender: z.enum(['Male', 'Female'], {
       required_error: 'Gender is required',
     }),
-    age: z.string({ required_error: 'Date of birth is required' }),
+    date_of_birth: z.string({ required_error: 'Date of birth is required' }),
     pet_category: z.enum(['dog', 'cat', 'both'], {
       required_error: 'Pet category is required',
     }),
@@ -39,10 +41,7 @@ const createPetSchema = z.object({
 
 const updatePetePetSchema = z.object({
   body: z.object({
-    full_name: z
-      .string({ required_error: 'Full name is required' })
-      .min(2, 'Full name must be at least 2 characters')
-      .optional(),
+    full_name: z.string({ required_error: 'Full name is required' }).optional(),
     location: z.object({
       type: z.literal('Point').optional(),
       coordinates: z
@@ -64,19 +63,16 @@ const updatePetePetSchema = z.object({
       .boolean({ required_error: 'Vaccinated is required' })
       .optional(),
     weight: z.string({ required_error: 'Weight is required' }).optional(),
-    chip_number: z
-      .number({ required_error: 'Chip number is required' })
-      .optional(),
-    breed: z
-      .string({ required_error: 'Breed is required' })
-      .min(2, 'Breed must be at least 2 characters')
-      .optional(),
+    chipped: z.boolean({ required_error: 'chipped is required' }).optional(),
+    breed: z.string({ required_error: 'Breed is required' }).optional(),
     gender: z
       .enum(['Male', 'Female'], {
         required_error: 'Gender is required',
       })
       .optional(),
-    age: z.string({ required_error: 'Date of birth is required' }).optional(),
+    date_of_birth: z
+      .string({ required_error: 'Date of birth is required' })
+      .optional(),
     pet_category: z
       .enum(['dog', 'cat', 'both'], {
         required_error: 'Pet category is required',

@@ -7,16 +7,17 @@ export interface IPet {
   location: {
     type: 'Point';
     coordinates: [number, number]; // [lng, lat]
-    address: string;
+    address?: string;
   };
-  description: string;
-  breed: string;
+  description?: string;
+  breed?: string;
   gender: 'Male' | 'Female';
-  neutered: boolean;
-  chip_number: number;
-  vaccinated: boolean;
-  weight: string;
-  age: string;
+  neutered?: boolean;
+  chipped?: boolean;
+  chip_number?: string;
+  vaccinated?: boolean;
+  weight?: string;
+  date_of_birth: Date;
   createdAt?: Date;
   updatedAt?: Date;
   owner?: Types.ObjectId;
