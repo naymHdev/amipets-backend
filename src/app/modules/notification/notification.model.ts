@@ -27,6 +27,14 @@ const notificationSchema = new Schema<INotification>(
       type: Boolean,
       default: false,
     },
+    notifyUser: {
+      type: Boolean,
+      default: false,
+    },
+    notifyShelter: {
+      type: Boolean,
+      default: false,
+    },
     isRead: {
       type: Boolean,
       default: false,

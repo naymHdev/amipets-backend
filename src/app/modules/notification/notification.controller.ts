@@ -34,8 +34,21 @@ const deleteAllNotifications = catchAsync(async (req, res) => {
   });
 });
 
+const getAllUserNotifications = catchAsync(async (req, res) => {
+  const result = await NotificationService.getAllUserNotifications(
+    req.user?._id,
+  );
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Users All notifications fetched successfully',
+    data: result,
+  });
+});
+
 export const NotificationController = {
   getAllNotifications,
   deleteNotification,
   deleteAllNotifications,
+  getAllUserNotifications,
 };

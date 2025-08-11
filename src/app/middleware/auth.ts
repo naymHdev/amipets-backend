@@ -28,6 +28,7 @@ const auth = (...requiredRoles: Role[]) => {
           : config.jwt_access_secret;
 
       const decoded = jwt.verify(token, secret as string) as JwtPayload;
+      // console.log('decoded__', decoded);
 
       const { role, email } = decoded;
 
@@ -49,6 +50,8 @@ const auth = (...requiredRoles: Role[]) => {
         _id: user._id,
         email: user.email,
         role: user.role,
+        first_name: user.first_name,
+        last_name: user.last_name,
       } as JwtPayload;
 
       // console.log('decoded_user', req.user);

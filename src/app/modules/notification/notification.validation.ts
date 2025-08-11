@@ -6,6 +6,8 @@ const createNotificationZodSchema = z.object({
   data: z.object({}),
   receiverId: z.string({ required_error: 'Receiver id is required' }),
   notifyAdmin: z.boolean().optional(),
+  notifyUser: z.boolean().optional(),
+  notifyShelter: z.boolean().optional(),
   isRead: z.boolean().optional(),
 });
 

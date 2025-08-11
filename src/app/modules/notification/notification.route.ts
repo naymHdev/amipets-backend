@@ -23,4 +23,10 @@ router.delete(
   NotificationController.deleteAllNotifications,
 );
 
+router.get(
+  '/user-notifications',
+  auth(Role.USER),
+  NotificationController.getAllUserNotifications,
+);
+
 export const NotificationRoutes = router;

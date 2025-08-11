@@ -6,6 +6,8 @@ export interface INotification {
   data: Record<string, unknown>;
   receiverId: Types.ObjectId[];
   notifyAdmin?: boolean;
+  notifyUser?: boolean;
+  notifyShelter?: boolean;
   isRead?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

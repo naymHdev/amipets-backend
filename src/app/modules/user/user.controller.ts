@@ -86,6 +86,17 @@ const deleteProfile = catchAsync(async (req, res) => {
       message: `Your profile deleted successfully!`,
     },
     receiverId: [req.user?._id],
+    notifyUser: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.firstName} ${req.user?.lastName} deleted profile`,
+    },
+    receiverId: [req.user?._id],
     notifyAdmin: true,
   });
 
@@ -114,7 +125,18 @@ const createMyPet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `Your pet ${result?.full_name} created successfully!`,
+      message: `${result?.full_name} Your pet created successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyUser: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.first_name} ${req.user?.last_name} created pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -149,6 +171,17 @@ const updateMyPet = catchAsync(async (req, res) => {
     data: {
       id: result?._id.toString(),
       message: `Pet ${result?.full_name} updated successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyUser: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.first_name} ${req.user?.last_name} updated pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
@@ -205,6 +238,17 @@ const deleteMyPet = catchAsync(async (req, res) => {
     data: {
       id: result?._id.toString(),
       message: `Your pet ${result?.full_name} deleted successfully!`,
+    },
+    receiverId: [req.user?._id],
+    notifyUser: true,
+  });
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.first_name} ${req.user?.last_name} deleted pet`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,
