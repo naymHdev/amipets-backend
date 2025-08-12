@@ -33,19 +33,22 @@ const petSchema = new Schema<IPet>(
       required: false,
     },
     neutered: {
-      type: Boolean,
-      required: false,
+      type: String,
+      enum: ['Yes', 'No', 'N/A'],
+      required: 'false',
     },
     vaccinated: {
-      type: Boolean,
+      type: String,
+      enum: ['Yes', 'No', 'N/A'],
       required: true,
+    },
+    chipped: {
+      type: String,
+      enum: ['Yes', 'No', 'N/A'],
+      required: false,
     },
     weight: {
       type: String,
-      required: false,
-    },
-    chipped: {
-      type: Boolean,
       required: false,
     },
     chip_number: {

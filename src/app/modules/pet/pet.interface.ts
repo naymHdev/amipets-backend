@@ -12,10 +12,10 @@ export interface IPet {
   description?: string;
   breed?: string;
   gender: 'Male' | 'Female';
-  neutered?: boolean;
-  chipped?: boolean;
+  neutered?: 'Yes' | 'No' | 'N/A';
+  chipped?: 'Yes' | 'No' | 'N/A';
   chip_number?: string;
-  vaccinated?: boolean;
+  vaccinated?: 'Yes' | 'No' | 'N/A';
   weight?: string;
   date_of_birth: Date;
   createdAt?: Date;
