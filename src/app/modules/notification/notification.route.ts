@@ -25,7 +25,7 @@ router.delete(
 
 router.get(
   '/user-notifications',
-  auth(Role.USER),
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
   NotificationController.getAllUserNotifications,
 );
 

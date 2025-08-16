@@ -9,6 +9,7 @@ import {
   emitMessageToUser,
 } from '../../utils/emitMessage';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { IJwtPayload, Role } from '../auth/auth.interface';
 
 const sendNotification = async (payload: INotification) => {
   const { data, receiverId, key, notifyAdmin, notifyUser, notifyShelter } =
@@ -70,9 +71,56 @@ const deleteAllNotifications = async () => {
   return result;
 };
 
-const getAllUserNotifications = async (id: string) => {
-  const result = await Notification.find({ receiverId: id });
-  return result;
+const getAllUserNotifications = async (
+  user: IJwtPayload,
+  query: Record<string, unknown>,
+) => {
+  const userId = user._id;
+  const { ...pQuery } = query;
+
+  let baseQuery;
+
+  switch (user.role) {
+    case Role.USER:
+      baseQuery = Notification.find({
+        notifyUser: true,
+        receiverId: userId,
+      });
+      break;
+
+    case Role.ADMIN:
+      baseQuery = Notification.find({
+        notifyAdmin: true,
+      });
+      break;
+
+    case Role.SHELTER:
+      baseQuery = Notification.find({
+        notifyShelter: true,
+        receiverId: userId,
+      });
+      break;
+
+    default:
+      baseQuery = Notification.find({
+        receiverId: userId,
+      });
+      break;
+  }
+
+  const notificationsQuery = new QueryBuilder(baseQuery, pQuery)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await notificationsQuery.modelQuery;
+  const meta = await notificationsQuery.countTotal();
+
+  return {
+    meta,
+    data: result,
+  };
 };
 
 export const NotificationService = {

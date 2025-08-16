@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { NotificationService } from './notification.service';
+import { IJwtPayload } from '../auth/auth.interface';
 
 const getAllNotifications = catchAsync(async (req, res) => {
   const result = await NotificationService.getAllNotifications(req.query);
@@ -36,7 +37,8 @@ const deleteAllNotifications = catchAsync(async (req, res) => {
 
 const getAllUserNotifications = catchAsync(async (req, res) => {
   const result = await NotificationService.getAllUserNotifications(
-    req.user?._id,
+    req.user as IJwtPayload,
+    req.query,
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
