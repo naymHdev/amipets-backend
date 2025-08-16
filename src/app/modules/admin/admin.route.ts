@@ -55,7 +55,7 @@ router.patch(
 router.post(
   '/create-banner',
   auth(Role.ADMIN),
-  single_image_Upload.single('image'),
+  single_image_Upload.array('image'),
   parseBody,
   validateRequest(AdminValidation.bannerSchema),
   AdminController.createBanner,
@@ -66,7 +66,7 @@ router.get('/get-banner', AdminController.getBanner);
 router.patch(
   '/update-banner/:banner',
   auth(Role.ADMIN),
-  single_image_Upload.single('image'),
+  single_image_Upload.array('image'),
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),
   AdminController.updateBanner,

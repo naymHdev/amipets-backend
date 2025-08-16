@@ -98,7 +98,7 @@ const updateTermsOfService = async (termsOfService: ITermsOfService) => {
 };
 
 // ---------------------------- Banner Service ----------------------------
-const createBannerFromDB = async (payload: IBanner, image: string) => {
+const createBannerFromDB = async (payload: IBanner, image: string[]) => {
   const isExist = await Banner.findOne({});
 
   if (isExist) {
@@ -120,7 +120,7 @@ const getBannerFromDB = async () => {
 
 const updateBanner = async (
   payload: IBanner,
-  image: string,
+  image: string[],
   banner: string,
 ) => {
   const isExist = await Banner.findOne({});

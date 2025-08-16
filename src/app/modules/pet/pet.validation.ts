@@ -60,12 +60,14 @@ const updatePetePetSchema = z.object({
     description: z
       .string({ required_error: 'Description is required' })
       .optional(),
-    neutered: z.boolean({ required_error: 'Neutered is required' }).optional(),
-    vaccinated: z
-      .boolean({ required_error: 'Vaccinated is required' })
+    neutered: z
+      .enum(['Yes', 'No', 'N/A'], {
+        required_error: 'Neutered is required',
+      })
       .optional(),
+    vaccinated: z.enum(['Yes', 'No', 'N/A']).optional(),
     weight: z.string({ required_error: 'Weight is required' }).optional(),
-    chipped: z.boolean({ required_error: 'chipped is required' }).optional(),
+    chipped: z.enum(['Yes', 'No', 'N/A']).optional(),
     breed: z.string({ required_error: 'Breed is required' }).optional(),
     gender: z
       .enum(['Male', 'Female'], {

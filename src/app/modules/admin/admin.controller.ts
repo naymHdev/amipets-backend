@@ -173,9 +173,13 @@ const updateTermsAndCondition = catchAsync(async (req, res) => {
 // --------------------------------- Banner Controller ---------------------------------
 const createBanner = catchAsync(async (req, res) => {
   const payload = req.body;
-  const image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const files = req.files as Express.Multer.File[];
+
+  const image = files.map((file) => {
+    return (
+      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
+    );
+  });
   const result = await AdminService.createBannerFromDB(payload, image);
 
   await NotificationService.sendNotification({
@@ -209,9 +213,14 @@ const getBanner = catchAsync(async (req, res) => {
 
 const updateBanner = catchAsync(async (req, res) => {
   const payload = req.body;
-  const image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const files = req.files as Express.Multer.File[];
+
+  const image = files.map((file) => {
+    return (
+      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
+    );
+  });
+
   const { banner } = req.params;
 
   const result = await AdminService.updateBanner(payload, image, banner);

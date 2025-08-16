@@ -58,7 +58,7 @@ const TermsOfServiceSchema = new Schema<IPrivacyPolicy>(
 const BannerSchema = new Schema<IBanner>(
   {
     image: {
-      type: String,
+      type: [String],
       required: false,
     },
     websiteLink: {
@@ -141,7 +141,8 @@ const AddWebsiteSchema = new Schema<IAddWebsite>(
 // Auto-generate position if not provided
 AddWebsiteSchema.pre('save', async function (next) {
   if (this.isNew && (this.position === null || this.position === undefined)) {
-    const Model = this.constructor as typeof import('mongoose').Model<IAddWebsite>;
+    const Model = this
+      .constructor as typeof import('mongoose').Model<IAddWebsite>;
     const lastWebsite = await Model.findOne().sort({ position: -1 });
     this.position = lastWebsite ? lastWebsite.position + 1 : 1;
   }
