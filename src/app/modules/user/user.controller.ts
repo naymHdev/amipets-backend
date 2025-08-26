@@ -22,7 +22,7 @@ const updateProfile = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `${result?.full_name} updated successfully!`,
+      message: `${req.user?.first_name} ${req.user?.last_name} profile updated successfully!`,
     },
     receiverId: [req.user?._id],
     notifyAdmin: true,

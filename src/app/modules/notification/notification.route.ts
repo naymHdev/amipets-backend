@@ -29,4 +29,10 @@ router.get(
   NotificationController.getAllUserNotifications,
 );
 
+router.patch(
+  '/mark-notifications-as-read',
+  auth(Role.USER, Role.ADMIN, Role.SHELTER),
+  NotificationController.markNotificationsAsRead,
+);
+
 export const NotificationRoutes = router;

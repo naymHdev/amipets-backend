@@ -48,9 +48,22 @@ const getAllUserNotifications = catchAsync(async (req, res) => {
   });
 });
 
+const markNotificationsAsRead = catchAsync(async (req, res) => {
+  const result = await NotificationService.markNotificationsAsRead(
+    req.user as IJwtPayload,
+  );
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Users unread notifications fetched successfully',
+    data: result,
+  });
+});
+
 export const NotificationController = {
   getAllNotifications,
   deleteNotification,
   deleteAllNotifications,
+  markNotificationsAsRead,
   getAllUserNotifications,
 };

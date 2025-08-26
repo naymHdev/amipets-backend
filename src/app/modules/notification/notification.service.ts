@@ -123,10 +123,30 @@ const getAllUserNotifications = async (
   };
 };
 
+export const markNotificationsAsRead = async (user: IJwtPayload) => {
+  const userId = user._id;
+
+  const result = await Notification.updateMany(
+    {
+      receiverId: userId,
+      isRead: false,
+    },
+    {
+      $set: { isRead: true },
+    },
+  );
+
+  return {
+    message: `${result.modifiedCount} notifications marked as read.`,
+    modifiedCount: result.modifiedCount,
+  };
+};
+
 export const NotificationService = {
   sendNotification,
   getAllNotifications,
   deleteNotification,
   deleteAllNotifications,
   getAllUserNotifications,
+  markNotificationsAsRead,
 };
