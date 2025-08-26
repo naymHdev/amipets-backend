@@ -57,14 +57,18 @@ const TermsOfServiceSchema = new Schema<IPrivacyPolicy>(
 
 const BannerSchema = new Schema<IBanner>(
   {
-    image: {
-      type: [String],
-      required: false,
-    },
-    websiteLink: {
-      type: String,
-      required: true,
-    },
+    bannerInfo: [
+      {
+        image: {
+          type: String,
+          required: false,
+        },
+        websiteLink: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     banner: {
       type: String,
       default: 'banner',

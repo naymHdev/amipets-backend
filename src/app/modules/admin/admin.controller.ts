@@ -212,6 +212,7 @@ const getBanner = catchAsync(async (req, res) => {
 });
 
 const updateBanner = catchAsync(async (req, res) => {
+  const { id } = req.params;
   const payload = req.body;
   const files = req.files as Express.Multer.File[];
 
@@ -221,9 +222,8 @@ const updateBanner = catchAsync(async (req, res) => {
     );
   });
 
-  const { banner } = req.params;
+  const result = await AdminService.updateBanner(payload, image, id);
 
-  const result = await AdminService.updateBanner(payload, image, banner);
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
     key: 'notification',
@@ -242,6 +242,30 @@ const updateBanner = catchAsync(async (req, res) => {
   });
 });
 
+const deleteSingleBannerInfo = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await AdminService.deleteSingleBannerInfo(id);
+
+  await NotificationService.sendNotification({
+    ownerId: req.user?._id,
+    key: 'notification',
+    data: {
+      id: result?._id.toString(),
+      message: ` ${req.user?.first_name} ${req.user?.last_name} deleted banner info. Deleted time ${new Date().toLocaleString()}`,
+    },
+    receiverId: [req.user?._id],
+    notifyAdmin: true,
+  });
+
+  sendResponse(res, {
+    success: true,
+    message: 'Banner info deleted successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 // ----------------------------- Services Controller ----------------------------
 const createService = catchAsync(async (req, res) => {
   const payload = req.body;
@@ -249,6 +273,7 @@ const createService = catchAsync(async (req, res) => {
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
     '';
   const result = await AdminService.createServiceFromDB(payload, icon);
+
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
     key: 'notification',
@@ -259,6 +284,7 @@ const createService = catchAsync(async (req, res) => {
     receiverId: [req.user?._id],
     notifyAdmin: true,
   });
+
   sendResponse(res, {
     success: true,
     message: 'Service created successfully',
@@ -644,9 +670,11 @@ export const AdminController = {
   updateAbout,
   updatePrivacyPolicy,
   updateTermsAndCondition,
+
   createBanner,
   getBanner,
   updateBanner,
+  deleteSingleBannerInfo,
 
   createService,
   getService,

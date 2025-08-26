@@ -64,12 +64,18 @@ router.post(
 router.get('/get-banner', AdminController.getBanner);
 
 router.patch(
-  '/update-banner/:banner',
+  '/update-banner/:id',
   auth(Role.ADMIN),
   single_image_Upload.array('image'),
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),
   AdminController.updateBanner,
+);
+
+router.delete(
+  '/delete-banner-info/:id',
+  auth(Role.ADMIN),
+  AdminController.deleteSingleBannerInfo,
 );
 
 // --------------------------------- Services Routes ---------------------------------

@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export interface IAbout {
   title: string;
@@ -15,8 +15,10 @@ export interface ITermsOfService {
 }
 
 export interface IBanner {
-  image: string[];
-  websiteLink: string;
+  bannerInfo: {
+    image: string;
+    websiteLink: string;
+  }[];
   banner: string;
 }
 

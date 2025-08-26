@@ -66,7 +66,13 @@ const bannerSchema = z.object({
     banner: z
       .string({ required_error: 'Banner name cannot be empty' })
       .default('banner'),
-    websiteLink: z.string({ required_error: 'Website link cannot be empty' }),
+
+    bannerInfo: z.array(
+      z.object({
+        image: z.string().optional(),
+        websiteLink: z.string({ required_error: 'Website link is required' }),
+      }),
+    ),
   }),
 });
 
@@ -76,8 +82,12 @@ const updateBannerSchema = z.object({
       .string({ required_error: 'Banner name cannot be empty' })
       .default('banner')
       .optional(),
-    websiteLink: z
-      .string({ required_error: 'Website link cannot be empty' })
+    bannerInfo: z
+      .array(
+        z.object({
+          websiteLink: z.string(),
+        }),
+      )
       .optional(),
   }),
 });

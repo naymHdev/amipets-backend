@@ -20,6 +20,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import User from '../auth/auth.model';
 import { UserSearchableFields } from './admin.constant';
 import { IJwtPayload, IUser } from '../auth/auth.interface';
+import mongoose from 'mongoose';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -98,18 +99,39 @@ const updateTermsOfService = async (termsOfService: ITermsOfService) => {
 };
 
 // ---------------------------- Banner Service ----------------------------
-const createBannerFromDB = async (payload: IBanner, image: string[]) => {
+const createBannerFromDB = async (payload: IBanner, images: string[]) => {
+  // Build new bannerInfo entries from payload + images
+  const newBannerInfo = payload.bannerInfo.map((info, index) => ({
+    ...info,
+    image: images?.[index] || info.image,
+  }));
+
+  // Check if banner already exists
   const isExist = await Banner.findOne({});
 
+  let result;
   if (isExist) {
-    throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      "A 'banner' entry already exists in the database. Please update it instead.",
+    // Append new bannerInfo to existing
+    const mergedBannerInfo = [...isExist.bannerInfo, ...newBannerInfo];
+
+    result = await Banner.findOneAndUpdate(
+      {},
+      {
+        banner: payload.banner || 'banner',
+        bannerInfo: mergedBannerInfo,
+      },
+      { new: true },
     );
+  } else {
+    // First banner entry
+    const banner = new Banner({
+      banner: payload.banner || 'banner',
+      bannerInfo: newBannerInfo,
+    });
+
+    result = await banner.save();
   }
 
-  const banner = new Banner({ ...payload, image });
-  const result = await banner.save();
   return result;
 };
 
@@ -119,28 +141,57 @@ const getBannerFromDB = async () => {
 };
 
 const updateBanner = async (
-  payload: IBanner,
-  image: string[],
-  banner: string,
+  payload: Partial<IBanner>,
+  images: string[],
+  id: string,
 ) => {
-  const isExist = await Banner.findOne({});
+  const isExist = await Banner.findOne({ 'bannerInfo._id': id });
 
   if (!isExist) {
     throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      "A 'banner' entry does not exist in the database. Please create it first.",
+      StatusCodes.NOT_FOUND,
+      'Banner info entry does not exist.',
     );
   }
 
-  const finalImg = image || isExist.image;
+  // Build the new data for this single bannerInfo entry
+  const updatedInfo: any = {
+    ...payload.bannerInfo?.[0],
+  };
 
+  if (images && images.length > 0) {
+    updatedInfo.image = images[0];
+  }
+
+  // Update a single bannerInfo object inside the array
   const result = await Banner.findOneAndUpdate(
-    {},
-    { ...payload, image: finalImg, banner },
+    { 'bannerInfo._id': new mongoose.Types.ObjectId(id) },
     {
-      new: true,
+      $set: {
+        'bannerInfo.$.websiteLink': updatedInfo.websiteLink,
+        ...(updatedInfo.image && { 'bannerInfo.$.image': updatedInfo.image }),
+      },
     },
+    { new: true },
   );
+
+  return result;
+};
+
+const deleteSingleBannerInfo = async (infoId: string) => {
+  const result = await Banner.findOneAndUpdate(
+    {}, // match the single banner document
+    { $pull: { bannerInfo: { _id: new mongoose.Types.ObjectId(infoId) } } },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'No banner found or banner info does not exist',
+    );
+  }
+
   return result;
 };
 
@@ -281,6 +332,7 @@ const getServiceBaseWeb = async (
   const baseQuery = AddWebsite.find({ service: serviceId });
 
   const websiteQuery = new QueryBuilder(baseQuery, wQuery)
+    .search(['web_name', 'pet_type', 'serviceName'])
     .sort()
     .fields()
     .filter();
@@ -453,9 +505,11 @@ export const AdminService = {
   updateAbout,
   updatePrivacyPolicy,
   updateTermsOfService,
+
   createBannerFromDB,
   getBannerFromDB,
   updateBanner,
+  deleteSingleBannerInfo,
 
   createServiceFromDB,
   getServiceFromDB,
