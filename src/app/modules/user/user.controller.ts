@@ -125,7 +125,7 @@ const createMyPet = catchAsync(async (req, res) => {
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: `${result?.full_name} Your pet created successfully!`,
+      message: `${req.user?.first_name} ${req.user?.last_name} Your pet created successfully!`,
     },
     receiverId: [req.user?._id],
     notifyUser: true,
