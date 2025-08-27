@@ -117,9 +117,15 @@ const getAllUserNotifications = async (
   const result = await notificationsQuery.modelQuery;
   const meta = await notificationsQuery.countTotal();
 
+  // Count read and unread notifications
+  const readNotificationCount = result.filter((n) => n.isRead).length;
+  const unreadNotificationCount = result.filter((n) => !n.isRead).length;
+
   return {
     meta,
     data: result,
+    readNotificationCount,
+    unreadNotificationCount,
   };
 };
 
