@@ -6,42 +6,6 @@ import { StatusCodes } from 'http-status-codes';
 import Pet from '../pet/pet.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 
-// const createBookmarksFromDB = async (petId: string, userId: string) => {
-//   if (!userId) {
-//     throw new AppError(
-//       StatusCodes.UNAUTHORIZED,
-//       'You are not authorized! Please login.',
-//     );
-//   }
-
-//   const pet = await Pet.findById(petId);
-//   if (!pet) {
-//     throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
-//   }
-
-//   if (pet.isBookmarked) {
-//     throw new AppError(StatusCodes.BAD_REQUEST, 'Pet is already bookmarked');
-//   }
-
-//   const payload: IBookmarks = {
-//     user_id: new Types.ObjectId(userId),
-//     pet_id: new Types.ObjectId(petId),
-//     isDeleted: false,
-//     isActive: true,
-//   };
-
-//   const result = await Bookmarks.create(payload);
-
-//   // update pet isBookmarked
-//   await Pet.findOneAndUpdate(
-//     { _id: payload.pet_id },
-//     { $set: { isBookmarked: true } },
-//     { new: true },
-//   );
-
-//   return result;
-// };
-
 const createBookmarksFromDB = async (petId: string, userId: string) => {
   if (!userId) {
     throw new AppError(
@@ -106,6 +70,11 @@ const getAllBookmarksFromDB = async (
   };
 };
 
+const getAllBookmarkedIds = async (userId: string) => {
+  const result = await Bookmarks.find({ user_id: userId }).select('pet_id');
+  return result;
+};
+
 const getDetailsFromDB = async (id: string) => {
   const result = await Bookmarks.findById(id)
     .populate('pet_id')
@@ -135,4 +104,5 @@ export const BookmarksService = {
   getDetailsFromDB,
   getAllBookmarksFromDB,
   deletedBookmarksFromDB,
+  getAllBookmarkedIds,
 };

@@ -29,7 +29,11 @@ router.patch(
 );
 router.delete('/petImg/:id', auth(Role.SHELTER), PetController.deletedPetImg);
 
-router.get('/all-pets', PetController.getAllPets);
+router.get(
+  '/all-pets',
+  auth(Role.SHELTER, Role.USER, Role.ADMIN),
+  PetController.getAllPets,
+);
 
 router.get('/my-pets', auth(Role.SHELTER), PetController.getMyPets);
 

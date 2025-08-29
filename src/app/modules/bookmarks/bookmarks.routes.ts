@@ -21,6 +21,12 @@ router.get(
 );
 
 router.get(
+  '/my-bookmarks/-ids',
+  auth(Role.USER),
+  BookmarkController.getAllBookmarkedIds,
+);
+
+router.get(
   '/bookmark-details/:id',
   auth(Role.USER),
   BookmarkController.getDetails,
