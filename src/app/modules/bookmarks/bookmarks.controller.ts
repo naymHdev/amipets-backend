@@ -14,12 +14,13 @@ const createBookmark = catchAsync(async (req, res) => {
   }
 
   const result = await BookmarksService.createBookmarksFromDB(petId, userId);
+  // console.log('result_________', result);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
     key: 'notification',
     data: {
-      id: result?._id.toString(),
+      id: result?.pet_id,
       message: ` ${req.user?.first_name} ${req.user?.last_name} created bookmark`,
     },
     receiverId: [req.user?._id],
@@ -30,7 +31,7 @@ const createBookmark = catchAsync(async (req, res) => {
     ownerId: req.user?._id,
     key: 'notification',
     data: {
-      id: result?._id.toString(),
+      id: result?.pet_id,
       message: ` ${req.user?.first_name} ${req.user?.last_name} created bookmark`,
     },
     receiverId: [req.user?._id],
@@ -39,14 +40,17 @@ const createBookmark = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
-    message: 'Bookmark created successfully',
+    message: `${result?.isActive ? 'Bookmark added successfully' : 'Bookmark removed successfully'}`,
     data: result,
   });
 });
 
 const getAllBookmarks = catchAsync(async (req, res) => {
   const userId = req?.user?._id as string;
-  const result = await BookmarksService.getAllBookmarksFromDB(userId);
+  const result = await BookmarksService.getAllBookmarksFromDB(
+    userId,
+    req.query,
+  );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
