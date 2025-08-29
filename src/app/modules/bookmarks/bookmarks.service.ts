@@ -88,9 +88,9 @@ const getAllBookmarksFromDB = async (
   query: Record<string, unknown>,
 ) => {
   const { ...pQuery } = query;
-  const baseQuery = Bookmarks.find({ user_id: userId });
-  // .populate('pet_id')
-  // .populate('user_id');
+  const baseQuery = Bookmarks.find({ user_id: userId })
+    .populate('pet_id')
+    .populate('user_id');
 
   const petsQuery = new QueryBuilder(baseQuery, pQuery)
     .filter()
