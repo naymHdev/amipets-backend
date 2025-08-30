@@ -194,6 +194,17 @@ const findBreeds = catchAsync(async (req, res) => {
   });
 });
 
+const findLocations = catchAsync(async (req, res) => {
+  const result = await PetServices.findLocations();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Locations fetched successfully!',
+    data: result,
+  });
+});
+
 export const PetController = {
   createPet,
   updatePet,
@@ -203,4 +214,5 @@ export const PetController = {
   deletePet,
   deletedPetImg,
   findBreeds,
+  findLocations,
 };

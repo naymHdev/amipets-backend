@@ -185,6 +185,12 @@ const findPetBreads = async () => {
   const pet = await Pet.distinct('breed');
   return pet;
 };
+const findLocations = async () => {
+  const pet = await Pet.distinct('location');
+  return pet;
+};
+
+
 
 export const PetServices = {
   createPerFromDB,
@@ -195,4 +201,5 @@ export const PetServices = {
   deleteSinglePet,
   deletedPetImg,
   findPetBreads,
+  findLocations
 };
