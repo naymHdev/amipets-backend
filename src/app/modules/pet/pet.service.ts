@@ -129,33 +129,147 @@ const deletedPetImg = async (petId: string, img: string) => {
 };
 
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
-  const { ...pQuery } = query;
+  const {
+    latitude,
+    longitude,
+    page: pageStr,
+    limit: limitStr,
+    searchTerm,
+    ...filters
+  } = query;
 
-  const petsQuery = new QueryBuilder(Pet.find().populate('owner'), pQuery)
-    .search(['full_name', 'breed', 'description', 'pet_category'])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+  // Convert latitude and longitude to numbers (if they are strings)
+  const lat = parseFloat(latitude as string);
+  const lon = parseFloat(longitude as string);
 
-  const result = await petsQuery.modelQuery;
-  const meta = await petsQuery.countTotal();
+  const page = parseInt(pageStr as string) || 1;
+  const limit = parseInt(limitStr as string) || 10;
+  const skip = (page - 1) * limit;
 
-  return {
-    meta,
-    data: result,
-  };
+  const pipeline: any[] = [];
+
+  // GEO SEARCH
+  if (lat && lon) {
+    pipeline.push({
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lon, lat], // Correct order of coordinates [lon, lat]
+        },
+        key: 'location',
+        distanceField: 'dist.calculated',
+        spherical: true,
+        maxDistance: 50 * 1609.34, // 50 miles in meters
+        query: {
+          // isDeleted: false,
+          // isAdopted: false,
+          ...filters,
+        },
+      },
+    });
+  } else {
+    pipeline.push({
+      $match: {
+        // isDeleted: false,
+        // isAdopted: false,
+        ...filters,
+      },
+    });
+  }
+
+  // SEARCH TERM
+  if (searchTerm) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { full_name: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+          {
+            pet_category: { $regex: searchTerm, $options: 'i' }, // Removed $elemMatch for better matching
+          },
+        ],
+      },
+    });
+  }
+
+  // ADDITIONAL FILTERS
+  if (Object.keys(filters).length > 0) {
+    pipeline.push({ $match: filters });
+  }
+
+  // SORT + PAGINATION
+  pipeline.push({ $sort: { createdAt: -1 } });
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: limit });
+
+  // RUN AGGREGATION
+  const results = await Pet.collection.aggregate(pipeline).toArray();
+
+  // COUNT TOTAL DOCUMENTS WITHOUT SKIP/LIMIT
+  const countPipeline: any[] = [];
+
+  if (lat && lon) {
+    countPipeline.push({
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lon, lat],
+        },
+        key: 'location',
+        distanceField: 'dist.calculated',
+        spherical: true,
+        maxDistance: 50 * 1609.34,
+        query: {
+          // isDeleted: false,
+          // isAdopted: false,
+          ...filters,
+        },
+      },
+    });
+  } else {
+    countPipeline.push({
+      $match: {
+        // isDeleted: true,
+        // isAdopted: true,
+        ...filters,
+      },
+    });
+  }
+
+  if (searchTerm) {
+    countPipeline.push({
+      $match: {
+        $or: [
+          { full_name: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+          { pet_category: { $regex: searchTerm, $options: 'i' } },
+        ],
+      },
+    });
+  }
+
+  if (Object.keys(filters).length > 0) {
+    countPipeline.push({ $match: filters });
+  }
+
+  countPipeline.push({ $count: 'total' });
+
+  const countResult = await Pet.collection.aggregate(countPipeline).toArray();
+  const totalData = countResult[0]?.total || 0;
+  const totalPages = Math.ceil(totalData / limit);
+
+  return { page, limit, totalPages, totalData, results };
 };
 
 const getMyPets = async (
   authUser: IJwtPayload,
   query: Record<string, unknown>,
 ) => {
-  const { ...pQuery } = query;
+  const { ...filters } = query;
 
   const baseQuery = Pet.find({ owner: authUser._id });
 
-  const petsQuery = new QueryBuilder(baseQuery, pQuery)
+  const petsQuery = new QueryBuilder(baseQuery, filters)
     .search(['full_name', 'location', 'breed', 'pet_category', 'gender'])
     .filter()
     .sort()
@@ -190,8 +304,6 @@ const findLocations = async () => {
   return pet;
 };
 
-
-
 export const PetServices = {
   createPerFromDB,
   updatePetFromDB,
@@ -201,5 +313,5 @@ export const PetServices = {
   deleteSinglePet,
   deletedPetImg,
   findPetBreads,
-  findLocations
+  findLocations,
 };

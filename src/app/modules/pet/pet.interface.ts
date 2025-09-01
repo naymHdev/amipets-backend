@@ -6,8 +6,7 @@ export interface IPet {
   full_name: string;
   location: {
     type: 'Point';
-    coordinates: [number, number]; // [lng, lat]
-    address?: string;
+    coordinates: [number, number];
   };
   description?: string;
   breed?: string;

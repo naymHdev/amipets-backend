@@ -1,8 +1,8 @@
 // models/pet.model.ts
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { IPet } from './pet.interface';
 
-const petSchema = new Schema<IPet>(
+const petSchema = new Schema<IPet & Document>(
   {
     full_name: {
       type: String,
@@ -20,12 +20,8 @@ const petSchema = new Schema<IPet>(
         required: true,
       },
       coordinates: {
-        type: [Number], // [lng, lat]
+        type: [Number], // [longitude, latitude]
         required: true,
-      },
-      address: {
-        type: String,
-        required: false,
       },
     },
     description: {
@@ -35,7 +31,7 @@ const petSchema = new Schema<IPet>(
     neutered: {
       type: String,
       enum: ['Yes', 'No', 'N/A'],
-      required: 'false',
+      required: false,
     },
     vaccinated: {
       type: String,
@@ -92,5 +88,8 @@ const petSchema = new Schema<IPet>(
   },
 );
 
-const Pet = mongoose.model<IPet>('Pet', petSchema);
+petSchema.index({ location: '2dsphere' });
+
+// Create the model and export it
+const Pet = mongoose.model<IPet & Document>('Pet', petSchema);
 export default Pet;
