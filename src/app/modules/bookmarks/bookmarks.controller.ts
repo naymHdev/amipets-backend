@@ -14,7 +14,7 @@ const createBookmark = catchAsync(async (req, res) => {
   }
 
   const result = await BookmarksService.createBookmarksFromDB(petId, userId);
-  console.log('result_________', result);
+  // console.log('result_________', result);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
