@@ -66,7 +66,7 @@ const socialLoginValidationSchema = z.object({
       .email({ message: 'Provide a valid email, try again' })
       .optional(),
     image: z.string().url({ message: 'Provide a valid image URL' }).optional(),
-    first_name: z.string().min(2).max(100).optional(),
+    first_name: z.string().min(2).max(10),
   }),
 });
 
