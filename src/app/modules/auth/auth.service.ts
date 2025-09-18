@@ -16,6 +16,8 @@ import emailSender from '../../utils/emailSender';
 const loginUserFromDB = async (payload: IAuth) => {
   const session = await mongoose.startSession();
 
+  // console.log('payload', payload);
+
   try {
     session.startTransaction();
 
@@ -24,11 +26,13 @@ const loginUserFromDB = async (payload: IAuth) => {
       throw new AppError(StatusCodes.NOT_FOUND, 'You are not registered!');
     }
 
-    if (!user.verification?.status) {
-      throw new AppError(
-        StatusCodes.FORBIDDEN,
-        'You are not verified! Please verify your email address. Check your inbox.',
-      );
+    if (!user?.isSocialLogin) {
+      if (!user.verification?.status) {
+        throw new AppError(
+          StatusCodes.FORBIDDEN,
+          'You are not verified! Please verify your email address. Check your inbox.',
+        );
+      }
     }
 
     if (!user.isActive) {
@@ -98,6 +102,7 @@ const registerUserFromDB = async (userData: IUser) => {
 
     const user = new User(userData);
     const result = await user.save({ session });
+    console.log('result', result);
 
     await session.commitTransaction();
 
@@ -136,10 +141,6 @@ const socialLogin = async ({
       'You account is connected by another login system',
     );
   } else {
-    // if (user && !user?.verification?.status) {
-    //   throw new AppError(StatusCodes.FORBIDDEN, 'Your account is blocked');
-    // }
-
     if (user && user?.isDeleted) {
       throw new AppError(StatusCodes.FORBIDDEN, 'Your account is deleted');
     }
@@ -179,6 +180,11 @@ const socialLogin = async ({
     jwtPayload,
     config.jwt_refresh_secret as string,
     (60 * 60 * 24 * 30).toString(), //  30 days
+  );
+  // console.log('userDoc', userDoc);
+  await User.updateOne(
+    { _id: userDoc?._id },
+    { $set: { 'verification.status': true, isVerified: true } },
   );
 
   return {

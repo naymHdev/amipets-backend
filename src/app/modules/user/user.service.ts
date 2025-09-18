@@ -240,7 +240,7 @@ const getMyAllPetsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getMyPets = async (authUser: IJwtPayload) => {
-  console.log('myPet---auth', authUser);
+  // console.log('myPet---auth', authUser);
 
   const pets = await MyPet.find({ owner: authUser._id });
   return pets;
