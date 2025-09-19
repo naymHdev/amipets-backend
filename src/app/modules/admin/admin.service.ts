@@ -40,9 +40,13 @@ const getABoutFromDB = async () => {
   const result = await About.findOne();
   return result;
 };
-
 const updateAbout = async (about: IAbout) => {
-  const result = await About.findOneAndUpdate({}, about, { new: true });
+  const result = await About.findOneAndUpdate({}, about, {
+    new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
+  });
+
   return result;
 };
 
@@ -68,6 +72,8 @@ const getPrivacyPolicyFromDB = async () => {
 const updatePrivacyPolicy = async (privacyPolicy: IPrivacyPolicy) => {
   const result = await PrivacyPolicy.findOneAndUpdate({}, privacyPolicy, {
     new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
   });
   return result;
 };
@@ -94,7 +100,10 @@ const getTermsOfServiceFromDB = async () => {
 const updateTermsOfService = async (termsOfService: ITermsOfService) => {
   const result = await TermsOfService.findOneAndUpdate({}, termsOfService, {
     new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
   });
+
   return result;
 };
 
