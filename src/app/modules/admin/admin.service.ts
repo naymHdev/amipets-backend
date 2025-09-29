@@ -348,11 +348,22 @@ const getServiceBaseWeb = async (
   serviceId: string,
   query: Record<string, unknown>,
 ) => {
-  console.log('query', query);
+  const { pet_type, ...wQuery } = query;
 
-  const { ...wQuery } = query;
-  const baseQuery = AddWebsite.find({ service: serviceId });
+  // Adjust the pet_type logic
+  let petTypeFilter = {};
 
+  if (pet_type) {
+    if (pet_type === 'cat') {
+      petTypeFilter = { pet_type: { $in: ['cat', 'both'] } };
+    } else if (pet_type === 'dog') {
+      petTypeFilter = { pet_type: { $in: ['dog', 'both'] } };
+    } else if (pet_type === 'both') {
+      petTypeFilter = {};
+    }
+  }
+
+  const baseQuery = AddWebsite.find({ service: serviceId, ...petTypeFilter });
   const websiteQuery = new QueryBuilder(baseQuery, wQuery)
     .search(['web_name', 'pet_type', 'serviceName'])
     .sort()
