@@ -300,10 +300,23 @@ const updateWebFromDB = async (
 };
 
 const getWebsiteFromDB = async (query: Record<string, unknown>) => {
-  const { ...wQuery } = query;
+  const { pet_type, ...wQuery } = query;
+
+  // Adjust the pet_type logic
+  let petTypeFilter = {};
+
+  if (pet_type) {
+    if (pet_type === 'cat') {
+      petTypeFilter = { pet_type: { $in: ['cat', 'both'] } };
+    } else if (pet_type === 'dog') {
+      petTypeFilter = { pet_type: { $in: ['dog', 'both'] } };
+    } else if (pet_type === 'both') {
+      petTypeFilter = {};
+    }
+  }
 
   const websiteQuery = new QueryBuilder(
-    AddWebsite.find().populate('service'),
+    AddWebsite.find(petTypeFilter).populate('service'),
     wQuery,
   )
     .search(['web_name', 'web_link', 'location', 'pet_type'])
