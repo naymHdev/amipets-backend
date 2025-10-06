@@ -93,6 +93,7 @@ const servicesSchema = z.object({
   body: z.object({
     name: z.string().min(3, 'Service name cannot be empty'),
     isActive: z.boolean().default(true).optional(),
+    position: z.number().optional(),
   }),
 });
 
@@ -100,6 +101,12 @@ const updateServicesSchema = z.object({
   body: z.object({
     name: z.string().min(3, 'Service name cannot be empty').optional(),
     isActive: z.boolean().default(true).optional(),
+  }),
+});
+
+const updatePosition = z.object({
+  body: z.object({
+    position: z.number().optional(),
   }),
 });
 
@@ -160,4 +167,5 @@ export const AdminValidation = {
   addWebsiteSchema,
   adminProfileUpdateValidationSchema,
   updateWebsiteSchema,
+  updatePosition,
 };

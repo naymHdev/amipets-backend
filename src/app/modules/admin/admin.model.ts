@@ -20,6 +20,7 @@ const AboutSchema = new Schema<IAbout>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
@@ -36,6 +37,7 @@ const PrivacyPolicySchema = new Schema<IPrivacyPolicy>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
@@ -76,6 +78,7 @@ const BannerSchema = new Schema<IBanner>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
@@ -93,9 +96,15 @@ const ServiceSchema = new Schema<IService>(
       type: Boolean,
       default: true,
     },
+    position: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
@@ -139,6 +148,7 @@ const AddWebsiteSchema = new Schema<IAddWebsite>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

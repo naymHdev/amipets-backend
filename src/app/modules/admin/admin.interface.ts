@@ -26,6 +26,7 @@ export interface IService {
   name: string;
   icon: string;
   isActive: boolean;
+  position?: number;
 }
 
 export interface IAddWebsite {

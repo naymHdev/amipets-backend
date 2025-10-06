@@ -364,6 +364,18 @@ const deletedService = catchAsync(async (req, res) => {
   });
 });
 
+const updateServicePosition = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const payload = req.body.position;
+  const result = await AdminService.updateServicePosition(id, payload);
+  sendResponse(res, {
+    success: true,
+    message: 'Service position updated successfully',
+    statusCode: StatusCodes.OK,
+    data: result,
+  });
+});
+
 // -------------------------------- Add Website Controller --------------------------------
 const createAddWebsite = catchAsync(async (req, res) => {
   const payload = req.body;
@@ -682,6 +694,7 @@ export const AdminController = {
   deletedService,
   getSingleService,
   serviceBaseWeb,
+  updateServicePosition,
   getWebLocations,
 
   createAddWebsite,

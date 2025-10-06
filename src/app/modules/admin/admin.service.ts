@@ -222,11 +222,24 @@ const createServiceFromDB = async (payload: IService, icon: string) => {
 const getServiceFromDB = async (query: Record<string, unknown>) => {
   const { ...wQuery } = query;
   const baseQuery = Service.find();
+  const serviceQuery = new QueryBuilder(baseQuery, wQuery)
+    .search(['name'])
+    .filter()
+    .fields();
 
-  const serviceQuery = new QueryBuilder(baseQuery, wQuery).search(['name']);
+  const services = await serviceQuery.modelQuery.lean();
 
-  const result = await serviceQuery.modelQuery;
-  return result;
+  const fixedServices = services
+    .filter((s: any) => (s.position as number) && s.position > 0)
+    .sort((a: any, b: any) => a.position - b.position);
+
+  const randomServices = services
+    .filter((s: any) => !s.position || s.position === 0)
+    .sort(() => Math.random() - 0.5);
+
+  const finalServices = [...fixedServices, ...randomServices];
+
+  return finalServices;
 };
 
 const getSingleServices = async (id: string) => {
@@ -449,6 +462,45 @@ const unblockUser = async (id: string) => {
   await user.save();
 };
 
+const updateServicePosition = async (id: string, position: number) => {
+  if (position <= 0) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Position cannot be negative');
+  }
+  if (!Number.isInteger(position)) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Position must be an integer');
+  }
+  if (!Number(position)) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'You must provide a position number greater than 0',
+    );
+  }
+
+  const service = await Service.findById(id);
+  if (!service) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Service not found');
+  }
+
+  if (service.position === position) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Position cannot be the same');
+  }
+
+  const serviceLength = await Service.countDocuments();
+  if (position > serviceLength) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Position cannot be greater than the number of services',
+    );
+  }
+
+  const result = await Service.findByIdAndUpdate(
+    id,
+    { $set: { position: position } },
+    { new: true, runValidators: true, upsert: true },
+  );
+  return result;
+};
+
 // --------------------------- Shelter Services ---------------------------
 const getAllSheltersFromDB = async (query: Record<string, unknown>) => {
   const { ...sQuery } = query;
@@ -551,6 +603,7 @@ export const AdminService = {
   deleteService,
   getServiceBaseWeb,
   getWebLocations,
+  updateServicePosition,
 
   createWebsiteFromDB,
   getWebsiteFromDB,

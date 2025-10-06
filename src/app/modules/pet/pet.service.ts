@@ -141,7 +141,6 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   // Convert latitude and longitude to numbers (if they are strings)
   const lat = parseFloat(latitude as string);
   const lon = parseFloat(longitude as string);
-
   const page = parseInt(pageStr as string) || 1;
   const limit = parseInt(limitStr as string) || 10;
   const skip = (page - 1) * limit;
@@ -154,15 +153,13 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
       $geoNear: {
         near: {
           type: 'Point',
-          coordinates: [lon, lat], // Correct order of coordinates [lon, lat]
+          coordinates: [lon, lat],
         },
         key: 'location',
         distanceField: 'dist.calculated',
         spherical: true,
-        maxDistance: 50 * 1609.34, // 50 miles in meters
+        maxDistance: 50 * 1609.34,
         query: {
-          // isDeleted: false,
-          // isAdopted: false,
           ...filters,
         },
       },
@@ -170,8 +167,6 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   } else {
     pipeline.push({
       $match: {
-        // isDeleted: false,
-        // isAdopted: false,
         ...filters,
       },
     });
@@ -185,7 +180,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
           { full_name: { $regex: searchTerm, $options: 'i' } },
           { description: { $regex: searchTerm, $options: 'i' } },
           {
-            pet_category: { $regex: searchTerm, $options: 'i' }, // Removed $elemMatch for better matching
+            pet_category: { $regex: searchTerm, $options: 'i' },
           },
         ],
       },
@@ -200,12 +195,15 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   // SORT + PAGINATION
   pipeline.push({ $sort: { createdAt: -1 } });
   pipeline.push({ $skip: skip });
-  pipeline.push({ $limit: limit });
+  // pipeline.push({ $limit: limit });
+
+  // ✅ RANDOMIZE ORDER
+  pipeline.push({ $sample: { size: limit } });
 
   // RUN AGGREGATION
   const results = await Pet.collection.aggregate(pipeline).toArray();
 
-  // COUNT TOTAL DOCUMENTS WITHOUT SKIP/LIMIT
+  // ✅ COUNT total matching documents (without sampling)
   const countPipeline: any[] = [];
 
   if (lat && lon) {
@@ -220,8 +218,6 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
         spherical: true,
         maxDistance: 50 * 1609.34,
         query: {
-          // isDeleted: false,
-          // isAdopted: false,
           ...filters,
         },
       },
@@ -229,8 +225,6 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   } else {
     countPipeline.push({
       $match: {
-        // isDeleted: true,
-        // isAdopted: true,
         ...filters,
       },
     });

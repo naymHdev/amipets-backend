@@ -103,6 +103,12 @@ router.delete(
   AdminController.deletedService,
 );
 router.get('/web-locations', AdminController.getWebLocations);
+router.patch(
+  '/change-position/:id',
+  auth(Role.ADMIN),
+  validateRequest(AdminValidation.updatePosition),
+  AdminController.updateServicePosition,
+);
 
 // --------------------------------- Add Website Routes ---------------------------------
 router.post(
