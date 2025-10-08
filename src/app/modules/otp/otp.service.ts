@@ -7,7 +7,7 @@ import moment from 'moment';
 import { generateOtp } from '../../utils/otpGenerator';
 import path from 'path';
 import fs from 'fs';
-import emailSender from '../../utils/emailSender';
+import sendMail from '../../utils/emailSender';
 
 const verifyOtp = async (token: string, otp: string | number) => {
   if (!token) {
@@ -21,6 +21,7 @@ const verifyOtp = async (token: string, otp: string | number) => {
       config.jwt_access_secret as Secret,
     ) as JwtPayload;
   } catch (err: any) {
+    console.log(err);
     throw new AppError(
       StatusCodes.FORBIDDEN,
       'Session has expired. Please try to submit OTP within 3 minute',
@@ -141,14 +142,12 @@ const resendOtp = async (email: string) => {
   );
 
   if (user) {
-    await emailSender(
-      user?.email,
-      'Your One Time OTP',
-      fs
-        .readFileSync(otpEmailPath, 'utf8')
-        .replace('{{otp}}', otp)
-        .replace('{{email}}', user?.email),
-    );
+    const html = fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{otp}}', otp)
+      .replace('{{email}}', user?.email);
+
+    await sendMail({ to: user?.email, html, subject: 'Your One Time OTP' });
   }
 
   return { token };

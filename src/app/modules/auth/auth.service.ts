@@ -11,7 +11,7 @@ import moment from 'moment';
 import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
-import emailSender from '../../utils/emailSender';
+import sendMail from '../../utils/emailSender';
 
 const loginUserFromDB = async (payload: IAuth) => {
   const session = await mongoose.startSession();
@@ -102,7 +102,7 @@ const registerUserFromDB = async (userData: IUser) => {
 
     const user = new User(userData);
     const result = await user.save({ session });
-    console.log('result', result);
+    // console.log('result', result);
 
     await session.commitTransaction();
 
@@ -272,15 +272,12 @@ const forgotPassword = async (email: string) => {
     'view',
     'forgot_pass_mail.html',
   );
+  const html = fs
+    .readFileSync(otpEmailPath, 'utf-8')
+    .replace('{{otp}}', otp)
+    .replace('{{email}}', user?.email);
 
-  await emailSender(
-    user?.email,
-    'Your reset password OTP is',
-    fs
-      .readFileSync(otpEmailPath, 'utf8')
-      .replace('{{otp}}', otp)
-      .replace('{{email}}', user?.email),
-  );
+  await sendMail({ to: user?.email, html, subject: 'OTP From Amipeta Sense' });
 
   return { email, token };
 };

@@ -10,7 +10,7 @@ export async function defaultTask() {
       last_name: 'Mantas',
       email: 'mantaskuneika1@gmail.com',
       phoneNumber: '+8801770064053',
-      password: 'mantaskuneika1@',
+      password: 'mantasKuneika1@',
       role: 'admin',
       verification: {
         otp: '0',
