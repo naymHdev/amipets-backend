@@ -22,11 +22,13 @@ const petSchema = new Schema<IPet & Document>(
       coordinates: {
         type: [Number], // [longitude, latitude]
         required: true,
+        trim: true,
       },
     },
     description: {
       type: String,
       required: false,
+      trim: true,
     },
     neutered: {
       type: String,
@@ -42,18 +44,22 @@ const petSchema = new Schema<IPet & Document>(
       type: String,
       enum: ['Yes', 'No', 'N/A'],
       required: false,
+      trim: true,
     },
     weight: {
       type: String,
       required: false,
+      default: null,
     },
     chip_number: {
       type: String,
       required: false,
+      trim: true,
     },
     breed: {
       type: String,
       required: false,
+      trim: true,
     },
     gender: {
       type: String,

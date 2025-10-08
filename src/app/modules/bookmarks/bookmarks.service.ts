@@ -52,14 +52,28 @@ const getAllBookmarksFromDB = async (
   query: Record<string, unknown>,
 ) => {
   const { ...pQuery } = query;
+
+  const searchFields = [
+    'pet_id.full_name',
+    'pet_id.breed',
+    'pet_id.pet_category',
+    'pet_id.gender',
+    'user_id.first_name',
+    'user_id.last_name',
+    'user_id.email',
+    'user_id.location',
+  ];
+
   const baseQuery = Bookmarks.find({ user_id: userId })
     .populate('pet_id')
     .populate('user_id');
 
   const petsQuery = new QueryBuilder(baseQuery, pQuery)
+    .search(searchFields)
     .filter()
     .sort()
-    .fields();
+    .fields()
+    .paginate();
 
   const pets = await petsQuery.modelQuery;
   const meta = await petsQuery.countTotal();

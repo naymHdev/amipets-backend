@@ -147,6 +147,7 @@ const updateWebsiteSchema = z.object({
 // ---------------------------- Admin Profile Validation Schemas ----------------------------
 const adminProfileUpdateValidationSchema = z.object({
   body: z.object({
+    first_name: z.string().optional(),
     full_name: z.string().optional(),
     email: z.string().email().optional(),
     contact_number: z.number().optional(),

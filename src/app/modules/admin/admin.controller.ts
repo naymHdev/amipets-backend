@@ -671,6 +671,18 @@ const adminProfile = catchAsync(async (req, res) => {
   });
 });
 
+const deleteUser = catchAsync(async (req, res) => {
+  const { email } = req.params;
+  const result = await AdminService.deleteUser(email);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'User deleted successfully!',
+    data: result,
+  });
+});
+
 // ----------------------------- Export Controller ----------------------------
 export const AdminController = {
   createAbout,
@@ -708,6 +720,7 @@ export const AdminController = {
   getUserDetail,
   blockUser,
   unblockUser,
+  deleteUser,
 
   editAdminProfile,
   adminProfile,

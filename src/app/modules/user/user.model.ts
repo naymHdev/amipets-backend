@@ -15,12 +15,14 @@ const MyPetSchema = new Schema<IMyPet>(
     },
     chip_number: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
+      trim: true,
     },
     breed: {
       type: String,
       required: true,
+      trim: true,
     },
     gender: {
       type: String,

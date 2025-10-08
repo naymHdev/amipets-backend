@@ -174,5 +174,6 @@ router.put(
 );
 
 router.get('/admin-profile', auth(Role.ADMIN), AdminController.adminProfile);
+router.delete('/delete-user/:email', AdminController.deleteUser);
 
 export const AdminRoutes = router;

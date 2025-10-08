@@ -22,7 +22,7 @@ const myPetValidationSchema = z.object({
       .min(2, 'Full name must be at least 2 characters'),
     chip_number: z
       .string({ required_error: 'Chip number is required' })
-      .length(10, 'Chip number must be exactly 10 digits'),
+      .optional(),
     breed: z
       .string({ required_error: 'Breed is required' })
       .min(2, 'Breed must be at least 2 characters'),
@@ -41,7 +41,6 @@ const updateMyPetValidationSchema = z.object({
       .optional(),
     chip_number: z
       .string({ required_error: 'Chip number is required' })
-      .length(10, 'Chip number must be exactly 10 digits')
       .optional(),
     breed: z
       .string({ required_error: 'Breed is required' })
@@ -73,7 +72,7 @@ const petAdoptedValidationSchema = z.object({
         }),
       )
       .nonempty({ message: 'At least one answer is required' }),
-  })
+  }),
 });
 
 export const UserValidation = {

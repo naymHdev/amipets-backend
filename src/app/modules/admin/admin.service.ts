@@ -449,8 +449,7 @@ const blockUser = async (id: string) => {
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
   }
-  user.isActive = false;
-  await user.save();
+  await User.findByIdAndUpdate(id, { isActive: false });
 };
 
 const unblockUser = async (id: string) => {
@@ -458,8 +457,7 @@ const unblockUser = async (id: string) => {
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
   }
-  user.isActive = true;
-  await user.save();
+  await User.findByIdAndUpdate(id, { isActive: true });
 };
 
 const updateServicePosition = async (id: string, position: number) => {
@@ -580,6 +578,15 @@ const editProfileFromDB = async (
   return result;
 };
 
+const deleteUser = async (email: string) => {
+  if (!email) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Email is required.');
+  }
+
+  const result = await User.deleteOne({ email });
+  return result;
+};
+
 export const AdminService = {
   createAboutFromDB,
   createPrivacyPolicyFromDB,
@@ -618,6 +625,7 @@ export const AdminService = {
   unblockUser,
   editProfileFromDB,
   adminProfile,
+  deleteUser,
 
   getAllSheltersFromDB,
   shelterDetailFromDB,

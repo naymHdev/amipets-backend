@@ -7,7 +7,7 @@ export interface IMyPet {
   breed: string;
   gender: 'Male' | 'Female';
   date_of_birth: string;
-  chip_number: string;
+  chip_number?: string;
   owner: Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
