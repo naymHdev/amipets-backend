@@ -11,7 +11,7 @@ import moment from 'moment';
 import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
-import sendMail from '../../utils/emailSender';
+import { sendEmail } from '../../utils/emailSender';
 
 const loginUserFromDB = async (payload: IAuth) => {
   const session = await mongoose.startSession();
@@ -272,12 +272,15 @@ const forgotPassword = async (email: string) => {
     'view',
     'forgot_pass_mail.html',
   );
-  const html = fs
-    .readFileSync(otpEmailPath, 'utf-8')
-    .replace('{{otp}}', otp)
-    .replace('{{email}}', user?.email);
 
-  await sendMail({ to: user?.email, html, subject: 'OTP From Amipeta Sense' });
+  await sendEmail(
+    user?.email,
+    'Your One Time OTP',
+    fs
+      .readFileSync(otpEmailPath, 'utf8')
+      .replace('{{otp}}', otp)
+      .replace('{{email}}', user?.email),
+  );
 
   return { email, token };
 };
