@@ -16,18 +16,6 @@ const updateProfile = catchAsync(async (req, res) => {
     profile_image,
     req.user as IJwtPayload,
   );
-
-  await NotificationService.sendNotification({
-    ownerId: req.user?._id,
-    key: 'notification',
-    data: {
-      id: result?._id.toString(),
-      message: `${req.user?.first_name} ${req.user?.last_name} profile updated successfully!`,
-    },
-    receiverId: [req.user?._id],
-    notifyAdmin: true,
-  });
-
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -62,7 +50,7 @@ const changePassword = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} changed password`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -97,7 +85,7 @@ const deleteProfile = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} deleted profile`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -139,7 +127,7 @@ const createMyPet = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} created pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -184,7 +172,7 @@ const updateMyPet = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -251,7 +239,7 @@ const deleteMyPet = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} deleted pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {

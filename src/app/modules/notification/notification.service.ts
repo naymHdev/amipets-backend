@@ -90,7 +90,7 @@ const getAllUserNotifications = async (
 
     case Role.ADMIN:
       baseQuery = Notification.find({
-        notifyAdmin: true,
+        notifyAdmin: false,
       });
       break;
 

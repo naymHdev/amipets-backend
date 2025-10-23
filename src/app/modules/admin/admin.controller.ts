@@ -18,7 +18,7 @@ const createAbout = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} created about section`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -51,7 +51,7 @@ const updateAbout = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated about section`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -73,7 +73,7 @@ const createPrivacyPolicy = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} created privacy policy`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -106,7 +106,7 @@ const updatePrivacyPolicy = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated privacy policy`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -128,7 +128,7 @@ const createTermsAndCondition = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} created terms and condition`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -160,7 +160,7 @@ const updateTermsAndCondition = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated terms and condition`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -190,7 +190,7 @@ const createBanner = catchAsync(async (req, res) => {
       message: `${req.user?.email?.split('@')[0]} updated banner`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -232,7 +232,7 @@ const updateBanner = catchAsync(async (req, res) => {
       message: `${req.user?.email?.split('@')[0]} updated banner`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -255,7 +255,7 @@ const deleteSingleBannerInfo = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} deleted banner info. Deleted time ${new Date().toLocaleString()}`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -282,7 +282,7 @@ const createService = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} created service`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -332,7 +332,7 @@ const updateService = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated service`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -354,7 +354,7 @@ const deletedService = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} deleted service`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -399,7 +399,7 @@ const createAddWebsite = catchAsync(async (req, res) => {
       message: ` ${req.user?.email.split('@')[0]} created website`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -426,7 +426,7 @@ const updateAddWebsite = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated website`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -471,7 +471,7 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
       message: `  ${req.user?.first_name} ${req.user?.last_name} deleted website`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     success: true,
@@ -551,7 +551,7 @@ const blockUser = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} blocked user`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -574,7 +574,7 @@ const unblockUser = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} unblocked user`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -620,7 +620,7 @@ const blockShelter = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} blocked shelter`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -650,7 +650,7 @@ const editAdminProfile = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} updated admin profile`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {

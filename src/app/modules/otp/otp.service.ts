@@ -7,7 +7,7 @@ import moment from 'moment';
 import { generateOtp } from '../../utils/otpGenerator';
 import path from 'path';
 import fs from 'fs';
-import sendMail from '../../utils/emailSender';
+import { sendEmail } from '../../utils/emailSender';
 
 const verifyOtp = async (token: string, otp: string | number) => {
   if (!token) {
@@ -142,12 +142,14 @@ const resendOtp = async (email: string) => {
   );
 
   if (user) {
-    const html = fs
-      .readFileSync(otpEmailPath, 'utf8')
-      .replace('{{otp}}', otp)
-      .replace('{{email}}', user?.email);
-
-    await sendMail({ to: user?.email, html, subject: 'Your One Time OTP' });
+    await sendEmail(
+      user?.email,
+      'Your One Time OTP',
+      fs
+        .readFileSync(otpEmailPath, 'utf8')
+        .replace('{{otp}}', otp)
+        .replace('{{email}}', user?.email),
+    );
   }
 
   return { token };

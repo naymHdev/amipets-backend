@@ -29,7 +29,7 @@ const createPet = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} created pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -77,7 +77,7 @@ const updatePet = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} updated pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -161,7 +161,7 @@ const deletePet = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} deleted pet`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({

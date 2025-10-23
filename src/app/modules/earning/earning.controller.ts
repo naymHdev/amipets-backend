@@ -15,7 +15,7 @@ const addIncome = catchAsync(async (req, res) => {
       message: `${result.clientName} added income`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
@@ -67,7 +67,7 @@ const deleteIncome = catchAsync(async (req, res) => {
       message: ` ${result?.clientName} deleted income`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
   sendResponse(res, {
     statusCode: StatusCodes.OK,

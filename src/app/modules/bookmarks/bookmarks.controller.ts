@@ -24,7 +24,7 @@ const createBookmark = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} created bookmark`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -93,7 +93,7 @@ const deleteBookmarks = catchAsync(async (req, res) => {
       message: ` ${req.user?.first_name} ${req.user?.last_name} deleted your bookmark`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({

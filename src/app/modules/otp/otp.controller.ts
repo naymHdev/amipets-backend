@@ -16,7 +16,7 @@ const verifyOtp = catchAsync(async (req, res) => {
   //     message: `  ${req.user?.first_name} ${req.user?.last_name} verified otp`,
   //   },
   //   receiverId: [req.user?._id],
-  //   notifyAdmin: true,
+  //   notifyAdmin: false,
   // });
 
   sendResponse(res, {
@@ -40,7 +40,7 @@ const resendOtp = catchAsync(async (req, res) => {
   //     message: `User resend otp`,
   //   },
   //   receiverId: [req.user?._id],
-  //   notifyAdmin: true,
+  //   notifyAdmin: false,
   // });
 
   sendResponse(res, {

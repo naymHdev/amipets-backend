@@ -37,30 +37,7 @@ const registerUser = catchAsync(async (req, res) => {
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUserFromDB(req.body);
-
   const { refreshToken, accessToken, user } = result;
-
-  // await NotificationService.sendNotification({
-  //   ownerId: new Types.ObjectId(user._id),
-  //   key: 'notification',
-  //   data: {
-  //     id: user?._id.toString(),
-  //     message: `Hello, you have successfully logged in. Your last login time ${new Date()}`,
-  //   },
-  //   receiverId: [new Types.ObjectId(user._id)],
-  //   notifyAdmin: true,
-  // });
-
-  // await NotificationService.sendNotification({
-  //   ownerId: new Types.ObjectId(user._id),
-  //   key: 'notification',
-  //   data: {
-  //     id: user?._id.toString(),
-  //     message: `Hay ${user?.first_name} ${user?.last_name} you are logged in successfully! Your last login time ${new Date()}`,
-  //   },
-  //   receiverId: [new Types.ObjectId(user._id)],
-  //   notifyUser: true,
-  // });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

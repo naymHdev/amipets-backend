@@ -1,61 +1,34 @@
-import nodemailer from 'nodemailer';
+import axios from 'axios';
 import config from '../config';
-import { StatusCodes } from 'http-status-codes';
 import AppError from '../errors/appError';
+import { StatusCodes } from 'http-status-codes';
 
-type TAttachment = {
-  filename: string;
-  path: string;
-  cid?: string;
-  contentType?: string;
-  content?: string;
-};
-
-type TEmail = {
-  to: string;
-  html: string;
-  subject: string;
-  from?: string;
-  attachments?: TAttachment[];
-};
-
-const sendMail = async ({ to, html, subject, from, attachments }: TEmail) => {
+export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
-    if (!to) {
-      throw new AppError(
-        StatusCodes.BAD_REQUEST,
-        'Recipient email (to) is required',
-      );
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: config.NODE_ENV === 'production' ? 465 : 587,
-      secure: false,
-      auth: {
-        user: config.nodemailer_host_email,
-        pass: config.nodemailer_host_pass,
-      },
-      attachments,
-    });
-
-    // send mail with defined transport object
-    const res = await transporter.sendMail({
-      from: from || config.nodemailer_host_email,
+    const emailData = {
       to,
-      replyTo: from || config.nodemailer_host_email,
+      from: config.nodemailer_host_email,
       subject,
       html,
-    });
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      userEmail: config.nodemailer_host_email,
+      appPassword: config.nodemailer_host_pass,
+    };
 
-    console.log(res.messageId, '------email sent successfully------');
-  } catch (error) {
-    console.log('send mail error_____', error);
-    throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      (error as Error).message || 'Failed to send email',
+    const res = await axios.post(
+      'https://nodemailer-transaction.vercel.app',
+      emailData,
     );
+    const result = res?.data;
+    if (!result.success) {
+      throw new AppError(StatusCodes.BAD_REQUEST, result.message);
+    }
+    console.log('Email sent successfully');
+    return result;
+  } catch (error) {
+    console.log('Error sending email________', error);
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Error sending email');
   }
 };
-
-export default sendMail;

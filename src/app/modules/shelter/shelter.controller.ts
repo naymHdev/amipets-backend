@@ -20,7 +20,7 @@ const createSurvey = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} Created Survey Question!`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -75,7 +75,7 @@ const deleteSurvey = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} deleted survey question`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -108,7 +108,7 @@ const updateSurvey = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} updated survey question`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
@@ -155,7 +155,7 @@ const updateUserRequest = catchAsync(async (req, res) => {
       message: `${req.user?.first_name} ${req.user?.last_name} updated user request`,
     },
     receiverId: [req.user?._id],
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   await NotificationService.sendNotification({
