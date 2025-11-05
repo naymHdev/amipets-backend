@@ -14,7 +14,10 @@ router.get('/locations', PetController.findLocations);
 router.post(
   '/create-pet',
   auth(Role.SHELTER),
-  single_image_Upload.array('pet_image'),
+  single_image_Upload.fields([
+    { name: 'pet_image', maxCount: 10 },
+    { name: 'pet_reports', maxCount: 10 },
+  ]),
   parseBody,
   validateRequest(petValidation.createPetSchema),
   PetController.createPet,
@@ -23,7 +26,10 @@ router.post(
 router.patch(
   '/:id',
   auth(Role.SHELTER),
-  single_image_Upload.array('pet_image'),
+  single_image_Upload.fields([
+    { name: 'pet_image', maxCount: 10 },
+    { name: 'pet_reports', maxCount: 10 },
+  ]),
   parseBody,
   validateRequest(petValidation.updatePetePetSchema),
   PetController.updatePet,

@@ -7,13 +7,22 @@ import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
 
 const createPet = catchAsync(async (req, res) => {
-  const files = req.files as Express.Multer.File[];
+  const files = req.files as {
+    pet_image: Express.Multer.File[];
+    pet_reports?: Express.Multer.File[];
+  };
 
-  const filePaths = files.map((file) => {
+  const filePaths = files?.pet_image?.map((file) => {
     return (
       (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
     );
   });
+
+  const pet_reports = files?.pet_reports?.map((file) => {
+    return file?.filename && config.BASE_URL + '/reports/' + file.filename;
+  });
+
+  req.body.pet_reports = pet_reports;
 
   const result = await PetServices.createPerFromDB(
     req.body,
@@ -54,12 +63,24 @@ const createPet = catchAsync(async (req, res) => {
 const updatePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const payload = req.body;
-  const files = req.files as Express.Multer.File[];
-  const filePaths = files.map((file) => {
+
+  const files = req.files as {
+    pet_image: Express.Multer.File[];
+    pet_reports?: Express.Multer.File[];
+  };
+
+  const filePaths = files?.pet_image?.map((file) => {
     return (
       (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
     );
   });
+
+  const pet_reports = files?.pet_reports?.map((file) => {
+    return file?.filename && config.BASE_URL + '/reports/' + file.filename;
+  });
+
+  req.body.pet_reports = pet_reports;
+
   const authUser = req.user as IJwtPayload;
 
   const result = await PetServices.updatePetFromDB(

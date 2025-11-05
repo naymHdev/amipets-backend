@@ -13,6 +13,11 @@ const petSchema = new Schema<IPet & Document>(
       type: [String],
       required: false,
     },
+    area_name: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     location: {
       type: {
         type: String,
@@ -87,6 +92,24 @@ const petSchema = new Schema<IPet & Document>(
     isBookmarked: {
       type: Boolean,
       default: false,
+    },
+
+    pet_status: {
+      type: String,
+      enum: ['adopted', 'deceased', 'in quarantine', 'reserved'],
+      required: false,
+    },
+    medical_notes: {
+      type: String,
+      required: false,
+    },
+    pet_reports: {
+      type: [String],
+      required: false,
+    },
+    internal_notes: {
+      type: String,
+      required: false,
     },
   },
   {

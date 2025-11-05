@@ -5,6 +5,7 @@ const createPetSchema = z.object({
     full_name: z
       .string({ required_error: 'Full name is required' })
       .min(2, 'Full name must be at least 2 characters'),
+    area_name: z.string().min(3, 'area_name is required'),
     location: z.object({
       type: z.literal('Point'),
       coordinates: z
@@ -15,7 +16,6 @@ const createPetSchema = z.object({
         .refine((coords) => coords.length === 2, {
           message: 'Coordinates must be [lng, lat]',
         }),
-      address: z.string().min(3, 'Address is required').optional(),
     }),
     description: z
       .string({ required_error: 'Description is required' })
@@ -38,12 +38,18 @@ const createPetSchema = z.object({
     }),
     isAdopted: z.boolean().optional(),
     isBookmarked: z.boolean().optional(),
+    pet_status: z
+      .enum(['adopted', 'deceased', 'in quarantine', 'reserved'], {
+        required_error: 'Pet status is required',
+      })
+      .optional(),
   }),
 });
 
 const updatePetePetSchema = z.object({
   body: z.object({
     full_name: z.string({ required_error: 'Full name is required' }).optional(),
+    area_name: z.string().optional(),
     location: z.object({
       type: z.literal('Point').optional(),
       coordinates: z
@@ -55,7 +61,6 @@ const updatePetePetSchema = z.object({
           message: 'Coordinates must be [lng, lat]',
         })
         .optional(),
-      address: z.string().min(3, 'Address is required').optional(),
     }),
     description: z
       .string({ required_error: 'Description is required' })

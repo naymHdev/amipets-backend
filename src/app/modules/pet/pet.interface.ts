@@ -4,6 +4,7 @@ export interface IPet {
   _id?: string;
   pet_image: string[];
   full_name: string;
+  area_name: string;
   location: {
     type: 'Point';
     coordinates: [number, number];
@@ -23,4 +24,9 @@ export interface IPet {
   pet_category: 'dog' | 'cat' | 'both';
   isAdopted?: boolean;
   isBookmarked?: boolean;
+
+  pet_status?: 'adopted' | 'deceased' | 'in quarantine' | 'reserved';
+  medical_notes?: string;
+  pet_reports?: string[];
+  internal_notes?: string;
 }
