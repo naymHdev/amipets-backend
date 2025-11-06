@@ -13,9 +13,13 @@ const petSchema = new Schema<IPet & Document>(
       type: [String],
       required: false,
     },
-    area_name: {
+    city: {
       type: String,
-      default: '',
+      required: true,
+      trim: true,
+    },
+    address: {
+      type: String,
       trim: true,
     },
     location: {
@@ -96,8 +100,8 @@ const petSchema = new Schema<IPet & Document>(
 
     pet_status: {
       type: String,
-      enum: ['adopted', 'deceased', 'in quarantine', 'reserved'],
-      required: false,
+      enum: ['adopted', 'deceased', 'in quarantine', 'reserved', 'available'],
+      default: 'available',
     },
     medical_notes: {
       type: String,

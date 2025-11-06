@@ -10,6 +10,7 @@ import { single_image_Upload } from '../../utils/imageUploader';
 const router = Router();
 router.get('/breeds', PetController.findBreeds);
 router.get('/locations', PetController.findLocations);
+router.get('/cities', PetController.findCities);
 
 router.post(
   '/create-pet',

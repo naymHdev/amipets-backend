@@ -102,7 +102,7 @@ const updatePetFromDB = async (
 
   // Handle image update → append new images to existing ones
   let finalProfileImages = existingPet.pet_image || [];
-  if (image && image.length > 0) {
+  if (image && image?.length > 0) {
     finalProfileImages = [...finalProfileImages, ...image];
   }
 
@@ -188,7 +188,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   }
 
   // ADDITIONAL FILTERS
-  if (Object.keys(filters).length > 0) {
+  if (Object.keys(filters)?.length > 0) {
     pipeline.push({ $match: filters });
   }
 
@@ -242,7 +242,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
     });
   }
 
-  if (Object.keys(filters).length > 0) {
+  if (Object.keys(filters)?.length > 0) {
     countPipeline.push({ $match: filters });
   }
 
@@ -298,6 +298,11 @@ const findLocations = async () => {
   return pet;
 };
 
+const findCities = async () => {
+  const pet = await Pet.distinct('city');
+  return pet;
+};
+
 export const PetServices = {
   createPerFromDB,
   updatePetFromDB,
@@ -308,4 +313,5 @@ export const PetServices = {
   deletedPetImg,
   findPetBreads,
   findLocations,
+  findCities,
 };

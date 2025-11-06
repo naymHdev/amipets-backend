@@ -5,7 +5,8 @@ const createPetSchema = z.object({
     full_name: z
       .string({ required_error: 'Full name is required' })
       .min(2, 'Full name must be at least 2 characters'),
-    area_name: z.string().min(3, 'area_name is required'),
+    city: z.string({ required_error: 'City is required' }),
+    address: z.string().optional(),
     location: z.object({
       type: z.literal('Point'),
       coordinates: z
@@ -13,7 +14,7 @@ const createPetSchema = z.object({
           z.number().min(-180).max(180), // lng
           z.number().min(-90).max(90), // lat
         ])
-        .refine((coords) => coords.length === 2, {
+        .refine((coords) => coords?.length === 2, {
           message: 'Coordinates must be [lng, lat]',
         }),
     }),
@@ -39,9 +40,10 @@ const createPetSchema = z.object({
     isAdopted: z.boolean().optional(),
     isBookmarked: z.boolean().optional(),
     pet_status: z
-      .enum(['adopted', 'deceased', 'in quarantine', 'reserved'], {
+      .enum(['adopted', 'deceased', 'in quarantine', 'reserved', 'available'], {
         required_error: 'Pet status is required',
       })
+      .default('available')
       .optional(),
   }),
 });
@@ -49,7 +51,8 @@ const createPetSchema = z.object({
 const updatePetePetSchema = z.object({
   body: z.object({
     full_name: z.string({ required_error: 'Full name is required' }).optional(),
-    area_name: z.string().optional(),
+    city: z.string().optional(),
+    address: z.string().optional(),
     location: z.object({
       type: z.literal('Point').optional(),
       coordinates: z
@@ -57,7 +60,7 @@ const updatePetePetSchema = z.object({
           z.number().min(-180).max(180), // lng
           z.number().min(-90).max(90), // lat
         ])
-        .refine((coords) => coords.length === 2, {
+        .refine((coords) => coords?.length === 2, {
           message: 'Coordinates must be [lng, lat]',
         })
         .optional(),
@@ -89,6 +92,12 @@ const updatePetePetSchema = z.object({
       .optional(),
     isAdopted: z.boolean().optional(),
     isBookmarked: z.boolean().optional(),
+    pet_status: z
+      .enum(['adopted', 'deceased', 'in quarantine', 'reserved', 'available'], {
+        required_error: 'Pet status is required',
+      })
+      .default('available')
+      .optional(),
   }),
 });
 

@@ -24,15 +24,15 @@ export const single_image_Upload = multer({
   limits: { fileSize: 1024 * 1024 * 20 /* 20 mb */ },
   fileFilter(req, file, cb) {
     // if file type valid
-    if (
-      ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(
-        file.mimetype,
-      )
-    ) {
+    // if (
+    //   ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(
+    //     file.mimetype,
+    //   )
+    // ) {
       cb(null, true);
-    } else {
-      cb(null, false);
-      return cb(new Error('file type is not allowed'));
-    }
+    // } else {
+    //   cb(null, false);
+    //   return cb(new Error('file type is not allowed'));
+    // }
   },
 });

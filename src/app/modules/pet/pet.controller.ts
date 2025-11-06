@@ -226,6 +226,17 @@ const findLocations = catchAsync(async (req, res) => {
   });
 });
 
+const findCities = catchAsync(async (req, res) => {
+  const result = await PetServices.findCities();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Cities fetched successfully!',
+    data: result,
+  });
+});
+
 export const PetController = {
   createPet,
   updatePet,
@@ -236,4 +247,5 @@ export const PetController = {
   deletedPetImg,
   findBreeds,
   findLocations,
+  findCities,
 };
