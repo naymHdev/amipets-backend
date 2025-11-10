@@ -129,7 +129,7 @@ const getDashboardShelterStats = async (filterYear: number) => {
 //  -------------------------------------- Shelter Dashboard Start --------------------------------------
 
 const shelterTotalStats = async (shelterId: string) => {
-  const totalPet = await Pet.countDocuments({ owner: shelterId });
+  const totalPet = await Pet.countDocuments({ owner: shelterId, isVisible : true });
   const totalDonations = await Pet.find({ isAdopted: true }).countDocuments({
     owner: shelterId,
   });
