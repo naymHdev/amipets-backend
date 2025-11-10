@@ -40,6 +40,10 @@ const auth = (...requiredRoles: Role[]) => {
         throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found!');
       }
 
+      if (user.isDeleted) {
+        throw new AppError(StatusCodes.BAD_REQUEST, 'You account is deleted');
+      }
+
       if (requiredRoles && !requiredRoles.includes(role)) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
       }

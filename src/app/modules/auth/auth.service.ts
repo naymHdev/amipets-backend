@@ -38,6 +38,9 @@ const loginUserFromDB = async (payload: IAuth) => {
     if (!user.isActive) {
       throw new AppError(StatusCodes.FORBIDDEN, 'Your account is not active');
     }
+    if (user.isDeleted) {
+      throw new AppError(StatusCodes.FORBIDDEN, 'Your account is deleted');
+    }
 
     if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
       throw new AppError(
