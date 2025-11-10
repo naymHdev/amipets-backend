@@ -1,12 +1,9 @@
 import { Role } from '../modules/auth/auth.interface';
 import User from '../modules/auth/auth.model';
-import Pet from '../modules/pet/pet.model';
 
 export async function defaultTask() {
   // check admin is exist
   const admin = await User.findOne({ role: Role.ADMIN });
-  // delete all pets
-   await Pet.deleteMany({});
   if (!admin) {
     await User.create({
       first_name: 'Mr',
