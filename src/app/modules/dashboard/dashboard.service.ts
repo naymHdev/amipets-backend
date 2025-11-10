@@ -5,9 +5,9 @@ import { PetAdopt } from '../user/user.model';
 
 //  -------------------------------------- Admin Dashboard Start --------------------------------------
 const dbTotalStats = async () => {
-  const totalUser = await User.countDocuments();
-  const totalShelter = await User.countDocuments({ role: 'shelter' });
-  const totalPet = await Pet.countDocuments();
+  const totalUser = await User.countDocuments({isDeleted : false});
+  const totalShelter = await User.countDocuments({ role: 'shelter', isDeleted : false });
+  const totalPet = await Pet.countDocuments({isVisible : true});
   return { totalUser, totalShelter, totalPet };
 };
 
