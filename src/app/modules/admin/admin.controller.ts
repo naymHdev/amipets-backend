@@ -541,18 +541,7 @@ const getUserDetail = catchAsync(async (req, res) => {
 
 const blockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.blockUser(id);
-
-  await NotificationService.sendNotification({
-    ownerId: req.user?._id,
-    key: 'notification',
-    data: {
-      id: null,
-      message: ` ${req.user?.first_name} ${req.user?.last_name} blocked user`,
-    },
-    receiverId: [req.user?._id],
-    notifyAdmin: false,
-  });
+  await AdminService.blockUser(id, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -564,18 +553,7 @@ const blockUser = catchAsync(async (req, res) => {
 
 const unblockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.unblockUser(id);
-
-  await NotificationService.sendNotification({
-    ownerId: req.user?._id,
-    key: 'notification',
-    data: {
-      id: null,
-      message: ` ${req.user?.first_name} ${req.user?.last_name} unblocked user`,
-    },
-    receiverId: [req.user?._id],
-    notifyAdmin: false,
-  });
+  await AdminService.unblockUser(id, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

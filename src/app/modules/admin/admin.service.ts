@@ -422,7 +422,10 @@ const getWebLocations = async () => {
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   const { ...uQuery } = query;
 
-  const usersQuery = new QueryBuilder(User.find({role : {$ne : "admin"}, isDeleted : false}), uQuery)
+  const usersQuery = new QueryBuilder(
+    User.find({ role: { $ne: 'admin' }, isDeleted: false }),
+    uQuery,
+  )
     .search(UserSearchableFields)
     .filter()
     .sort()
@@ -446,20 +449,52 @@ const getUserDetailFromDB = async (id: string) => {
   return result;
 };
 
-const blockUser = async (id: string) => {
+const blockUser = async (id: string, userID: any) => {
   const user = await User.findById(id);
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
   }
   await User.findByIdAndUpdate(id, { isActive: false });
+
+  if (user?.role == 'shelter') {
+    //disable all pets
+    await Pet.updateMany({ owner: id }, { isVisible: false });
+  }
+
+  await NotificationService.sendNotification({
+    ownerId: userID,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${user?.first_name} ${user?.last_name} your account blocked ❌`,
+    },
+    receiverId: [user?._id as any],
+    notifyAdmin: false,
+  });
 };
 
-const unblockUser = async (id: string) => {
+const unblockUser = async (id: string, userID: any) => {
   const user = await User.findById(id);
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
   }
   await User.findByIdAndUpdate(id, { isActive: true });
+
+  if (user?.role == 'shelter') {
+    //active all pets
+    await Pet.updateMany({ owner: id }, { isVisible: true });
+  }
+
+  await NotificationService.sendNotification({
+    ownerId: userID,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${user?.first_name} ${user?.last_name} your account unblocked ✅`,
+    },
+    receiverId: [user?._id as any],
+    notifyAdmin: false,
+  });
 };
 
 const updateServicePosition = async (id: string, position: number) => {
@@ -504,7 +539,7 @@ const updateServicePosition = async (id: string, position: number) => {
 // --------------------------- Shelter Services ---------------------------
 const getAllSheltersFromDB = async (query: Record<string, unknown>) => {
   const { ...sQuery } = query;
-  const baseQuery = User.find({ role: 'shelter', isDeleted : false });
+  const baseQuery = User.find({ role: 'shelter', isDeleted: false });
 
   const sheltersQuery = new QueryBuilder(baseQuery, sQuery)
     .search(['gender', 'email', 'first_name', 'last_name', 'location'])
@@ -527,7 +562,7 @@ const shelterDetailFromDB = async (id: string) => {
   return result;
 };
 
-const blockShelter = async (id: string, userID : any) => {
+const blockShelter = async (id: string, userID: any) => {
   const shelter = await User.findById(id);
   if (!shelter) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Shelter not found');
@@ -548,10 +583,9 @@ const blockShelter = async (id: string, userID : any) => {
     receiverId: [shelter?._id as any],
     notifyAdmin: false,
   });
-
 };
 
-const deleteShelter = async (id: string, userID : any) => {
+const deleteShelter = async (id: string, userID: any) => {
   const shelter = await User.findById(id);
   if (!shelter) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Shelter not found');
@@ -572,7 +606,6 @@ const deleteShelter = async (id: string, userID : any) => {
     receiverId: [shelter?._id as any],
     notifyAdmin: false,
   });
-
 };
 
 // --------------------------- Admin Profile Service ---------------------------
@@ -671,5 +704,5 @@ export const AdminService = {
   getAllSheltersFromDB,
   shelterDetailFromDB,
   blockShelter,
-  deleteShelter
+  deleteShelter,
 };
