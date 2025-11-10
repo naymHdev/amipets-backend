@@ -29,7 +29,7 @@ export const single_image_Upload = multer({
     //     file.mimetype,
     //   )
     // ) {
-      cb(null, true);
+    cb(null, true);
     // } else {
     //   cb(null, false);
     //   return cb(new Error('file type is not allowed'));

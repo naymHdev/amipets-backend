@@ -162,6 +162,11 @@ router.patch(
   auth(Role.ADMIN),
   AdminController.blockShelter,
 );
+router.delete(
+  '/delete-shelter/:id',
+  auth(Role.ADMIN),
+  AdminController.deleteShelter,
+);
 
 // --------------------------------- Admin Profile Routes ---------------------------------
 router.put(

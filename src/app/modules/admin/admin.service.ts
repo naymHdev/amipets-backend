@@ -21,6 +21,8 @@ import User from '../auth/auth.model';
 import { UserSearchableFields } from './admin.constant';
 import { IJwtPayload, IUser } from '../auth/auth.interface';
 import mongoose from 'mongoose';
+import { NotificationService } from '../notification/notification.service';
+import Pet from '../pet/pet.model';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -420,7 +422,7 @@ const getWebLocations = async () => {
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   const { ...uQuery } = query;
 
-  const usersQuery = new QueryBuilder(User.find(), uQuery)
+  const usersQuery = new QueryBuilder(User.find({role : {$ne : "admin"}, isDeleted : false}), uQuery)
     .search(UserSearchableFields)
     .filter()
     .sort()
@@ -502,7 +504,7 @@ const updateServicePosition = async (id: string, position: number) => {
 // --------------------------- Shelter Services ---------------------------
 const getAllSheltersFromDB = async (query: Record<string, unknown>) => {
   const { ...sQuery } = query;
-  const baseQuery = User.find({ role: 'shelter' });
+  const baseQuery = User.find({ role: 'shelter', isDeleted : false });
 
   const sheltersQuery = new QueryBuilder(baseQuery, sQuery)
     .search(['gender', 'email', 'first_name', 'last_name', 'location'])
@@ -525,13 +527,52 @@ const shelterDetailFromDB = async (id: string) => {
   return result;
 };
 
-const blockShelter = async (id: string) => {
+const blockShelter = async (id: string, userID : any) => {
   const shelter = await User.findById(id);
   if (!shelter) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Shelter not found');
   }
   shelter.isActive = false;
   await shelter.save();
+
+  //disable all pets
+  await Pet.updateMany({ owner: id }, { isVisible: false });
+
+  await NotificationService.sendNotification({
+    ownerId: userID,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${shelter?.first_name} ${shelter?.last_name} your account blocked`,
+    },
+    receiverId: [shelter?._id as any],
+    notifyAdmin: false,
+  });
+
+};
+
+const deleteShelter = async (id: string, userID : any) => {
+  const shelter = await User.findById(id);
+  if (!shelter) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Shelter not found');
+  }
+  shelter.isDeleted = true;
+  await shelter.save();
+
+  //disable all pets
+  await Pet.updateMany({ owner: id }, { isVisible: false });
+
+  await NotificationService.sendNotification({
+    ownerId: userID,
+    key: 'notification',
+    data: {
+      id: null,
+      message: ` ${shelter?.first_name} ${shelter?.last_name} your account is deleted`,
+    },
+    receiverId: [shelter?._id as any],
+    notifyAdmin: false,
+  });
+
 };
 
 // --------------------------- Admin Profile Service ---------------------------
@@ -630,4 +671,5 @@ export const AdminService = {
   getAllSheltersFromDB,
   shelterDetailFromDB,
   blockShelter,
+  deleteShelter
 };

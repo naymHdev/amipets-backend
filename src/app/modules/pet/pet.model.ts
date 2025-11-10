@@ -115,6 +115,7 @@ const petSchema = new Schema<IPet & Document>(
       type: String,
       required: false,
     },
+    isVisible: { type: Boolean, default: true }
   },
   {
     timestamps: true,

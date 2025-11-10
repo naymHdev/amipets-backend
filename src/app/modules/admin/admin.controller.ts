@@ -610,23 +610,26 @@ const getShelterDetail = catchAsync(async (req, res) => {
 
 const blockShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.blockShelter(id);
-
-  await NotificationService.sendNotification({
-    ownerId: req.user?._id,
-    key: 'notification',
-    data: {
-      id: null,
-      message: ` ${req.user?.first_name} ${req.user?.last_name} blocked shelter`,
-    },
-    receiverId: [req.user?._id],
-    notifyAdmin: false,
-  });
+  await AdminService.blockShelter(id, req.user?._id);
+  
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Shelter blocked successfully!',
+    data: null,
+  });
+});
+
+const deleteShelter = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await AdminService.deleteShelter(id, req.user?._id);
+  
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Shelter deleted successfully!',
     data: null,
   });
 });
@@ -727,4 +730,5 @@ export const AdminController = {
   getAllShelter,
   getShelterDetail,
   blockShelter,
+  deleteShelter,
 };

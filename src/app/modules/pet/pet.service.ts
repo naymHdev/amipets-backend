@@ -145,6 +145,8 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const limit = parseInt(limitStr as string) || 10;
   const skip = (page - 1) * limit;
 
+  filters.isVisible = true;
+
   const pipeline: any[] = [];
 
   // GEO SEARCH
@@ -261,7 +263,7 @@ const getMyPets = async (
 ) => {
   const { ...filters } = query;
 
-  const baseQuery = Pet.find({ owner: authUser._id });
+  const baseQuery = Pet.find({ owner: authUser._id, isVisible : true });
 
   const petsQuery = new QueryBuilder(baseQuery, filters)
     .search(['full_name', 'location', 'breed', 'pet_category', 'gender'])
@@ -280,7 +282,7 @@ const getMyPets = async (
 };
 
 const getSinglePet = async (petId: string) => {
-  const pet = await Pet.findById(petId).populate('owner');
+  const pet = await Pet.findOne({_id : petId,  isVisible : true }).populate('owner');
   return pet;
 };
 

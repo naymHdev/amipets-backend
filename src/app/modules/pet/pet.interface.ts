@@ -35,4 +35,6 @@ export interface IPet {
   medical_notes?: string;
   pet_reports?: string[];
   internal_notes?: string;
+
+  isVisible: boolean
 }
