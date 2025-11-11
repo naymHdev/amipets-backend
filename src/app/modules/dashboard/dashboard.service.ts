@@ -130,7 +130,7 @@ const getDashboardShelterStats = async (filterYear: number) => {
 
 const shelterTotalStats = async (shelterId: string) => {
   const totalPet = await Pet.countDocuments({ owner: shelterId, isVisible : true });
-  const totalDonations = await Pet.find({ isAdopted: true }).countDocuments({
+  const totalDonations = await Pet.find({ pet_status: 'adopted'}).countDocuments({
     owner: shelterId,
   });
   return { totalPet, totalPetDonations: totalDonations };
@@ -216,6 +216,7 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
       $match: {
         owner: new Types.ObjectId(userId),
         isAdopted: true,
+        pet_status : "adopted",
         createdAt: { $gte: startOfYear, $lt: endOfYear },
       },
     },
