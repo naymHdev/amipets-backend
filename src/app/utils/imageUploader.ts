@@ -21,7 +21,7 @@ const file_upload_config = multer.diskStorage({
 
 export const single_image_Upload = multer({
   storage: file_upload_config,
-  limits: { fileSize: 1024 * 1024 * 20 /* 20 mb */ },
+  // limits: { fileSize: 1024 * 1024 * 20 },
   fileFilter(req, file, cb) {
     // if file type valid
     // if (
