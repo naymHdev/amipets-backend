@@ -42,6 +42,7 @@ const userSchema = new Schema<IUser, UserModel>(
     location: {
       type: String,
       required: false,
+      default: null,
     },
     address: {
       type: {
@@ -54,7 +55,7 @@ const userSchema = new Schema<IUser, UserModel>(
         type: [Number], // [longitude, latitude]
         required: true,
         trim: true,
-        default: [0, 0],
+        default: [],
       },
     },
     profile_image: {
