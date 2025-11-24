@@ -43,6 +43,20 @@ const userSchema = new Schema<IUser, UserModel>(
       type: String,
       required: false,
     },
+    address: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: true,
+        trim: true,
+        default: [0, 0],
+      },
+    },
     profile_image: {
       type: String,
       required: false,

@@ -4,16 +4,6 @@ import sendResponse from '../../utils/sendResponse';
 import { NotificationService } from './notification.service';
 import { IJwtPayload } from '../auth/auth.interface';
 
-const getAllNotifications = catchAsync(async (req, res) => {
-  const result = await NotificationService.getAllNotifications(req.query);
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: 'All notifications fetched successfully',
-    data: result,
-  });
-});
-
 const deleteNotification = catchAsync(async (req, res) => {
   const { id } = req.params;
   await NotificationService.deleteNotification(id);
@@ -26,7 +16,9 @@ const deleteNotification = catchAsync(async (req, res) => {
 });
 
 const deleteAllNotifications = catchAsync(async (req, res) => {
-  await NotificationService.deleteAllNotifications();
+  const user = req.user as IJwtPayload;
+
+  await NotificationService.deleteAllNotifications(user);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -61,7 +53,6 @@ const markNotificationsAsRead = catchAsync(async (req, res) => {
 });
 
 export const NotificationController = {
-  getAllNotifications,
   deleteNotification,
   deleteAllNotifications,
   markNotificationsAsRead,

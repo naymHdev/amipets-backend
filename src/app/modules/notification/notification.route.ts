@@ -5,12 +5,6 @@ import { Role } from '../auth/auth.interface';
 
 const router = Router();
 
-router.get(
-  '/all-notifications',
-  auth(Role.ADMIN, Role.SHELTER, Role.USER),
-  NotificationController.getAllNotifications,
-);
-
 router.delete(
   '/delete-notification/:id',
   auth(Role.ADMIN, Role.SHELTER, Role.USER),

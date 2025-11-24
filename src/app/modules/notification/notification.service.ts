@@ -8,7 +8,6 @@ import {
   emitMessageToShelter,
   emitMessageToUser,
 } from '../../utils/emitMessage';
-import QueryBuilder from '../../builder/QueryBuilder';
 import { IJwtPayload, Role } from '../auth/auth.interface';
 
 const sendNotification = async (payload: INotification) => {
@@ -40,36 +39,90 @@ const sendNotification = async (payload: INotification) => {
   return { notification: newNotification };
 };
 
-const getAllNotifications = async (query: Record<string, unknown>) => {
-  const { ...pQuery } = query;
-
-  const baseQuery = Notification.find();
-
-  const notificationsQuery = new QueryBuilder(baseQuery, pQuery)
-    .search([])
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await notificationsQuery.modelQuery;
-  const meta = await notificationsQuery.countTotal();
-
-  return {
-    meta,
-    data: result,
-  };
-};
-
 const deleteNotification = async (id: string) => {
   const result = await Notification.findByIdAndDelete({ _id: id });
   return result;
 };
 
-const deleteAllNotifications = async () => {
-  const result = await Notification.deleteMany({});
+const deleteAllNotifications = async (user: IJwtPayload) => {
+  const role = user.role;
+  let result;
+
+  switch (role) {
+    case Role.USER:
+      result = await Notification.deleteMany({ notifyUser: true });
+      break;
+    case Role.ADMIN:
+      result = await Notification.deleteMany({ notifyAdmin: true });
+      break;
+    case Role.SHELTER:
+      result = await Notification.deleteMany({ notifyShelter: true });
+      break;
+    default:
+      result = await Notification.deleteMany({ receiverId: user._id });
+      break;
+  }
+
   return result;
 };
+
+// const getAllUserNotifications = async (
+//   user: IJwtPayload,
+//   query: Record<string, unknown>,
+// ) => {
+//   const userId = user._id;
+//   const { ...pQuery } = query;
+
+//   let baseQuery;
+
+//   switch (user.role) {
+//     case Role.USER:
+//       baseQuery = Notification.find({
+//         notifyUser: true,
+//         receiverId: userId,
+//       });
+//       break;
+
+//     case Role.ADMIN:
+//       baseQuery = Notification.find({
+//         notifyAdmin: false,
+//       });
+//       break;
+
+//     case Role.SHELTER:
+//       baseQuery = Notification.find({
+//         notifyShelter: true,
+//         receiverId: userId,
+//       });
+//       break;
+
+//     default:
+//       baseQuery = Notification.find({
+//         receiverId: userId,
+//       });
+//       break;
+//   }
+
+//   const notificationsQuery = new QueryBuilder(baseQuery, pQuery)
+//     .filter()
+//     .sort()
+//     .paginate()
+//     .fields();
+
+//   const result = await notificationsQuery.modelQuery;
+//   const meta = await notificationsQuery.countTotal();
+
+//   // Count read and unread notifications
+//   const readNotificationCount = result.filter((n) => n.isRead).length;
+//   const unreadNotificationCount = result.filter((n) => !n.isRead).length;
+
+//   return {
+//     meta,
+//     data: result,
+//     readNotificationCount,
+//     unreadNotificationCount,
+//   };
+// };
 
 const getAllUserNotifications = async (
   user: IJwtPayload,
@@ -78,55 +131,47 @@ const getAllUserNotifications = async (
   const userId = user._id;
   const { ...pQuery } = query;
 
-  let baseQuery;
+  const baseFilter: Record<string, unknown> = {};
 
   switch (user.role) {
     case Role.USER:
-      baseQuery = Notification.find({
-        notifyUser: true,
-        receiverId: userId,
-      });
+      baseFilter.notifyUser = true;
+      baseFilter.receiverId = userId;
       break;
 
     case Role.ADMIN:
-      baseQuery = Notification.find({
-        notifyAdmin: false,
-      });
+      baseFilter.notifyAdmin = true;
       break;
 
     case Role.SHELTER:
-      baseQuery = Notification.find({
-        notifyShelter: true,
-        receiverId: userId,
-      });
+      baseFilter.notifyShelter = true;
+      baseFilter.receiverId = userId;
       break;
 
     default:
-      baseQuery = Notification.find({
-        receiverId: userId,
-      });
+      baseFilter.receiverId = userId;
       break;
   }
 
-  const notificationsQuery = new QueryBuilder(baseQuery, pQuery)
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
+  // Apply query operators (pagination, sort, filter)
+  let mongoQuery = Notification.find(baseFilter);
 
-  const result = await notificationsQuery.modelQuery;
-  const meta = await notificationsQuery.countTotal();
+  if (pQuery.sortBy && pQuery.sortOrder) {
+    mongoQuery = mongoQuery.sort({
+      [pQuery.sortBy as string]: pQuery.sortOrder === 'desc' ? -1 : 1,
+    });
+  }
 
-  // Count read and unread notifications
-  const readNotificationCount = result.filter((n) => n.isRead).length;
-  const unreadNotificationCount = result.filter((n) => !n.isRead).length;
+  if (pQuery.limit) {
+    mongoQuery = mongoQuery.limit(Number(pQuery.limit));
+  }
 
-  return {
-    meta,
-    data: result,
-    readNotificationCount,
-    unreadNotificationCount,
-  };
+  if (pQuery.skip) {
+    mongoQuery = mongoQuery.skip(Number(pQuery.skip));
+  }
+
+  const notifications = await mongoQuery.exec();
+  return notifications;
 };
 
 export const markNotificationsAsRead = async (user: IJwtPayload) => {
@@ -150,7 +195,6 @@ export const markNotificationsAsRead = async (user: IJwtPayload) => {
 
 export const NotificationService = {
   sendNotification,
-  getAllNotifications,
   deleteNotification,
   deleteAllNotifications,
   getAllUserNotifications,

@@ -16,6 +16,10 @@ export interface IUser {
   last_name?: string;
   gender: TUserGender;
   location?: string;
+  address?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
   contact_number?: number;
   email: string;
   password: string;

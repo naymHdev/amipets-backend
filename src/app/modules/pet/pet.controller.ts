@@ -19,7 +19,7 @@ const createPet = catchAsync(async (req, res) => {
   });
 
   const pet_reports = files?.pet_reports?.map((file) => {
-    return file?.filename && config.BASE_URL + '/reports/' + file.filename;
+    return file?.filename && config.BASE_URL + '/images/' + file.filename;
   });
 
   req.body.pet_reports = pet_reports;
@@ -76,7 +76,7 @@ const updatePet = catchAsync(async (req, res) => {
   });
 
   const pet_reports = files?.pet_reports?.map((file) => {
-    return file?.filename && config.BASE_URL + '/reports/' + file.filename;
+    return file?.filename && config.BASE_URL + '/images/' + file.filename;
   });
 
   req.body.pet_reports = pet_reports;
@@ -149,6 +149,8 @@ const getMyPets = catchAsync(async (req, res) => {
 });
 
 const getAllPets = catchAsync(async (req, res) => {
+  // console.log('auth___', req.user);
+
   const result = await PetServices.getAllPetsFromDB(req.query);
 
   sendResponse(res, {

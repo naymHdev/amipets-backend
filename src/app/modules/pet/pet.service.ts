@@ -129,6 +129,9 @@ const deletedPetImg = async (petId: string, img: string) => {
 };
 
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
+  console.log(
+    '--------------'
+  );
   const {
     latitude,
     longitude,
