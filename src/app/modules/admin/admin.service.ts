@@ -489,42 +489,60 @@ const unblockUser = async (id: string, userID: any) => {
   });
 };
 
-const updateServicePosition = async (id: string, position: number) => {
-  if (position <= 0) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Position cannot be negative');
-  }
-  if (!Number.isInteger(position)) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Position must be an integer');
-  }
-  if (!Number(position)) {
-    throw new AppError(
-      StatusCodes.BAD_REQUEST,
-      'You must provide a position number greater than 0',
-    );
-  }
-
+const updateServicePosition = async (id: string, position: number | null) => {
   const service = await Service.findById(id);
   if (!service) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Service not found');
   }
 
-  if (service.position === position) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Position cannot be the same');
+  if (position === null || position === undefined) {
+    const result = await Service.findByIdAndUpdate(
+      id,
+      { $set: { position: null } },
+      { new: true }
+    );
+    return result;
   }
 
-  const serviceLength = await Service.countDocuments();
-  if (position > serviceLength) {
+  if (!Number.isInteger(position) || position <= 0) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
-      'Position cannot be greater than the number of services',
+      'Position must be a positive integer'
     );
   }
 
+  if (service.position === position) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Position is already set');
+  }
+
+  const positionTaken = await Service.findOne({
+    position: position,
+    _id: { $ne: id },
+  });
+
+  if (positionTaken) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      `Position ${position} is already assigned to another service`
+    );
+  }
+
+  // 6. Total count validation (optional)
+  const totalServices = await Service.countDocuments();
+  if (position > totalServices) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      `Position cannot exceed total service count (${totalServices})`
+    );
+  }
+
+  // 7. Update service position
   const result = await Service.findByIdAndUpdate(
     id,
-    { $set: { position: position } },
-    { new: true, runValidators: true, upsert: true },
+    { $set: { position } },
+    { new: true, runValidators: true }
   );
+
   return result;
 };
 
