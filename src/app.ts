@@ -12,37 +12,41 @@ import { socketIo } from './app/config/socket.config';
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: [
-      'https://amipeta.lt',
-      'https://www.amipeta.lt',
-      'http://localhost:3000',
-      'https://api.amipeta.lt',
-      'https://www.api.amipeta.lt',
-      'https://dashboard.amipeta.lt',
-      'https://www.dashboard.amipeta.lt',
-    ],
-    credentials: true,
-  }),
-);
-
 // app.use(
 //   cors({
-//     origin: true,
+//     origin: [
+//       'https://amipeta.lt',
+//       'https://www.amipeta.lt',
+//       'http://localhost:3000',
+//       'https://api.amipeta.lt',
+//       'https://www.api.amipeta.lt',
+//       'https://dashboard.amipeta.lt',
+//       'https://www.dashboard.amipeta.lt',
+//     ],
 //     credentials: true,
 //   }),
 // );
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 
 // HTTP socket Server setup
 export const httpServer = createServer(app);
 socketIo(httpServer);
 
-
-
 app.use(cookieParser());
-app.use(express.json({limit : "1000mb"}))
-app.use(express.urlencoded({ extended: true, limit : "1000mb", parameterLimit: 1000000 }));
+app.use(express.json({ limit: '1000mb' }));
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: '1000mb',
+    parameterLimit: 1000000,
+  }),
+);
 app.use(express.static('public'));
 
 app.use('/api/v1', router);

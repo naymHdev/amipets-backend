@@ -23,6 +23,7 @@ import { IJwtPayload, IUser } from '../auth/auth.interface';
 import mongoose from 'mongoose';
 import { NotificationService } from '../notification/notification.service';
 import Pet from '../pet/pet.model';
+import { orderByPositionAndFill, QueryRecord, ServiceDoc } from './admin.utils';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -221,29 +222,20 @@ const createServiceFromDB = async (payload: IService, icon: string) => {
   return result;
 };
 
-const getServiceFromDB = async (query: Record<string, unknown>) => {
+const getServiceFromDB = async (query: QueryRecord): Promise<ServiceDoc[]> => {
   const { ...wQuery } = query;
+
   const baseQuery = Service.find();
   const serviceQuery = new QueryBuilder(baseQuery, wQuery)
     .search(['name'])
     .filter()
     .fields();
 
-  const services = await serviceQuery.modelQuery.lean();
+  const services = await serviceQuery.modelQuery.lean<ServiceDoc[]>();
 
-  const fixedServices = services
-    .filter((s: any) => (s.position as number) && s.position > 0)
-    .sort((a: any, b: any) => a.position - b.position);
-
-  const randomServices = services
-    .filter((s: any) => !s.position || s.position === 0)
-    .sort(() => Math.random() - 0.5);
-
-  const finalServices = [...fixedServices, ...randomServices];
-
-  return finalServices;
+  // Use the pure function above (type safe)
+  return orderByPositionAndFill(services);
 };
-
 const getSingleServices = async (id: string) => {
   const result = await Service.findById(id);
   return result;
