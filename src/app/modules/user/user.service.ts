@@ -282,7 +282,7 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
 
   payload.adopter = new Types.ObjectId(authUser._id);
 
-  const result = await PetAdopt.create(payload);
+  const result = (await PetAdopt.create(payload)).populate('adopted_pet');
 
   await Pet.findOneAndUpdate(
     { _id: payload.adopted_pet },

@@ -5,6 +5,8 @@ import catchAsync from '../../utils/catchAsync';
 import { IJwtPayload } from '../auth/auth.interface';
 import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
+import { Types } from 'mongoose';
+import User from '../auth/auth.model';
 
 const updateProfile = catchAsync(async (req, res) => {
   const profile_image =
@@ -256,6 +258,42 @@ const getPetAdopt = catchAsync(async (req, res) => {
     req.user as IJwtPayload,
     req.body,
   );
+
+  const petName = (result.adopted_pet as any)?.full_name;
+  const petType = (result.adopted_pet as any)?.pet_category;
+  const ownerId = (result.adopted_pet as any)?.owner;
+  const adoptionId = result?._id.toString();
+
+  // Messages
+  const ownerMessage = `Your ${petType} "${petName}" has received a new adoption request.`;
+  const adminMessage = `A new adoption request has been submitted for the ${petType} "${petName}".`;
+
+  // --- 1. Notify Pet Owner ---
+  await NotificationService.sendNotification({
+    ownerId: ownerId,
+    key: 'notification',
+    data: {
+      id: adoptionId,
+      message: ownerMessage,
+    },
+    receiverId: [ownerId],
+    notifyShelter: true,
+  });
+
+  // --- 2. Notify Admin(s) ---
+  const admins = await User.find({ role: 'admin' }, '_id');
+  const adminIds = admins.map((a) => new Types.ObjectId(a._id.toString()));
+
+  await NotificationService.sendNotification({
+    ownerId: ownerId,
+    key: 'notification',
+    data: {
+      id: adoptionId,
+      message: adminMessage,
+    },
+    receiverId: adminIds,
+    notifyAdmin: true,
+  });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

@@ -8,17 +8,30 @@ import { Types } from 'mongoose';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
+  console.log('result__', result);
 
   let otpToken;
   if (result?.isVerified == false) {
     otpToken = await otpServices.resendOtp(result?.email);
   }
+
+  const role = result.role;
+  let roleText = '';
+  if (role === 'user') {
+    roleText = 'user account';
+  } else if (role === 'shelter') {
+    roleText = 'shelter account';
+  } else {
+    roleText = 'account';
+  }
+  const message = `${result.first_name} ${result.last_name} has created a new ${roleText}.`;
+
   await NotificationService.sendNotification({
     ownerId: new Types.ObjectId(result._id),
     key: 'notification',
     data: {
       id: result?._id.toString(),
-      message: ` ${result?.first_name} ${result?.last_name} created account`,
+      message: message,
     },
     receiverId: [new Types.ObjectId(result._id)],
     notifyAdmin: true,
