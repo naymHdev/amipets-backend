@@ -171,7 +171,12 @@ const getAllUserNotifications = async (
   }
 
   const notifications = await mongoQuery.exec();
-  return notifications;
+
+  // Count read and unread notifications
+  const readNotificationCount = notifications.filter((n) => n.isRead).length;
+  const unreadNotificationCount = notifications.filter((n) => !n.isRead).length;
+
+  return {notifications, readNotificationCount, unreadNotificationCount};
 };
 
 export const markNotificationsAsRead = async (user: IJwtPayload) => {

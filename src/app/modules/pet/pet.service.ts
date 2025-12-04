@@ -129,15 +129,13 @@ const deletedPetImg = async (petId: string, img: string) => {
 };
 
 const getAllPetsFromDB = async (query: Record<string, unknown>) => {
-  console.log(
-    '--------------'
-  );
   const {
     latitude,
     longitude,
     page: pageStr,
     limit: limitStr,
     searchTerm,
+    ageGroup,
     ...filters
   } = query;
 
@@ -147,6 +145,39 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const page = parseInt(pageStr as string) || 1;
   const limit = parseInt(limitStr as string) || 10;
   const skip = (page - 1) * limit;
+
+  const now = new Date();
+  const geoQuery: any = { isVisible: true };
+
+  // ----------------- AGE FILTER LOGIC -----------------
+  if (query.ageGroup) {
+    const now = new Date();
+
+    let ageFilter: any = {};
+
+    if (query.ageGroup === 'upto2') {
+      const twoYearsAgo = new Date();
+      twoYearsAgo.setFullYear(now.getFullYear() - 2);
+      ageFilter.date_of_birth = { $gte: twoYearsAgo };
+    }
+
+    if (query.ageGroup === '2to7') {
+      const twoYearsAgo = new Date();
+      const sevenYearsAgo = new Date();
+      twoYearsAgo.setFullYear(now.getFullYear() - 2);
+      sevenYearsAgo.setFullYear(now.getFullYear() - 7);
+      ageFilter.date_of_birth = { $gte: sevenYearsAgo, $lte: twoYearsAgo };
+    }
+
+    if (query.ageGroup === 'over7') {
+      const sevenYearsAgo = new Date();
+      sevenYearsAgo.setFullYear(now.getFullYear() - 7);
+      ageFilter.date_of_birth = { $lte: sevenYearsAgo };
+    }
+
+    // Merge ageFilter into existing filters object
+    Object.assign(filters, ageFilter);
+  }
 
   filters.isVisible = true;
 
@@ -164,9 +195,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
         distanceField: 'dist.calculated',
         spherical: true,
         maxDistance: 50 * 1609.34,
-        query: {
-          ...filters,
-        },
+        query: geoQuery,
       },
     });
   } else {
@@ -200,7 +229,6 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   // SORT + PAGINATION
   pipeline.push({ $sort: { createdAt: -1 } });
   pipeline.push({ $skip: skip });
-  // pipeline.push({ $limit: limit });
 
   // ✅ RANDOMIZE ORDER
   pipeline.push({ $sample: { size: limit } });
@@ -222,9 +250,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
         distanceField: 'dist.calculated',
         spherical: true,
         maxDistance: 50 * 1609.34,
-        query: {
-          ...filters,
-        },
+        query: geoQuery,
       },
     });
   } else {
@@ -266,7 +292,7 @@ const getMyPets = async (
 ) => {
   const { ...filters } = query;
 
-  const baseQuery = Pet.find({ owner: authUser._id, isVisible : true });
+  const baseQuery = Pet.find({ owner: authUser._id, isVisible: true });
 
   const petsQuery = new QueryBuilder(baseQuery, filters)
     .search(['full_name', 'location', 'breed', 'pet_category', 'gender'])
@@ -285,7 +311,9 @@ const getMyPets = async (
 };
 
 const getSinglePet = async (petId: string) => {
-  const pet = await Pet.findOne({_id : petId,  isVisible : true }).populate('owner');
+  const pet = await Pet.findOne({ _id: petId, isVisible: true }).populate(
+    'owner',
+  );
   return pet;
 };
 

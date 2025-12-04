@@ -33,7 +33,14 @@ const createPetSchema = z.object({
     gender: z.enum(['Male', 'Female'], {
       required_error: 'Gender is required',
     }),
-    date_of_birth: z.string({ required_error: 'Date of birth is required' }),
+    date_of_birth: z.preprocess(
+      (arg) => {
+        if (typeof arg === 'string' || arg instanceof Date) {
+          return new Date(arg);
+        }
+      },
+      z.date({ required_error: 'Date of birth is required' }),
+    ),
     pet_category: z.enum(['dog', 'cat', 'both'], {
       required_error: 'Pet category is required',
     }),
