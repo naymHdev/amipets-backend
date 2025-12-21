@@ -99,7 +99,7 @@ const ServiceSchema = new Schema<IService>(
     position: {
       type: Number,
       required: false,
-      default: null,
+      default: 0,
     },
   },
   {
@@ -153,15 +153,15 @@ const AddWebsiteSchema = new Schema<IAddWebsite>(
 );
 
 // Auto-generate position if not provided
-// AddWebsiteSchema.pre('save', async function (next) {
-//   if (this.isNew && (this.position === null || this.position === undefined)) {
-//     const Model = this
-//       .constructor as typeof import('mongoose').Model<IAddWebsite>;
-//     const lastWebsite = await Model.findOne().sort({ position: -1 });
-//     this.position = lastWebsite ? lastWebsite.position + 1 : 1;
-//   }
-//   next();
-// });
+AddWebsiteSchema.pre('save', async function (next) {
+  if (this.isNew && (this.position === null || this.position === undefined)) {
+    const Model = this
+      .constructor as typeof import('mongoose').Model<IAddWebsite>;
+    const lastWebsite = await Model.findOne().sort({ position: -1 });
+    this.position = lastWebsite ? lastWebsite.position + 1 : 1;
+  }
+  next();
+});
 
 export const About = model<IAbout>('About', AboutSchema);
 
