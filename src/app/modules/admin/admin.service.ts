@@ -425,7 +425,7 @@ const updateServiceBaseWebPosition = async (
   if (positionTaken) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
-      `Position ${position} is already assigned to another website ID: ${positionTaken._id} Name: ${positionTaken.web_name}`,
+      `Position ${position} is already assigned to another website Name: ${positionTaken.web_name}`,
     );
   }
 
