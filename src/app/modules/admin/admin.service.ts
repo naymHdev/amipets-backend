@@ -24,6 +24,7 @@ import mongoose from 'mongoose';
 import { NotificationService } from '../notification/notification.service';
 import Pet from '../pet/pet.model';
 import { orderByPositionAndFill, QueryRecord, ServiceDoc } from './admin.utils';
+import { serviceBaseWebOrderByPositionAndFill } from './admin.web.utils';
 
 const createAboutFromDB = async (about: IAbout) => {
   const isExist = await About.findOne({});
@@ -377,32 +378,74 @@ const getServiceBaseWeb = async (
     .fields()
     .filter();
 
-  const result = await websiteQuery.modelQuery.sort({ position: 1 });
-  return result;
+  const result = await websiteQuery.modelQuery.lean<ServiceDoc[]>();
+
+  return serviceBaseWebOrderByPositionAndFill(result);
 };
 
-const swapPosition = async (pos1: number | string, pos2: number | string) => {
-  const position1 = Number(pos1);
-  const position2 = Number(pos2);
+const updateServiceBaseWebPosition = async (
+  id: string,
+  position: number | null,
+) => {
+  const websites = await AddWebsite.findById(id);
 
-  const website1 = await AddWebsite.findOne({ position: position1 });
-  const website2 = await AddWebsite.findOne({ position: position2 });
+  if (!websites) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'websites not found');
+  }
 
-  if (!website1 || !website2) {
+  if (position === null || position === undefined) {
+    const result = await AddWebsite.findByIdAndUpdate(
+      id,
+      { $set: { position: null } },
+      { new: true },
+    );
+    return result;
+  }
+
+  if (!Number.isInteger(position) || position <= 0) {
     throw new AppError(
-      StatusCodes.NOT_FOUND,
-      'One or both positions not found',
+      StatusCodes.BAD_REQUEST,
+      'Position must be a positive integer',
     );
   }
 
-  await AddWebsite.findByIdAndUpdate(website1._id, { position: position2 });
-  await AddWebsite.findByIdAndUpdate(website2._id, { position: position1 });
+  if (websites.position === position) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'The same position is already set for this website base service',
+    );
+  }
 
-  return {
-    message: 'Positions swapped',
-    website1: website1._id,
-    website2: website2._id,
-  };
+  const positionTaken = await AddWebsite.findOne({
+    position: position,
+    service: websites?.service,
+    _id: { $ne: id },
+  });
+
+  if (positionTaken) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      `Position ${position} is already assigned to another website ID: ${positionTaken._id} Name: ${positionTaken.web_name}`,
+    );
+  }
+
+  // 6. Total count validation (optional)
+  const totalWebServices = await AddWebsite.countDocuments();
+  if (position > totalWebServices) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      `Position cannot exceed total website count (${totalWebServices})`,
+    );
+  }
+
+  // 7. Update web base service position
+  const result = await AddWebsite.findByIdAndUpdate(
+    id,
+    { $set: { position } },
+    { new: true, runValidators: true },
+  );
+
+  return result;
 };
 
 const getWebLocations = async () => {
@@ -499,7 +542,7 @@ const updateServicePosition = async (id: string, position: number | null) => {
     const result = await Service.findByIdAndUpdate(
       id,
       { $set: { position: null } },
-      { new: true }
+      { new: true },
     );
     return result;
   }
@@ -507,7 +550,7 @@ const updateServicePosition = async (id: string, position: number | null) => {
   if (!Number.isInteger(position) || position <= 0) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
-      'Position must be a positive integer'
+      'Position must be a positive integer',
     );
   }
 
@@ -523,7 +566,7 @@ const updateServicePosition = async (id: string, position: number | null) => {
   if (positionTaken) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
-      `Position ${position} is already assigned to another service`
+      `Position ${position} is already assigned to another service`,
     );
   }
 
@@ -532,7 +575,7 @@ const updateServicePosition = async (id: string, position: number | null) => {
   if (position > totalServices) {
     throw new AppError(
       StatusCodes.BAD_REQUEST,
-      `Position cannot exceed total service count (${totalServices})`
+      `Position cannot exceed total service count (${totalServices})`,
     );
   }
 
@@ -540,7 +583,7 @@ const updateServicePosition = async (id: string, position: number | null) => {
   const result = await Service.findByIdAndUpdate(
     id,
     { $set: { position } },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   return result;
@@ -700,7 +743,7 @@ export const AdminService = {
   getWebsiteFromDB,
   deleteWebsite,
   getWebDetailFromDB,
-  swapPosition,
+  updateServiceBaseWebPosition,
   updateWebFromDB,
 
   getAllUsersFromDB,

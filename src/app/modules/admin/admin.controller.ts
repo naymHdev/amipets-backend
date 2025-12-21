@@ -493,14 +493,13 @@ const serviceBaseWeb = catchAsync(async (req, res) => {
   });
 });
 
-const swapPosition = catchAsync(async (req, res) => {
-  const { pos1, pos2 } = req.body;
-
-  const result = await AdminService.swapPosition(pos1, pos2);
-
+const updateServiceBaseWebPosition = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const payload = req.body.position;
+  const result = await AdminService.updateServiceBaseWebPosition(id, payload);
   sendResponse(res, {
     success: true,
-    message: 'Position swapped successfully',
+    message: 'Service base website position updated successfully',
     statusCode: StatusCodes.OK,
     data: result,
   });
@@ -589,7 +588,6 @@ const getShelterDetail = catchAsync(async (req, res) => {
 const blockShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.blockShelter(id, req.user?._id);
-  
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -602,7 +600,6 @@ const blockShelter = catchAsync(async (req, res) => {
 const deleteShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
   await AdminService.deleteShelter(id, req.user?._id);
-  
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -694,7 +691,7 @@ export const AdminController = {
   getAddWebsite,
   deletedAddWebsite,
   getAddWebsiteDetail,
-  swapPosition,
+  updateServiceBaseWebPosition,
   updateAddWebsite,
 
   getAllUsers,

@@ -137,7 +137,11 @@ router.delete(
   AdminController.deletedAddWebsite,
 );
 
-router.patch('/swap-website', AdminController.swapPosition);
+router.patch(
+  '/change-service-base-web-position/:id',
+  auth(Role.ADMIN),
+  AdminController.updateServiceBaseWebPosition,
+);
 
 // ---------------------------- Control Users Routes ----------------------------
 router.get('/get-users', auth(Role.ADMIN), AdminController.getAllUsers);

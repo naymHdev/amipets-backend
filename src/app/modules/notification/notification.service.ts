@@ -176,7 +176,7 @@ const getAllUserNotifications = async (
   const readNotificationCount = notifications.filter((n) => n.isRead).length;
   const unreadNotificationCount = notifications.filter((n) => !n.isRead).length;
 
-  return {notifications, readNotificationCount, unreadNotificationCount};
+  return { notifications, readNotificationCount, unreadNotificationCount };
 };
 
 export const markNotificationsAsRead = async (user: IJwtPayload) => {
