@@ -134,6 +134,20 @@ const deletedPetImg = catchAsync(async (req, res) => {
   });
 });
 
+const deletedPetReport = catchAsync(async (req, res) => {
+  const petId = req.params.id;
+  const report = req.body.report;
+
+  const result = await PetServices.deletedPetReport(petId, report);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Pet report deleted successfully!',
+    data: result,
+  });
+});
+
 const getMyPets = catchAsync(async (req, res) => {
   const result = await PetServices.getMyPets(
     req.user as IJwtPayload,
@@ -250,4 +264,5 @@ export const PetController = {
   findBreeds,
   findLocations,
   findCities,
+  deletedPetReport,
 };

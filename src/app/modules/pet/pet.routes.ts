@@ -36,6 +36,8 @@ router.patch(
   PetController.updatePet,
 );
 router.delete('/petImg/:id', auth(Role.SHELTER), PetController.deletedPetImg);
+router.delete('/petReport/:id', auth(Role.SHELTER), PetController.deletedPetReport);
+
 
 router.get(
   '/all-pets',

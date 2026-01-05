@@ -112,6 +112,12 @@ const updatePetFromDB = async (
     finalProfileImages = [...finalProfileImages, ...image];
   }
 
+  let finalReports = existingPet.pet_reports || [];
+  if (payload.pet_reports && payload.pet_reports?.length > 0) {
+    finalReports = [...finalReports, ...payload.pet_reports];
+  }
+
+  // --------- Update pet with new data ---------
   if (payload.pet_status === 'adopted') {
     payload.adoptedDate = new Date();
   } else {
@@ -119,7 +125,10 @@ const updatePetFromDB = async (
   }
 
   // Update existing pet with new data
-  Object.assign(existingPet, payload, { pet_image: finalProfileImages });
+  Object.assign(existingPet, payload, {
+    pet_image: finalProfileImages,
+    pet_reports: finalReports,
+  });
   const updatedPet = await existingPet.save();
 
   return updatedPet;
@@ -134,6 +143,25 @@ const deletedPetImg = async (petId: string, img: string) => {
   const newPet = await Pet.findByIdAndUpdate(
     petId,
     { $pull: { pet_image: img } },
+    { new: true },
+  );
+
+  return newPet;
+};
+
+const deletedPetReport = async (petId: string, report: string) => {
+  const pet = await Pet.findById(petId);
+  if (!pet) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Pet not found');
+  }
+
+  if (!pet.pet_reports?.includes(report)) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Payload report are not found');
+  }
+
+  const newPet = await Pet.findByIdAndUpdate(
+    petId,
+    { $pull: { pet_reports: report } },
     { new: true },
   );
 
@@ -355,7 +383,10 @@ export const PetServices = {
   getMyPets,
   getSinglePet,
   deleteSinglePet,
+
   deletedPetImg,
+  deletedPetReport,
+
   findPetBreads,
   findLocations,
   findCities,
