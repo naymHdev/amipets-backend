@@ -95,6 +95,7 @@ export type QueryRecord = Record<string, unknown>;
 export interface ServiceDoc extends Positionable {
   name: string;
   icon?: string;
+  service_tags?: string[];
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;

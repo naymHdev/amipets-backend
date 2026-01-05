@@ -98,6 +98,10 @@ const petSchema = new Schema<IPet & Document>(
       default: false,
     },
 
+    adoptedDate: {
+      type: Date,
+      default: null,
+    },
     pet_status: {
       type: String,
       enum: ['adopted', 'deceased', 'in quarantine', 'reserved', 'available'],
@@ -115,7 +119,7 @@ const petSchema = new Schema<IPet & Document>(
       type: String,
       required: false,
     },
-    isVisible: { type: Boolean, default: true }
+    isVisible: { type: Boolean, default: true },
   },
   {
     timestamps: true,

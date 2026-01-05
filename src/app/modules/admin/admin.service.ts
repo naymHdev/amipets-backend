@@ -228,8 +228,9 @@ const getServiceFromDB = async (query: QueryRecord): Promise<ServiceDoc[]> => {
 
   const baseQuery = Service.find();
   const serviceQuery = new QueryBuilder(baseQuery, wQuery)
-    .search(['name'])
+    .search(['name', 'service_tags'])
     .filter()
+    .sort()
     .fields();
 
   const services = await serviceQuery.modelQuery.lean<ServiceDoc[]>();

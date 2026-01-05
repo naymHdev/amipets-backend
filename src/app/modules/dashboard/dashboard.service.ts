@@ -5,9 +5,12 @@ import { PetAdopt } from '../user/user.model';
 
 //  -------------------------------------- Admin Dashboard Start --------------------------------------
 const dbTotalStats = async () => {
-  const totalUser = await User.countDocuments({isDeleted : false});
-  const totalShelter = await User.countDocuments({ role: 'shelter', isDeleted : false });
-  const totalPet = await Pet.countDocuments({isVisible : true});
+  const totalUser = await User.countDocuments({ isDeleted: false });
+  const totalShelter = await User.countDocuments({
+    role: 'shelter',
+    isDeleted: false,
+  });
+  const totalPet = await Pet.countDocuments({ isVisible: true });
   return { totalUser, totalShelter, totalPet };
 };
 
@@ -129,8 +132,13 @@ const getDashboardShelterStats = async (filterYear: number) => {
 //  -------------------------------------- Shelter Dashboard Start --------------------------------------
 
 const shelterTotalStats = async (shelterId: string) => {
-  const totalPet = await Pet.countDocuments({ owner: shelterId, isVisible : true });
-  const totalDonations = await Pet.find({ pet_status: 'adopted'}).countDocuments({
+  const totalPet = await Pet.countDocuments({
+    owner: shelterId,
+    isVisible: true,
+  });
+  const totalDonations = await Pet.find({
+    pet_status: 'adopted',
+  }).countDocuments({
     owner: shelterId,
   });
   return { totalPet, totalPetDonations: totalDonations };
@@ -215,9 +223,8 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
     {
       $match: {
         owner: new Types.ObjectId(userId),
-        isAdopted: true,
-        pet_status : "adopted",
-        createdAt: { $gte: startOfYear, $lt: endOfYear },
+        pet_status: 'adopted',
+        adoptedDate: { $gte: startOfYear, $lt: endOfYear },
       },
     },
     {
@@ -309,8 +316,8 @@ const findRecentAdopters = async (
     {
       $project: {
         _id: 1,
-        // answers: 1, 
-        status: 1, 
+        // answers: 1,
+        status: 1,
         adopted_pet: 1,
         adopter: 1,
         createdAt: 1,
@@ -345,9 +352,9 @@ const findRecentAdopters = async (
   };
 };
 const detailsRecentAdopters = async (petId: string) => {
-  const adopter = await PetAdopt.findById({ _id: petId }).populate(
-    'adopted_pet',
-  ).populate('adopter');
+  const adopter = await PetAdopt.findById({ _id: petId })
+    .populate('adopted_pet')
+    .populate('adopter');
 
   return adopter;
 };

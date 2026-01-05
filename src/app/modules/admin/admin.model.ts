@@ -101,6 +101,10 @@ const ServiceSchema = new Schema<IService>(
       required: false,
       default: null,
     },
+    service_tags: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

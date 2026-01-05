@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await AuthService.registerUserFromDB(req.body);
-  console.log('result__', result);
+  // console.log('result__', result);
 
   let otpToken;
   if (result?.isVerified == false) {

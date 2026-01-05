@@ -27,6 +27,7 @@ export interface IService {
   icon: string;
   isActive: boolean;
   position?: number;
+  service_tags: string[];
 }
 
 export interface IAddWebsite {

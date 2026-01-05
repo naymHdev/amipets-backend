@@ -26,6 +26,7 @@ export interface IPet {
   isAdopted?: boolean;
   isBookmarked?: boolean;
 
+  adoptedDate: Date | null;
   pet_status?:
     | 'adopted'
     | 'deceased'
@@ -36,5 +37,5 @@ export interface IPet {
   pet_reports?: string[];
   internal_notes?: string;
 
-  isVisible: boolean
+  isVisible: boolean;
 }

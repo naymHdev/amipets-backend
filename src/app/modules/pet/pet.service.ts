@@ -42,6 +42,12 @@ const createPerFromDB = async (
     );
   }
 
+  if (payload.pet_status === 'adopted') {
+    payload.adoptedDate = new Date();
+  } else {
+    payload.adoptedDate = null;
+  }
+
   payload.owner = new Types.ObjectId(authUser._id);
 
   const pet = new Pet({
@@ -104,6 +110,12 @@ const updatePetFromDB = async (
   let finalProfileImages = existingPet.pet_image || [];
   if (image && image?.length > 0) {
     finalProfileImages = [...finalProfileImages, ...image];
+  }
+
+  if (payload.pet_status === 'adopted') {
+    payload.adoptedDate = new Date();
+  } else {
+    payload.adoptedDate = null;
   }
 
   // Update existing pet with new data
