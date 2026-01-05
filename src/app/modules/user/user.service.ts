@@ -276,7 +276,7 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
 
   const isAdopted = await Pet.findById(payload.adopted_pet);
 
-  if (isAdopted?.isAdopted) {
+  if (isAdopted?.isAdopted && isAdopted.pet_status === 'adopted') {
     throw new AppError(StatusCodes.NOT_FOUND, 'This pet is already adopted.');
   }
 
@@ -287,6 +287,12 @@ const getPetAdoptFromDB = async (authUser: IJwtPayload, payload: IPetAdopt) => {
   await Pet.findOneAndUpdate(
     { _id: payload.adopted_pet },
     { $set: { isAdopted: true } },
+    { new: true },
+  );
+
+ await Pet.findOneAndUpdate(
+    { _id: payload.adopted_pet },
+    { $set: { pet_status: 'adopted' } },
     { new: true },
   );
 

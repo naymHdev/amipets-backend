@@ -224,12 +224,12 @@ const petsDonetsOverView = async (filterYear: number, userId: string) => {
       $match: {
         owner: new Types.ObjectId(userId),
         pet_status: 'adopted',
-        adoptedDate: { $gte: startOfYear, $lt: endOfYear },
+        adoptedDate: { $gte: startOfYear, $lt: endOfYear, $ne: null },
       },
     },
     {
       $group: {
-        _id: { month: { $month: '$createdAt' } },
+        _id: { month: { $month: '$adoptedDate' } },
         count: { $sum: 1 },
       },
     },
