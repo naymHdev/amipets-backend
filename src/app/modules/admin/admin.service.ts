@@ -243,7 +243,7 @@ const getSingleServices = async (id: string) => {
   return result;
 };
 
-const updateService = async (id: string, payload: IService, icon: string) => {
+const updateService = async (id: string, payload: IService, icon: string | undefined) => {
   const existsService = await Service.findById(id);
 
   if (!existsService) {
@@ -252,6 +252,8 @@ const updateService = async (id: string, payload: IService, icon: string) => {
       "A 'service' entry does not exist in the database. Please create it first.",
     );
   }
+
+  
 
   const result = await Service.findOneAndUpdate(
     { _id: id },

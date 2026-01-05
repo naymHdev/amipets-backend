@@ -321,7 +321,7 @@ const updateService = catchAsync(async (req, res) => {
   const payload = req.body;
   const icon =
     (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+    undefined;
   const result = await AdminService.updateService(id, payload, icon);
 
   await NotificationService.sendNotification({
