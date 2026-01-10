@@ -114,13 +114,13 @@ const updatePosition = z.object({
 
 const addWebsiteSchema = z.object({
   body: z.object({
-    web_name: z.string().min(3, 'Website name cannot be empty'),
+    web_name: z.string({ required_error: 'Website name cannot be empty' }),
     web_link: z.string({ required_error: 'Website link cannot be empty' }),
     pet_type: z.enum(['dog', 'cat', 'both'], {
       required_error: 'Pet type is required',
     }),
-    description: z.string().min(10, 'Description cannot be empty'),
-    location: z.string().min(3, 'Location cannot be empty'),
+    description: z.string({ required_error: 'Description is required' }),
+    location: z.string({ required_error: 'Location is required' }),
     service: z.string({ required_error: 'Service is required' }),
     position: z.number().optional(),
     service_tags: z.array(
@@ -131,7 +131,9 @@ const addWebsiteSchema = z.object({
 
 const updateWebsiteSchema = z.object({
   body: z.object({
-    web_name: z.string().min(3, 'Website name cannot be empty').optional(),
+    web_name: z
+      .string({ required_error: 'Website name cannot be empty' })
+      .optional(),
     web_link: z
       .string({ required_error: 'Website link cannot be empty' })
       .optional(),
@@ -140,8 +142,8 @@ const updateWebsiteSchema = z.object({
         required_error: 'Pet type is required',
       })
       .optional(),
-    description: z.string().min(10, 'Description cannot be empty').optional(),
-    location: z.string().min(3, 'Location cannot be empty').optional(),
+    description: z.string().optional(),
+    location: z.string().optional(),
     service: z.string({ required_error: 'Service is required' }).optional(),
     position: z.number().optional(),
     service_tags: z.array(z.string()).optional(),
