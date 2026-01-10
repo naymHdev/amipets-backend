@@ -243,7 +243,11 @@ const getSingleServices = async (id: string) => {
   return result;
 };
 
-const updateService = async (id: string, payload: IService, icon: string | undefined) => {
+const updateService = async (
+  id: string,
+  payload: IService,
+  icon: string | undefined,
+) => {
   const existsService = await Service.findById(id);
 
   if (!existsService) {
@@ -252,8 +256,6 @@ const updateService = async (id: string, payload: IService, icon: string | undef
       "A 'service' entry does not exist in the database. Please create it first.",
     );
   }
-
-  
 
   const result = await Service.findOneAndUpdate(
     { _id: id },
@@ -376,7 +378,7 @@ const getServiceBaseWeb = async (
 
   const baseQuery = AddWebsite.find({ service: serviceId, ...petTypeFilter });
   const websiteQuery = new QueryBuilder(baseQuery, wQuery)
-    .search(['web_name', 'pet_type', 'serviceName'])
+    .search(['web_name', 'pet_type', 'serviceName', 'service_tags'])
     .sort()
     .fields()
     .filter();

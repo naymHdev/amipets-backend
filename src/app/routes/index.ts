@@ -9,6 +9,7 @@ import { NotificationRoutes } from '../modules/notification/notification.route';
 import { BookmarkRoutes } from '../modules/bookmarks/bookmarks.routes';
 import { DashboardRoutes } from '../modules/dashboard/dashboard.routes';
 import { EarningRoutes } from '../modules/earning/earning.routes';
+import { DownloadRoutes } from '../modules/download/download.routes';
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: '/earning',
     route: EarningRoutes,
+  },
+  {
+    path: '/downloads',
+    route: DownloadRoutes,
   },
 ];
 

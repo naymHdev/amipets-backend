@@ -123,6 +123,9 @@ const addWebsiteSchema = z.object({
     location: z.string().min(3, 'Location cannot be empty'),
     service: z.string({ required_error: 'Service is required' }),
     position: z.number().optional(),
+    service_tags: z.array(
+      z.string({ required_error: 'Minimum one tag is required' }),
+    ),
   }),
 });
 
@@ -141,6 +144,7 @@ const updateWebsiteSchema = z.object({
     location: z.string().min(3, 'Location cannot be empty').optional(),
     service: z.string({ required_error: 'Service is required' }).optional(),
     position: z.number().optional(),
+    service_tags: z.array(z.string()).optional(),
   }),
 });
 

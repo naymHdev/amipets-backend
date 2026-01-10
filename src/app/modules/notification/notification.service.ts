@@ -154,7 +154,7 @@ const getAllUserNotifications = async (
   }
 
   // Apply query operators (pagination, sort, filter)
-  let mongoQuery = Notification.find(baseFilter);
+  let mongoQuery = Notification.find(baseFilter).sort({ createdAt: -1 });
 
   if (pQuery.sortBy && pQuery.sortOrder) {
     mongoQuery = mongoQuery.sort({

@@ -82,4 +82,5 @@ const PetAdoptSchema = new Schema<IPetAdopt>(
 
 export const MyPet = mongoose.model<IMyPet>('MyPet', MyPetSchema);
 
+
 export const PetAdopt = mongoose.model<IPetAdopt>('PetAdopt', PetAdoptSchema);

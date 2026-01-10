@@ -40,4 +40,5 @@ export interface IAddWebsite {
   service: Types.ObjectId;
   serviceName: string;
   position: number;
+  service_tags: string[];
 }

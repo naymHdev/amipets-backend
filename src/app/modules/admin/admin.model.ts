@@ -149,6 +149,10 @@ const AddWebsiteSchema = new Schema<IAddWebsite>(
       required: true,
     },
     position: { type: Number, required: false },
+    service_tags: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

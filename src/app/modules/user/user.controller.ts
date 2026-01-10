@@ -292,7 +292,7 @@ const getPetAdopt = catchAsync(async (req, res) => {
       message: adminMessage,
     },
     receiverId: adminIds,
-    notifyAdmin: true,
+    notifyAdmin: false,
   });
 
   sendResponse(res, {
