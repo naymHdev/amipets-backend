@@ -49,4 +49,4 @@ coverage/
 
 .vercel
 .DS_Store
-
+public/images
