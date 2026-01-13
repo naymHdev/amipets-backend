@@ -37,7 +37,7 @@ const findAllEarnings = catchAsync(async (req, res) => {
 });
 
 const transactionDetails = catchAsync(async (req, res) => {
-  const result = await EarningService.transactionDetails(req.params.id);
+  const result = await EarningService.transactionDetails(req.params.id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -57,7 +57,7 @@ const incomeStatus = catchAsync(async (req, res) => {
 });
 
 const deleteIncome = catchAsync(async (req, res) => {
-  const result = await EarningService.deletedEarning(req.params.id);
+  const result = await EarningService.deletedEarning(req.params.id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,

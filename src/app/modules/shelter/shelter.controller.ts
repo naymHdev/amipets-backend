@@ -43,7 +43,7 @@ const createSurvey = catchAsync(async (req, res) => {
 });
 
 const getSurvey = catchAsync(async (req, res) => {
-  const result = await ShelterServices.getSurveyFromDB(req.params.id);
+  const result = await ShelterServices.getSurveyFromDB(req.params.id as string);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -54,7 +54,7 @@ const getSurvey = catchAsync(async (req, res) => {
 });
 
 const getSingleSurveyFromDB = catchAsync(async (req, res) => {
-  const result = await ShelterServices.getSingleSurveyFromDB(req.params.id);
+  const result = await ShelterServices.getSingleSurveyFromDB(req.params.id as string);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -65,7 +65,7 @@ const getSingleSurveyFromDB = catchAsync(async (req, res) => {
 });
 
 const deleteSurvey = catchAsync(async (req, res) => {
-  const result = await ShelterServices.deleteSurvey(req.params.id);
+  const result = await ShelterServices.deleteSurvey(req.params.id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -98,7 +98,7 @@ const deleteSurvey = catchAsync(async (req, res) => {
 });
 
 const updateSurvey = catchAsync(async (req, res) => {
-  const result = await ShelterServices.updateSurvey(req.params.id, req.body);
+  const result = await ShelterServices.updateSurvey(req.params.id as string, req.body);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -143,7 +143,7 @@ const mySurveyQs = catchAsync(async (req, res) => {
 
 const updateUserRequest = catchAsync(async (req, res) => {
   const result = await ShelterServices.updateUserRequest(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
 

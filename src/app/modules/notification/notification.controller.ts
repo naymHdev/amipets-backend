@@ -6,7 +6,7 @@ import { IJwtPayload } from '../auth/auth.interface';
 
 const deleteNotification = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await NotificationService.deleteNotification(id);
+  await NotificationService.deleteNotification(id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

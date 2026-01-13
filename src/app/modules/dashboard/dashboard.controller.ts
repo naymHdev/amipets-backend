@@ -96,7 +96,7 @@ const findRecentAdopters = catchAsync(async (req, res) => {
 
 const detailsRecentAdopters = catchAsync(async (req, res) => {
   const petId = req.params.id;
-  const result = await DashboardService.detailsRecentAdopters(petId);
+  const result = await DashboardService.detailsRecentAdopters(petId as string);
 
   res.status(200).json({
     success: true,

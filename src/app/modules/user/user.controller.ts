@@ -241,7 +241,7 @@ const getMySinglePet = catchAsync(async (req, res) => {
 
 const deleteMyPet = catchAsync(async (req, res) => {
   const petId = req.params.id;
-  const result = await UserService.deleteSinglePet(petId);
+  const result = await UserService.deleteSinglePet(petId as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,

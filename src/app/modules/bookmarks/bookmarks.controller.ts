@@ -13,7 +13,10 @@ const createBookmark = catchAsync(async (req, res) => {
     throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized! ');
   }
 
-  const result = await BookmarksService.createBookmarksFromDB(petId, userId);
+  const result = await BookmarksService.createBookmarksFromDB(
+    petId as string,
+    userId,
+  );
   // console.log('result_________', result);
 
   await NotificationService.sendNotification({
@@ -72,7 +75,7 @@ const getAllBookmarkedIds = catchAsync(async (req, res) => {
 
 const getDetails = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await BookmarksService.getDetailsFromDB(id);
+  const result = await BookmarksService.getDetailsFromDB(id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -83,7 +86,7 @@ const getDetails = catchAsync(async (req, res) => {
 
 const deleteBookmarks = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await BookmarksService.deletedBookmarksFromDB(id);
+  await BookmarksService.deletedBookmarksFromDB(id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
