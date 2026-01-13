@@ -5,7 +5,6 @@ import { parseBody } from '../../middleware/bodyParser';
 import { PetController } from './pet.controller';
 import { petValidation } from './pet.validation';
 import validateRequest from '../../middleware/validateRequest';
-import { single_image_Upload } from '../../utils/imageUploader';
 import { uploadFactory } from '../../middleware/uploadFactory';
 
 const router = Router();
@@ -28,7 +27,7 @@ router.post(
 router.patch(
   '/:id',
   auth(Role.SHELTER),
-  single_image_Upload.fields([
+  uploadFactory({ type: 'mixed', maxFiles: 5 }).fields([
     { name: 'pet_image', maxCount: 10 },
     { name: 'pet_reports', maxCount: 10 },
   ]),

@@ -57,7 +57,6 @@ const createPerFromDB = async (payload: IPet, authUser: IJwtPayload) => {
 const updatePetFromDB = async (
   petId: string,
   payload: Partial<IPet>,
-  image: string[],
   authUser: IJwtPayload,
 ) => {
   // Verify user existence and status
@@ -91,20 +90,20 @@ const updatePetFromDB = async (
   }
 
   // Optional: Check if user owns this pet or has rights to update
-  if (
-    existingPet?.owner &&
-    existingPet.owner.toString() !== isUserExists._id.toString()
-  ) {
-    throw new AppError(
-      StatusCodes.FORBIDDEN,
-      'You are not authorized to update this pet.',
-    );
-  }
+  // if (
+  //   existingPet?.owner &&
+  //   existingPet.owner.toString() !== isUserExists._id.toString()
+  // ) {
+  //   throw new AppError(
+  //     StatusCodes.FORBIDDEN,
+  //     'You are not authorized to update this pet.',
+  //   );
+  // }
 
   // Handle image update → append new images to existing ones
   let finalProfileImages = existingPet.pet_image || [];
-  if (image && image?.length > 0) {
-    finalProfileImages = [...finalProfileImages, ...image];
+  if (payload?.pet_image && payload?.pet_image?.length > 0) {
+    finalProfileImages = [...finalProfileImages, ...payload.pet_image];
   }
 
   let finalReports = existingPet.pet_reports || [];

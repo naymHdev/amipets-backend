@@ -3,7 +3,6 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
-import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
 import { uploadToS3 } from '../../utils/s3';
 
@@ -86,27 +85,39 @@ const updatePet = catchAsync(async (req, res) => {
     pet_image: Express.Multer.File[];
     pet_reports?: Express.Multer.File[];
   };
+  // Upload pet images to S3 and get their URLs
+  const petImageUrls = [];
+  if (files.pet_image && files.pet_image.length > 0) {
+    for (const file of files.pet_image) {
+      const fileName = `pet_images/${Date.now()}-${file.originalname}`;
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+      petImageUrls.push(url);
+    }
+  }
 
-  const filePaths = files?.pet_image?.map((file) => {
-    return (
-      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
-    );
-  });
+  // Upload pet reports to S3 and get their URLs (optional)
+  const petReportUrls = [];
+  if (files.pet_reports && files.pet_reports.length > 0) {
+    for (const file of files.pet_reports) {
+      const fileName = `pet_reports/${Date.now()}-${file.originalname}`;
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+      petReportUrls.push(url);
+    }
+  }
 
-  const pet_reports = files?.pet_reports?.map((file) => {
-    return file?.filename && config.BASE_URL + '/images/' + file.filename;
-  });
-
-  req.body.pet_reports = pet_reports;
+  // Add URLs to the request body for saving in the DB
+  req.body.pet_image = petImageUrls;
+  req.body.pet_reports = petReportUrls;
 
   const authUser = req.user as IJwtPayload;
 
-  const result = await PetServices.updatePetFromDB(
-    petId,
-    payload,
-    filePaths,
-    authUser,
-  );
+  const result = await PetServices.updatePetFromDB(petId, payload, authUser);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
