@@ -7,11 +7,7 @@ import Pet from './pet.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { Types } from 'mongoose';
 
-const createPerFromDB = async (
-  payload: IPet,
-  image: string[],
-  authUser: IJwtPayload,
-) => {
+const createPerFromDB = async (payload: IPet, authUser: IJwtPayload) => {
   const isUserExists = await User.findById(authUser._id);
 
   if (isUserExists?.role !== 'shelter') {
@@ -52,7 +48,6 @@ const createPerFromDB = async (
 
   const pet = new Pet({
     ...payload,
-    pet_image: image,
   });
   const result = await pet.save();
 

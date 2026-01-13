@@ -5,6 +5,7 @@ import { IJwtPayload } from '../auth/auth.interface';
 import { PetServices } from './pet.service';
 import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
+import { uploadToS3 } from '../../utils/s3';
 
 const createPet = catchAsync(async (req, res) => {
   const files = req.files as {
@@ -12,21 +13,38 @@ const createPet = catchAsync(async (req, res) => {
     pet_reports?: Express.Multer.File[];
   };
 
-  const filePaths = files?.pet_image?.map((file) => {
-    return (
-      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
-    );
-  });
+  // Upload pet images to S3 and get their URLs
+  const petImageUrls = [];
+  if (files.pet_image && files.pet_image.length > 0) {
+    for (const file of files.pet_image) {
+      const fileName = `pet_images/${Date.now()}-${file.originalname}`;
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+      petImageUrls.push(url);
+    }
+  }
 
-  const pet_reports = files?.pet_reports?.map((file) => {
-    return file?.filename && config.BASE_URL + '/images/' + file.filename;
-  });
+  // Upload pet reports to S3 and get their URLs (optional)
+  const petReportUrls = [];
+  if (files.pet_reports && files.pet_reports.length > 0) {
+    for (const file of files.pet_reports) {
+      const fileName = `pet_reports/${Date.now()}-${file.originalname}`;
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+      petReportUrls.push(url);
+    }
+  }
 
-  req.body.pet_reports = pet_reports;
+  // Add URLs to the request body for saving in the DB
+  req.body.pet_image = petImageUrls;
+  req.body.pet_reports = petReportUrls;
 
   const result = await PetServices.createPerFromDB(
     req.body,
-    filePaths,
     req.user as IJwtPayload,
   );
 
@@ -61,7 +79,7 @@ const createPet = catchAsync(async (req, res) => {
 });
 
 const updatePet = catchAsync(async (req, res) => {
-  const petId = req.params.id;
+  const petId = req.params.id as string;
   const payload = req.body;
 
   const files = req.files as {
@@ -121,7 +139,7 @@ const updatePet = catchAsync(async (req, res) => {
 });
 
 const deletedPetImg = catchAsync(async (req, res) => {
-  const petId = req.params.id;
+  const petId = req.params.id as string;
   const img = req.body.img;
 
   const result = await PetServices.deletedPetImg(petId, img);
@@ -138,7 +156,7 @@ const deletedPetReport = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const report = req.body.report;
 
-  const result = await PetServices.deletedPetReport(petId, report);
+  const result = await PetServices.deletedPetReport(petId as string, report);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -177,7 +195,7 @@ const getAllPets = catchAsync(async (req, res) => {
 
 const getSinglePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
-  const result = await PetServices.getSinglePet(petId);
+  const result = await PetServices.getSinglePet(petId as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -188,7 +206,7 @@ const getSinglePet = catchAsync(async (req, res) => {
 
 const deletePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
-  const result = await PetServices.deleteSinglePet(petId);
+  const result = await PetServices.deleteSinglePet(petId as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,

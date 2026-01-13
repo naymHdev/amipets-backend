@@ -6,6 +6,7 @@ import { PetController } from './pet.controller';
 import { petValidation } from './pet.validation';
 import validateRequest from '../../middleware/validateRequest';
 import { single_image_Upload } from '../../utils/imageUploader';
+import { uploadFactory } from '../../middleware/uploadFactory';
 
 const router = Router();
 router.get('/breeds', PetController.findBreeds);
@@ -15,7 +16,7 @@ router.get('/cities', PetController.findCities);
 router.post(
   '/create-pet',
   auth(Role.SHELTER),
-  single_image_Upload.fields([
+  uploadFactory({ type: 'mixed', maxFiles: 5 }).fields([
     { name: 'pet_image', maxCount: 10 },
     { name: 'pet_reports', maxCount: 10 },
   ]),
@@ -36,8 +37,11 @@ router.patch(
   PetController.updatePet,
 );
 router.delete('/petImg/:id', auth(Role.SHELTER), PetController.deletedPetImg);
-router.delete('/petReport/:id', auth(Role.SHELTER), PetController.deletedPetReport);
-
+router.delete(
+  '/petReport/:id',
+  auth(Role.SHELTER),
+  PetController.deletedPetReport,
+);
 
 router.get(
   '/all-pets',
