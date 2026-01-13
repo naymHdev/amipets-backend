@@ -3,7 +3,6 @@ import sendResponse from '../../utils/sendResponse';
 import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import { IJwtPayload } from '../auth/auth.interface';
-import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
 import { Types } from 'mongoose';
 import User from '../auth/auth.model';

@@ -2,10 +2,10 @@ import { Router } from 'express';
 import validateRequest from '../../middleware/validateRequest';
 import { AdminValidation } from './admin.validation';
 import { AdminController } from './admin.controller';
-import { single_image_Upload } from '../../utils/imageUploader';
 import { parseBody } from '../../middleware/bodyParser';
 import auth from '../../middleware/auth';
 import { Role } from '../auth/auth.interface';
+import { uploadFactory } from '../../middleware/uploadFactory';
 
 const router = Router();
 
@@ -55,9 +55,11 @@ router.patch(
 router.post(
   '/create-banner',
   auth(Role.ADMIN),
-  single_image_Upload.array('image'),
+  uploadFactory({ type: 'mixed', maxFiles: 5 }).fields([
+    { name: 'image', maxCount: 10 },
+  ]),
   parseBody,
-  validateRequest(AdminValidation.bannerSchema),
+  // validateRequest(AdminValidation.bannerSchema),
   AdminController.createBanner,
 );
 
@@ -66,7 +68,9 @@ router.get('/get-banner', AdminController.getBanner);
 router.patch(
   '/update-banner/:id',
   auth(Role.ADMIN),
-  single_image_Upload.array('image'),
+  uploadFactory({ type: 'mixed', maxFiles: 10 }).fields([
+    { name: 'image', maxCount: 10 },
+  ]),
   parseBody,
   validateRequest(AdminValidation.updateBannerSchema),
   AdminController.updateBanner,
@@ -82,7 +86,7 @@ router.delete(
 router.post(
   '/create-service',
   auth(Role.ADMIN),
-  single_image_Upload.single('icon'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('icon'),
   parseBody,
   validateRequest(AdminValidation.servicesSchema),
   AdminController.createService,
@@ -92,7 +96,7 @@ router.get('/service-detail/:id', AdminController.getSingleService);
 router.patch(
   '/update-service/:id',
   auth(Role.ADMIN),
-  single_image_Upload.single('icon'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('icon'),
   parseBody,
   validateRequest(AdminValidation.updateServicesSchema),
   AdminController.updateService,
@@ -113,7 +117,7 @@ router.patch(
 router.post(
   '/add-website',
   auth(Role.ADMIN),
-  single_image_Upload.single('web_img'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('web_img'),
   parseBody,
   validateRequest(AdminValidation.addWebsiteSchema),
   AdminController.createAddWebsite,
@@ -121,7 +125,7 @@ router.post(
 router.patch(
   '/update-website/:id',
   auth(Role.ADMIN),
-  single_image_Upload.single('web_img'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('web_img'),
   parseBody,
   validateRequest(AdminValidation.updateWebsiteSchema),
   AdminController.updateAddWebsite,
@@ -175,7 +179,7 @@ router.delete(
 router.put(
   '/update-admin-profile',
   auth(Role.ADMIN),
-  single_image_Upload.single('profile_image'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('profile_image'),
   parseBody,
   validateRequest(AdminValidation.adminProfileUpdateValidationSchema),
   AdminController.editAdminProfile,

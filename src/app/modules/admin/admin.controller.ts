@@ -2,10 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AdminService } from './admin.service';
-import config from '../../config';
 import { IJwtPayload } from '../auth/auth.interface';
 import { Service } from './admin.model';
 import { NotificationService } from '../notification/notification.service';
+import { uploadToS3 } from '../../utils/s3';
 
 const createAbout = catchAsync(async (req, res) => {
   const result = await AdminService.createAboutFromDB(req.body);
@@ -173,14 +173,23 @@ const updateTermsAndCondition = catchAsync(async (req, res) => {
 // --------------------------------- Banner Controller ---------------------------------
 const createBanner = catchAsync(async (req, res) => {
   const payload = req.body;
-  const files = req.files as Express.Multer.File[];
+  const files = req.files as { image: Express.Multer.File[] };
 
-  const image = files.map((file) => {
-    return (
-      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
-    );
-  });
-  const result = await AdminService.createBannerFromDB(payload, image);
+  let imageUrls: string[] = [];
+  if (files.image && files.image.length > 0) {
+    for (const file of files.image) {
+      const fileName = `image/${Date.now()}-${file.originalname}`;
+
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+
+      imageUrls.push(url as string);
+    }
+  }
+
+  const result = await AdminService.createBannerFromDB(payload, imageUrls);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -214,15 +223,27 @@ const getBanner = catchAsync(async (req, res) => {
 const updateBanner = catchAsync(async (req, res) => {
   const { id } = req.params;
   const payload = req.body;
-  const files = req.files as Express.Multer.File[];
+  const files = req.files as { image: Express.Multer.File[] };
 
-  const image = files.map((file) => {
-    return (
-      (file?.filename && config.BASE_URL + '/images/' + file.filename) || ''
-    );
-  });
+  let imageUrls: string[] = [];
+  if (files.image && files.image.length > 0) {
+    for (const file of files.image) {
+      const fileName = `image/${Date.now()}-${file.originalname}`;
 
-  const result = await AdminService.updateBanner(payload, image, id);
+      const url = await uploadToS3({
+        file: file,
+        fileName: fileName,
+      });
+
+      imageUrls.push(url as string);
+    }
+  }
+
+  const result = await AdminService.updateBanner(
+    payload,
+    imageUrls,
+    id as string,
+  );
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -245,7 +266,7 @@ const updateBanner = catchAsync(async (req, res) => {
 const deleteSingleBannerInfo = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await AdminService.deleteSingleBannerInfo(id);
+  const result = await AdminService.deleteSingleBannerInfo(id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -269,10 +290,21 @@ const deleteSingleBannerInfo = catchAsync(async (req, res) => {
 // ----------------------------- Services Controller ----------------------------
 const createService = catchAsync(async (req, res) => {
   const payload = req.body;
-  const icon =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
-  const result = await AdminService.createServiceFromDB(payload, icon);
+  const file = req.file;
+
+  let icon: string | null = '';
+  if (file) {
+    const fileName = `icon/${Date.now()}-${file.originalname}`;
+    icon = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
+
+  const result = await AdminService.createServiceFromDB(
+    payload,
+    icon as string,
+  );
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -306,7 +338,7 @@ const getService = catchAsync(async (req, res) => {
 
 const getSingleService = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await AdminService.getSingleServices(id);
+  const result = await AdminService.getSingleServices(id as string);
 
   sendResponse(res, {
     success: true,
@@ -319,10 +351,22 @@ const getSingleService = catchAsync(async (req, res) => {
 const updateService = catchAsync(async (req, res) => {
   const { id } = req.params;
   const payload = req.body;
-  const icon =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    undefined;
-  const result = await AdminService.updateService(id, payload, icon);
+  const file = req.file;
+
+  let icon: string | null = '';
+  if (file) {
+    const fileName = `icon/${Date.now()}-${file.originalname}`;
+    icon = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
+
+  const result = await AdminService.updateService(
+    id as string,
+    payload,
+    icon as string,
+  );
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -344,7 +388,7 @@ const updateService = catchAsync(async (req, res) => {
 
 const deletedService = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.deleteService(id);
+  await AdminService.deleteService(id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -367,7 +411,10 @@ const deletedService = catchAsync(async (req, res) => {
 const updateServicePosition = catchAsync(async (req, res) => {
   const { id } = req.params;
   const payload = req.body.position;
-  const result = await AdminService.updateServicePosition(id, payload);
+  const result = await AdminService.updateServicePosition(
+    id as string,
+    payload,
+  );
   sendResponse(res, {
     success: true,
     message: 'Service position updated successfully',
@@ -379,15 +426,21 @@ const updateServicePosition = catchAsync(async (req, res) => {
 // -------------------------------- Add Website Controller --------------------------------
 const createAddWebsite = catchAsync(async (req, res) => {
   const payload = req.body;
-  const web_img =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+  let web_img: string | null = '';
+  if (file) {
+    const fileName = `web_img/${Date.now()}-${file.originalname}`;
+    web_img = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
 
   const service = await Service.findById(req.body.service);
   const serviceName = service?.name;
   const result = await AdminService.createWebsiteFromDB(
     payload,
-    web_img,
+    web_img as string,
     serviceName as string,
   );
 
@@ -412,11 +465,21 @@ const createAddWebsite = catchAsync(async (req, res) => {
 const updateAddWebsite = catchAsync(async (req, res) => {
   const { id } = req.params;
   const payload = req.body;
-  const web_img =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+  let web_img: string | null = '';
+  if (file) {
+    const fileName = `web_img/${Date.now()}-${file.originalname}`;
+    web_img = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
 
-  const result = await AdminService.updateWebFromDB(id, payload, web_img);
+  const result = await AdminService.updateWebFromDB(
+    id as string,
+    payload,
+    web_img as string,
+  );
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -449,7 +512,7 @@ const getAddWebsite = catchAsync(async (req, res) => {
 
 const getAddWebsiteDetail = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await AdminService.getWebDetailFromDB(id);
+  const result = await AdminService.getWebDetailFromDB(id as string);
 
   sendResponse(res, {
     success: true,
@@ -461,7 +524,7 @@ const getAddWebsiteDetail = catchAsync(async (req, res) => {
 
 const deletedAddWebsite = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.deleteWebsite(id);
+  await AdminService.deleteWebsite(id as string);
 
   await NotificationService.sendNotification({
     ownerId: req.user?._id,
@@ -483,7 +546,7 @@ const deletedAddWebsite = catchAsync(async (req, res) => {
 
 const serviceBaseWeb = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await AdminService.getServiceBaseWeb(id, req.query);
+  const result = await AdminService.getServiceBaseWeb(id as string, req.query);
 
   sendResponse(res, {
     success: true,
@@ -496,7 +559,10 @@ const serviceBaseWeb = catchAsync(async (req, res) => {
 const updateServiceBaseWebPosition = catchAsync(async (req, res) => {
   const { id } = req.params;
   const payload = req.body.position;
-  const result = await AdminService.updateServiceBaseWebPosition(id, payload);
+  const result = await AdminService.updateServiceBaseWebPosition(
+    id as string,
+    payload,
+  );
   sendResponse(res, {
     success: true,
     message: 'Service base website position updated successfully',
@@ -529,7 +595,7 @@ const getAllUsers = catchAsync(async (req, res) => {
 
 const getUserDetail = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await AdminService.getUserDetailFromDB(id);
+  const result = await AdminService.getUserDetailFromDB(id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -540,7 +606,7 @@ const getUserDetail = catchAsync(async (req, res) => {
 
 const blockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.blockUser(id, req.user?._id);
+  await AdminService.blockUser(id as string, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -552,7 +618,7 @@ const blockUser = catchAsync(async (req, res) => {
 
 const unblockUser = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.unblockUser(id, req.user?._id);
+  await AdminService.unblockUser(id as string, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -576,7 +642,7 @@ const getAllShelter = catchAsync(async (req, res) => {
 
 const getShelterDetail = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await AdminService.shelterDetailFromDB(id);
+  const result = await AdminService.shelterDetailFromDB(id as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
@@ -587,7 +653,7 @@ const getShelterDetail = catchAsync(async (req, res) => {
 
 const blockShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.blockShelter(id, req.user?._id);
+  await AdminService.blockShelter(id as string, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -599,7 +665,7 @@ const blockShelter = catchAsync(async (req, res) => {
 
 const deleteShelter = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await AdminService.deleteShelter(id, req.user?._id);
+  await AdminService.deleteShelter(id as string, req.user?._id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -611,13 +677,20 @@ const deleteShelter = catchAsync(async (req, res) => {
 
 // ----------------------------- Admin Profile Controller ----------------------------
 const editAdminProfile = catchAsync(async (req, res) => {
-  const profile_image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+  let profile_image: string | null = '';
+  if (file) {
+    const fileName = `profile_image/${Date.now()}-${file.originalname}`;
+    profile_image = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
+
   const result = await AdminService.editProfileFromDB(
     req.user as IJwtPayload,
     req.body,
-    profile_image,
+    profile_image as string,
   );
 
   await NotificationService.sendNotification({
@@ -651,7 +724,7 @@ const adminProfile = catchAsync(async (req, res) => {
 
 const deleteUser = catchAsync(async (req, res) => {
   const { email } = req.params;
-  const result = await AdminService.deleteUser(email);
+  const result = await AdminService.deleteUser(email as string);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

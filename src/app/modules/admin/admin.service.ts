@@ -112,33 +112,36 @@ const updateTermsOfService = async (termsOfService: ITermsOfService) => {
 };
 
 // ---------------------------- Banner Service ----------------------------
-const createBannerFromDB = async (payload: IBanner, images: string[]) => {
-  // Build new bannerInfo entries from payload + images
-  const newBannerInfo = payload.bannerInfo.map((info, index) => ({
-    ...info,
-    image: images?.[index] || info.image,
+const createBannerFromDB = async (
+  payload: { title: string; description: string; websiteLink: string[] },
+  images: string[],
+) => {
+  // Create new bannerInfo entries based on the payload and images
+  const newBannerInfo = payload.websiteLink.map((link, index) => ({
+    image: images?.[index] || '',
+    websiteLink: link,
   }));
 
-  // Check if banner already exists
+  // Check if a banner already exists in the database
   const isExist = await Banner.findOne({});
 
   let result;
   if (isExist) {
-    // Append new bannerInfo to existing
+    // If a banner exists, append new bannerInfo to the existing banner
     const mergedBannerInfo = [...isExist.bannerInfo, ...newBannerInfo];
 
     result = await Banner.findOneAndUpdate(
       {},
       {
-        banner: payload.banner || 'banner',
+        banner: payload.title || 'banner',
         bannerInfo: mergedBannerInfo,
       },
       { new: true },
     );
   } else {
-    // First banner entry
+    // If no banner exists, create a new one
     const banner = new Banner({
-      banner: payload.banner || 'banner',
+      banner: payload.title || 'banner',
       bannerInfo: newBannerInfo,
     });
 
@@ -158,6 +161,7 @@ const updateBanner = async (
   images: string[],
   id: string,
 ) => {
+  // console.log('images___[]', images);
   const isExist = await Banner.findOne({ 'bannerInfo._id': id });
 
   if (!isExist) {
