@@ -7,15 +7,23 @@ import config from '../../config';
 import { NotificationService } from '../notification/notification.service';
 import { Types } from 'mongoose';
 import User from '../auth/auth.model';
+import { uploadToS3 } from '../../utils/s3';
 
 const updateProfile = catchAsync(async (req, res) => {
-  const profile_image =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+
+  let profileImageURL: string | null = '';
+  if (file) {
+    const fileName = `profile_image/${Date.now()}-${file.originalname}`;
+    profileImageURL = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
 
   const result = await UserService.updateProfile(
     req.body,
-    profile_image,
+    profileImageURL as string,
     req.user as IJwtPayload,
   );
   sendResponse(res, {
@@ -100,13 +108,20 @@ const deleteProfile = catchAsync(async (req, res) => {
 
 // ------------------------  My Pet Controller ------------------------
 const createMyPet = catchAsync(async (req, res) => {
-  const pet_img =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+
+  let pet_img: string | null = '';
+  if (file) {
+    const fileName = `pet_image/${Date.now()}-${file.originalname}`;
+    pet_img = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
 
   const result = await UserService.createMyPetFromDB(
     req.body,
-    pet_img,
+    pet_img as string,
     req.user as IJwtPayload,
   );
 
@@ -143,15 +158,22 @@ const createMyPet = catchAsync(async (req, res) => {
 const updateMyPet = catchAsync(async (req, res) => {
   const petId = req.params.id;
   const payload = req.body;
-  const pet_img =
-    (req.file?.filename && config.BASE_URL + '/images/' + req.file.filename) ||
-    '';
+  const file = req.file;
+
+  let pet_img: string | null = '';
+  if (file) {
+    const fileName = `pet_image/${Date.now()}-${file.originalname}`;
+    pet_img = await uploadToS3({
+      file: file,
+      fileName,
+    });
+  }
   const authUser = req.user as IJwtPayload;
 
   const result = await UserService.updateMyPetFromDB(
-    petId,
+    petId as string,
     payload,
-    pet_img,
+    pet_img as string,
     authUser,
   );
 
@@ -209,7 +231,7 @@ const getMyAllPet = catchAsync(async (req, res) => {
 
 const getMySinglePet = catchAsync(async (req, res) => {
   const petId = req.params.id;
-  const result = await UserService.getSinglePet(petId);
+  const result = await UserService.getSinglePet(petId as string);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

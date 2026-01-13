@@ -6,7 +6,7 @@ import { parseBody } from '../../middleware/bodyParser';
 import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from '../auth/auth.validation';
 import { UserValidation } from './user.validation';
-import { single_image_Upload } from '../../utils/imageUploader';
+import { uploadFactory } from '../../middleware/uploadFactory';
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.get(
 router.patch(
   '/update-profile',
   auth(Role.USER, Role.ADMIN, Role.SHELTER),
-  single_image_Upload.single('profile_image'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('profile_image'),
   parseBody,
   validateRequest(AuthValidation.userProfileUpdateValidationSchema),
   UserController.updateProfile,
@@ -44,7 +44,7 @@ router.get('/my-pets', auth(Role.USER), UserController.getMyPets);
 router.post(
   '/create-my-pet',
   auth(Role.USER),
-  single_image_Upload.single('pet_image'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('pet_image'),
   parseBody,
   validateRequest(UserValidation.myPetValidationSchema),
   UserController.createMyPet,
@@ -53,7 +53,7 @@ router.post(
 router.patch(
   '/update-my-pet/:id',
   auth(Role.USER),
-  single_image_Upload.single('pet_image'),
+  uploadFactory({ type: 'image', maxFiles: 1 }).single('pet_image'),
   parseBody,
   validateRequest(UserValidation.updateMyPetValidationSchema),
   UserController.updateMyPet,
