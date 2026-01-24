@@ -192,8 +192,6 @@ const getMyPets = catchAsync(async (req, res) => {
 });
 
 const getAllPets = catchAsync(async (req, res) => {
-  // console.log('auth___', req.user);
-
   const result = await PetServices.getAllPetsFromDB(req.query);
 
   sendResponse(res, {

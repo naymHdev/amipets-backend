@@ -572,7 +572,7 @@ const updateServiceBaseWebPosition = catchAsync(async (req, res) => {
 });
 
 const getWebLocations = catchAsync(async (req, res) => {
-  const result = await AdminService.getWebLocations();
+  const result = await AdminService.getWebLocations(req.params.id as string);
   sendResponse(res, {
     success: true,
     message: 'Locations fetched successfully',

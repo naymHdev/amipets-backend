@@ -106,7 +106,7 @@ router.delete(
   auth(Role.ADMIN),
   AdminController.deletedService,
 );
-router.get('/web-locations', AdminController.getWebLocations);
+router.get('/web-locations/:id', AdminController.getWebLocations);
 router.patch(
   '/change-position/:id',
   auth(Role.ADMIN),

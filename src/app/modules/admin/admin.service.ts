@@ -380,7 +380,10 @@ const getServiceBaseWeb = async (
     }
   }
 
-  const baseQuery = AddWebsite.find({ service: serviceId, ...petTypeFilter });
+  const baseQuery = AddWebsite.find({
+    service: serviceId,
+    ...petTypeFilter,
+  });
   const websiteQuery = new QueryBuilder(baseQuery, wQuery)
     .search(['web_name', 'pet_type', 'serviceName', 'service_tags'])
     .sort()
@@ -457,9 +460,30 @@ const updateServiceBaseWebPosition = async (
   return result;
 };
 
-const getWebLocations = async () => {
-  const result = await AddWebsite.distinct('location');
-  return result;
+const getWebLocations = async (id: string) => {
+  // 1️⃣ Find the service by ID
+  const service = await Service.findById(id);
+  if (!service) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Service not found');
+  }
+
+  // 2️⃣ Aggregate locations for websites that have the same service name
+  const locations = await AddWebsite.aggregate([
+    {
+      $lookup: {
+        from: 'services',
+        localField: 'service',
+        foreignField: '_id',
+        as: 'serviceData',
+      },
+    },
+    { $unwind: '$serviceData' },
+    { $match: { 'serviceData.name': service.name } },
+    { $group: { _id: null, locations: { $addToSet: '$location' } } },
+    { $project: { _id: 0, locations: 1 } },
+  ]);
+
+  return locations[0]?.locations || [];
 };
 
 // ---------------------------- Users Service ----------------------------
