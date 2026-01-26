@@ -137,6 +137,8 @@ const socialLogin = async ({
     role: { $ne: 'admin' },
   });
 
+  const finalImg = user?.profile_image ? undefined : image;
+
   if (user && !user?.isSocialLogin) {
     // If user not found, throw error
     throw new AppError(
@@ -152,7 +154,7 @@ const socialLogin = async ({
       { email },
       {
         email,
-        profile_image: image,
+        profile_image: finalImg,
         first_name,
         isverified: true,
         isSocialLogin: true,
@@ -191,9 +193,9 @@ const socialLogin = async ({
   );
 
   return {
-    user: userDoc,
     accessToken,
     refreshToken,
+    user: userDoc,
   };
 };
 
