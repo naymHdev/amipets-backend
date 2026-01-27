@@ -170,6 +170,8 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
     limit: limitStr,
     searchTerm,
     ageGroup,
+    pet_category,
+    gender,
     ...filters
   } = query;
 
@@ -183,37 +185,111 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   const now = new Date();
   const geoQuery: any = { isVisible: true };
 
+  /* -------------------- NORMALIZATION -------------------- */
+  const normalize = (v?: string) => v?.toLowerCase().trim();
+
+  const categoryMap: Record<string, string> = {
+    cat: 'cat',
+    dog: 'dog',
+    katė: 'cat',
+    suo: 'dog',
+    šuo: 'dog',
+  };
+
+  const genderMap: Record<string, string> = {
+    Male: 'Male',
+    Female: 'Female',
+    patelė: 'Female',
+    patinas: 'Male',
+  };
+
   // ----------------- AGE FILTER LOGIC -----------------
-  if (query.ageGroup) {
-    const now = new Date();
+  // if (query.ageGroup) {
+  //   const now = new Date();
 
-    let ageFilter: any = {};
+  //   let ageFilter: any = {};
 
-    if (query.ageGroup === 'upto2') {
-      const twoYearsAgo = new Date();
-      twoYearsAgo.setFullYear(now.getFullYear() - 2);
-      ageFilter.date_of_birth = { $gte: twoYearsAgo };
-    }
+  //   if (query.ageGroup === 'upto2') {
+  //     const twoYearsAgo = new Date();
+  //     twoYearsAgo.setFullYear(now.getFullYear() - 2);
+  //     ageFilter.date_of_birth = { $gte: twoYearsAgo };
+  //   }
 
-    if (query.ageGroup === '2to7') {
-      const twoYearsAgo = new Date();
-      const sevenYearsAgo = new Date();
-      twoYearsAgo.setFullYear(now.getFullYear() - 2);
-      sevenYearsAgo.setFullYear(now.getFullYear() - 7);
-      ageFilter.date_of_birth = { $gte: sevenYearsAgo, $lte: twoYearsAgo };
-    }
+  //   if (query.ageGroup === '2to7') {
+  //     const twoYearsAgo = new Date();
+  //     const sevenYearsAgo = new Date();
+  //     twoYearsAgo.setFullYear(now.getFullYear() - 2);
+  //     sevenYearsAgo.setFullYear(now.getFullYear() - 7);
+  //     ageFilter.date_of_birth = { $gte: sevenYearsAgo, $lte: twoYearsAgo };
+  //   }
 
-    if (query.ageGroup === 'over7') {
-      const sevenYearsAgo = new Date();
-      sevenYearsAgo.setFullYear(now.getFullYear() - 7);
-      ageFilter.date_of_birth = { $lte: sevenYearsAgo };
-    }
+  //   if (query.ageGroup === 'over7') {
+  //     const sevenYearsAgo = new Date();
+  //     sevenYearsAgo.setFullYear(now.getFullYear() - 7);
+  //     ageFilter.date_of_birth = { $lte: sevenYearsAgo };
+  //   }
 
-    // Merge ageFilter into existing filters object
-    Object.assign(filters, ageFilter);
-  }
+  //   // Merge ageFilter into existing filters object
+  //   Object.assign(filters, ageFilter);
+  // }
 
   filters.isVisible = true;
+
+  /* PET CATEGORY (supports single + multiple selection) */
+  if (pet_category) {
+    let categories: string[] = [];
+
+    if (Array.isArray(pet_category)) {
+      categories = pet_category;
+    } else if (typeof pet_category === 'string') {
+      categories = pet_category.split(',');
+    }
+
+    const normalizedCats = categories
+      // @ts-ignore
+      .map((c) => categoryMap[normalize(c)])
+      .filter(Boolean);
+
+    if (normalizedCats.length > 0) {
+      filters.pet_category = {
+        $in: [...normalizedCats, 'both'],
+      };
+    }
+  }
+
+  /* GENDER */
+  if (gender) {
+    // @ts-ignore
+    const normalizedGender = genderMap[normalize(gender as string)];
+    if (normalizedGender) {
+      filters.gender = normalizedGender;
+    }
+  }
+
+  /* AGE GROUP */
+  if (ageGroup) {
+    const now = new Date();
+
+    if (ageGroup === 'upto2') {
+      const d = new Date();
+      d.setFullYear(now.getFullYear() - 2);
+      filters.date_of_birth = { $gte: d };
+    }
+
+    if (ageGroup === '2to7') {
+      const from = new Date();
+      const to = new Date();
+      from.setFullYear(now.getFullYear() - 7);
+      to.setFullYear(now.getFullYear() - 2);
+      filters.date_of_birth = { $gte: from, $lte: to };
+    }
+
+    if (ageGroup === 'over7') {
+      const d = new Date();
+      d.setFullYear(now.getFullYear() - 7);
+      filters.date_of_birth = { $lte: d };
+    }
+  }
 
   const pipeline: any[] = [];
 
