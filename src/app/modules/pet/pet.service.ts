@@ -197,8 +197,8 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
   };
 
   const genderMap: Record<string, string> = {
-    Male: 'Male',
-    Female: 'Female',
+    male: 'Male',
+    female: 'Female',
     patelė: 'Female',
     patinas: 'Male',
   };
@@ -235,7 +235,9 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
 
   filters.isVisible = true;
 
-  /* PET CATEGORY (supports single + multiple selection) */
+  /* PET CATEGORY */
+  let normalizedCats: string[] = [];
+
   if (pet_category) {
     let categories: string[] = [];
 
@@ -245,15 +247,18 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
       categories = pet_category.split(',');
     }
 
-    const normalizedCats = categories
-      // @ts-ignore
+    normalizedCats = categories
       .map((c) => categoryMap[normalize(c)])
       .filter(Boolean);
 
-    if (normalizedCats.length > 0) {
-      filters.pet_category = {
-        $in: [...normalizedCats, 'both'],
-      };
+    // 🟡 SINGLE category → strict filter
+    if (normalizedCats.length === 1) {
+      filters.pet_category = normalizedCats[0];
+    }
+
+    // 🟢 BOTH cat & dog → no category filter
+    if (normalizedCats.includes('cat') && normalizedCats.includes('dog')) {
+      delete filters.pet_category;
     }
   }
 
