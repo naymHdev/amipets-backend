@@ -248,6 +248,7 @@ const getAllPetsFromDB = async (query: Record<string, unknown>) => {
     }
 
     normalizedCats = categories
+    // @ts-ignore
       .map((c) => categoryMap[normalize(c)])
       .filter(Boolean);
 
